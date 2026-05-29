@@ -1,0 +1,97 @@
+.feed-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 72px;
+  border-right: 1px solid #eee7df;
+  background: #faf9f7;
+  padding-top: 22px;
+  z-index: 10;
+  transition: width 0.22s ease;
+  overflow: hidden;
+}
+
+.feed-sidebar:hover {
+  width: 240px;
+}
+
+.sidebar-logo {
+  height: 150px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+
+.sidebar-logo-mini {
+  width: 42px;
+  height: auto;
+  margin-left: 15px;
+  margin-top: 37px;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-logo-full {
+  position: absolute;
+  left: 26px;
+  top: 18px;
+  width: 175px;
+  height: auto;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.feed-sidebar:hover .sidebar-logo-mini {
+  opacity: 0;
+}
+
+.feed-sidebar:hover .sidebar-logo-full {
+  opacity: 1;
+}
+
+.feed-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 52px 0 0;
+}
+
+.feed-menu-item {
+  width: 240px;
+  height: 44px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  color: #2f241d;
+  cursor: pointer;
+  padding-left: 0;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.feed-menu-item:hover {
+  background: #f0ece7;
+}
+
+.feed-menu-icon {
+  width: 72px;
+  min-width: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed-menu-text {
+  opacity: 0;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.feed-sidebar:hover .feed-menu-text {
+  opacity: 1;
+}

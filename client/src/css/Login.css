@@ -1,0 +1,76 @@
+* {
+    font-family: "Pretendard", sans-serif !important;
+}
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f6f2ea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  box-sizing: border-box;
+}
+
+.login-logo-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.login-logo-img {
+  width: 130px;
+  height: auto;
+  display: block;
+}
+
+.login-slogan {
+  text-align: center;
+  margin: 0 0 32px 0;
+  color: #000;
+  font-size: 14px;
+}
+
+.login-links {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  color: #8a8177;
+  font-size: 14px;
+}
+
+.login-link {
+  cursor: pointer;
+}
+
+.login-link:hover {
+  color: #2f2a24;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #222 !important;
+}
+
+.MuiInputLabel-root.Mui-focused {
+  color: #222 !important;
+}
+
+.login-page .MuiInputBase-input,
+.login-page .MuiInputLabel-root,
+.login-page .MuiFormLabel-root,
+.login-page input {
+  font-family: "Pretendard", sans-serif !important;
+}
+
+.login-error {
+  height: 18px;
+  margin: 12px 0 0 0;
+  color: #d32f2f;
+  font-size: 13px;
+  text-align: center;
+}

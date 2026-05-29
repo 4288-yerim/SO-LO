@@ -1,0 +1,163 @@
+.privacy-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f6f2ea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Pretendard", sans-serif;
+}
+
+.privacy-container {
+  width: 900px;
+}
+
+.privacy-logo-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.privacy-logo-area img {
+  width: 130px;
+}
+
+.privacy-card {
+  background-color: #fff;
+  border: 1px solid #e3ded5;
+  border-radius: 18px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.privacy-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.privacy-header h2 {
+  margin: 0 0 8px 0;
+  color: #2f2a24;
+  font-size: 22px;
+}
+
+.privacy-header p {
+  margin: 0;
+  margin-top: 5px;
+  color: #8a8177;
+  font-size: 14px;
+}
+
+.privacy-guide {
+  margin-top: 6px !important;
+  font-size: 13px !important;
+  color: #a0968b !important;
+}
+
+.privacy-options {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.privacy-option {
+  position: relative;
+  width: 33.333%;
+  height: 220px;
+  padding: 24px 18px;
+  border: 1px solid #ddd6cc;
+  border-radius: 16px;
+  background-color: #fff;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.privacy-option:hover {
+  background-color: #f8f3eb;
+  border-color: #2f2a24;
+}
+
+.privacy-option.active {
+  border-color: #2f2a24;
+  background-color: #f3eee6;
+}
+
+.privacy-icon {
+  margin-bottom: 14px;
+}
+
+.privacy-icon-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.privacy-option strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #2f2a24;
+  font-size: 17px;
+}
+
+.privacy-desc {
+  display: block;
+  color: #8a8177;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.privacy-detail-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+
+  padding: 14px 16px;
+  background-color: #f3eee6;
+  border-top: 1px solid #ddd6cc;
+
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+}
+
+.privacy-option:hover .privacy-detail-wrap {
+  transform: translateY(0);
+}
+
+.privacy-detail {
+  margin: 0;
+  color: #5f564d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.privacy-error {
+  height: 18px;
+  margin: 14px 0 0 0;
+  color: #d32f2f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.privacy-submit-button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #2f2a24;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.privacy-submit-button:hover {
+  background-color: #3a342d;
+}

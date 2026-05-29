@@ -1,11 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const sampleRouter = require("./routes/sample");
 const userRouter = require("./routes/user");
+const feedRouter = require("./routes/feed");
+const postRouter = require("./routes/post");
 
 const app = express();
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors({
   origin: "http://localhost:3000",
@@ -22,6 +27,8 @@ app.get("/", (req, res) => {
 
 app.use("/sample", sampleRouter);
 app.use("/user", userRouter);
+app.use("/feed", feedRouter);
+app.use("/post", postRouter);
 
 const PORT = process.env.PORT || 3010;
 
