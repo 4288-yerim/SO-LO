@@ -234,6 +234,59 @@ router.post("/check-id", async (req, res) => {
   }
 });
 
+// 닉네임 중복 확인
+router.post("/check-nickname", async (req, res) => {
+  const { userNickname } = req.body;
+
+  const nicknameRegex = /^[a-zA-Z0-9._]{2,20}$/;
+
+  if (!nicknameRegex.test(userNickname)) {
+    return res.status(400).json({
+      result: "fail",
+      message: "닉네임은 영문, 숫자, _, . 만 가능하며 2~20자여야 합니다."
+    });
+  }
+
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const result = await connection.execute(
+      `
+      SELECT USER_ID
+      FROM SNS_USERS
+      WHERE USER_NICKNAME = :userNickname
+      `,
+      { userNickname },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (result.rows.length > 0) {
+      return res.status(409).json({
+        result: "fail",
+        message: "이미 사용 중인 닉네임입니다."
+      });
+    }
+
+    res.json({
+      result: "success",
+      message: "사용 가능한 닉네임입니다."
+    });
+  } catch (error) {
+    console.error("Error check nickname", error);
+
+    res.status(500).json({
+      result: "fail",
+      message: "닉네임 중복 확인 실패"
+    });
+  } finally {
+    if (connection) {
+      await connection.close();
+    }
+  }
+});
+
 // 회원가입
 router.post("/signup", async (req, res) => {
   const {

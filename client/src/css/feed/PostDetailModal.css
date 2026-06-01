@@ -364,3 +364,10 @@
 .danger-menu-btn {
   color: #b44b4b !important;
 }
+
+.feed-profile-real-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

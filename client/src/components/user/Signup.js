@@ -32,6 +32,8 @@ function Signup() {
   const navigate = useNavigate();
   const [idChecked, setIdChecked] = useState(false);
   const [idMessage, setIdMessage] = useState("");
+  const [nicknameChecked, setNicknameChecked] = useState(false);
+  const [nicknameMessage, setNicknameMessage] = useState("");
   const idRegex = /^[a-zA-Z0-9]{4,20}$/;
   const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
   const nicknameRegex = /^[a-zA-Z0-9._]{2,20}$/;
@@ -163,9 +165,16 @@ function Signup() {
       };
     }
 
+    if (!nicknameChecked) {
+      return {
+        className: "input-guide",
+        text: "닉네임 중복 확인을 해주세요."
+      };
+    }
+
     return {
       className: "verified-message",
-      text: "사용 가능한 닉네임입니다."
+      text: nicknameMessage || "사용 가능한 닉네임입니다."
     };
   };
 
@@ -175,9 +184,9 @@ function Signup() {
       [e.target.name]: e.target.value
     });
 
-    if (e.target.name === "userId") {
-      setIdChecked(false);
-      setIdMessage("");
+    if (e.target.name === "userNickname") {
+      setNicknameChecked(false);
+      setNicknameMessage("");
     }
 
     if (e.target.name === "userPhone") {
@@ -258,6 +267,43 @@ function Signup() {
     }
   };
 
+  const checkNickname = async () => {
+    if (!nicknameRegex.test(form.userNickname)) {
+      setErrors((prev) => ({
+        ...prev,
+        userNickname:
+          "닉네임은 영문, 숫자, _, . 만 가능하며 2~20자여야 합니다."
+      }));
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3010/user/check-nickname",
+        {
+          userNickname: form.userNickname
+        }
+      );
+
+      setNicknameChecked(true);
+      setNicknameMessage(res.data.message);
+
+      setErrors((prev) => ({
+        ...prev,
+        userNickname: ""
+      }));
+    } catch (err) {
+      setNicknameChecked(false);
+
+      setErrors((prev) => ({
+        ...prev,
+        userNickname: err.response
+          ? err.response.data.message
+          : "서버 연결 실패"
+      }));
+    }
+  };
+
   const sendCode = async () => {
     try {
       const res = await axios.post("http://localhost:3010/user/send-code", {
@@ -329,10 +375,10 @@ const signup = () => {
     return;
   }
 
-  if (!idChecked) {
+  if (!nicknameChecked) {
     setErrors((prev) => ({
       ...prev,
-      userId: "아이디 중복 확인을 해주세요."
+      userNickname: "닉네임 중복 확인을 해주세요."
     }));
     return;
   }
@@ -442,12 +488,24 @@ const signup = () => {
             </p>
           )}
 
-          <input
-            name="userNickname"
-            placeholder="닉네임"
-            value={form.userNickname}
-            onChange={changeInput}
-          />
+          <div className="phone-row">
+            <input
+              name="userNickname"
+              placeholder="닉네임"
+              value={form.userNickname}
+              onChange={changeInput}
+              disabled={nicknameChecked}
+            />
+
+            <button
+              type="button"
+              className="sub-button"
+              onClick={checkNickname}
+              disabled={nicknameChecked}
+            >
+              {nicknameChecked ? "완료" : "확인"}
+            </button>
+          </div>
 
           <p className={getNicknameMessage().className}>
             {getNicknameMessage().text}

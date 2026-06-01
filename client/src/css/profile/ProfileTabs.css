@@ -1,0 +1,28 @@
+.profile-tabs {
+  max-width: 980px;
+  margin: 34px auto 24px;
+  border-top: 1px solid rgba(160, 160, 160, 0.35);
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+}
+
+.profile-tabs button {
+  padding: 24px 4px 14px;
+  border: none;
+  background: transparent;
+  color: #444;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.profile-tabs button:hover {
+  color: #70856b;
+}
+
+.profile-tabs button.active {
+  color: #70856b;
+  border-bottom-color: #70856b;
+}

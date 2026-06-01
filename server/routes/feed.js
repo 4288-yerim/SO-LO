@@ -25,40 +25,23 @@ router.get("/", authMiddleware, async (req, res) => {
         P.LNG,
         P.CMT_YN,
         P.CDATE,
-        U.USER_NICKNAME
+        U.USER_NICKNAME,
+        U.PROFILE_IMG
       FROM SNS_POST P
       JOIN SNS_USERS U
         ON P.USER_ID = U.USER_ID
-      JOIN SNS_USER_PRIVACY PR
-        ON P.USER_ID = PR.USER_ID
       WHERE U.USER_STATUS NOT IN ('BLK', 'DEL')
         AND P.FEED_STATUS != 'BLK'
         AND (
-          PR.POST_VISIBLE = 'ALL'
+          U.ACCOUNT_VISIBLE = 'PUB'
 
           OR (
-            PR.POST_VISIBLE = 'FLW'
+            U.ACCOUNT_VISIBLE = 'PRV'
             AND EXISTS (
               SELECT 1
               FROM SNS_FOLLOWS F
               WHERE F.FOLLOWER_ID = :userId
                 AND F.FOLLOWING_ID = P.USER_ID
-            )
-          )
-
-          OR (
-            PR.POST_VISIBLE = 'FRD'
-            AND EXISTS (
-              SELECT 1
-              FROM SNS_FOLLOWS F1
-              WHERE F1.FOLLOWER_ID = :userId
-                AND F1.FOLLOWING_ID = P.USER_ID
-            )
-            AND EXISTS (
-              SELECT 1
-              FROM SNS_FOLLOWS F2
-              WHERE F2.FOLLOWER_ID = P.USER_ID
-                AND F2.FOLLOWING_ID = :userId
             )
           )
 
@@ -200,6 +183,10 @@ router.get("/", authMiddleware, async (req, res) => {
         postId: post.POST_NO,
         userId: post.USER_ID,
         userNickname: post.USER_NICKNAME,
+
+        userProfileImg: post.PROFILE_IMG
+          ? `http://localhost:3010${post.PROFILE_IMG}`
+          : null,
         timeAgo: post.CDATE,
         category: post.CATEGORY_NO,
         title: post.TITLE,

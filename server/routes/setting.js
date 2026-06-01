@@ -11,10 +11,10 @@ const messageService = new SolapiMessageService(
   process.env.SOLAPI_API_SECRET
 );
 
-const scopeList = ["ALL", "FRD", "FLW", "OFF"];
+const badgeList = ["ALL", "FLW", "OFF"];
 
-function isValidScope(value) {
-  return scopeList.includes(value);
+function isValidBadge(value) {
+  return badgeList.includes(value);
 }
 
 // 설정 전체 조회
@@ -34,18 +34,9 @@ router.get("/:userId", async (req, res) => {
         USER_PHONE,
         USER_BIZ,
         USER_STATUS,
-        RELATION_BADGE
+        RELATION_BADGE,
+        ACCOUNT_VISIBLE
       FROM SNS_USERS
-      WHERE USER_ID = :userId
-      `,
-      { userId },
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }
-    );
-
-    const privacyResult = await connection.execute(
-      `
-      SELECT *
-      FROM SNS_USER_PRIVACY
       WHERE USER_ID = :userId
       `,
       { userId },
@@ -88,7 +79,6 @@ router.get("/:userId", async (req, res) => {
     res.json({
       result: "success",
       user: userResult.rows[0],
-      privacy: privacyResult.rows[0],
       noti: notiResult.rows[0],
       blockList: blockResult.rows
     });
@@ -108,37 +98,19 @@ router.get("/:userId", async (req, res) => {
 
 // 공개범위 저장
 router.put("/privacy", async (req, res) => {
-  const {
-    userId,
-    relationBadge,
-    dmScope,
-    followVisible,
-    aloneVisible,
-    likeVisible,
-    postVisible,
-    likePostVisible
-  } = req.body;
+  const { userId, accountVisible, relationBadge } = req.body;
+
+  const accountVisibleList = ["PUB", "PRV"];
+  const badgeList = ["ALL", "FLW", "FRD", "OFF"];
 
   if (
     !userId ||
-    !isValidScope(relationBadge) ||
-    !isValidScope(dmScope) ||
-    !isValidScope(followVisible) ||
-    !isValidScope(aloneVisible) ||
-    !isValidScope(likeVisible) ||
-    !isValidScope(postVisible) ||
-    !isValidScope(likePostVisible)
+    !accountVisibleList.includes(accountVisible) ||
+    !badgeList.includes(relationBadge)
   ) {
     return res.status(400).json({
       result: "fail",
-      message: "공개범위 값이 올바르지 않습니다."
-    });
-  }
-
-  if (postVisible === "OFF") {
-    return res.status(400).json({
-      result: "fail",
-      message: "게시글 공개범위는 전체 비공개를 선택할 수 없습니다."
+      message: "설정 값이 올바르지 않습니다."
     });
   }
 
@@ -151,58 +123,29 @@ router.put("/privacy", async (req, res) => {
       `
       UPDATE SNS_USERS
       SET
+        ACCOUNT_VISIBLE = :accountVisible,
         RELATION_BADGE = :relationBadge,
         UDATE = SYSDATE
       WHERE USER_ID = :userId
       `,
       {
         userId,
+        accountVisible,
         relationBadge
       },
-      { autoCommit: false }
+      { autoCommit: true }
     );
-
-    await connection.execute(
-      `
-      UPDATE SNS_USER_PRIVACY
-      SET
-        DM_SCOPE = :dmScope,
-        FOLLOW_VISIBLE = :followVisible,
-        ALONE_VISIBLE = :aloneVisible,
-        LIKE_VISIBLE = :likeVisible,
-        POST_VISIBLE = :postVisible,
-        LIKE_POST_VISIBLE = :likePostVisible,
-        UDATE = SYSDATE
-      WHERE USER_ID = :userId
-      `,
-      {
-        userId,
-        dmScope,
-        followVisible,
-        aloneVisible,
-        likeVisible,
-        postVisible,
-        likePostVisible
-      },
-      { autoCommit: false }
-    );
-
-    await connection.commit();
 
     res.json({
       result: "success",
       message: "설정이 저장되었습니다."
     });
   } catch (err) {
-    if (connection) {
-      await connection.rollback();
-    }
-
     console.error("Privacy update error", err);
 
     res.status(500).json({
       result: "fail",
-      message: "공개범위 저장 실패"
+      message: "설정 저장 실패"
     });
   } finally {
     if (connection) {

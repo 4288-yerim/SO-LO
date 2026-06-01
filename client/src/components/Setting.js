@@ -10,13 +10,8 @@ function Setting() {
   const userId = user?.userId;
 
   const [privacyForm, setPrivacyForm] = useState({
-    relationBadge: "ALL",
-    dmScope: "ALL",
-    followVisible: "ALL",
-    aloneVisible: "ALL",
-    likeVisible: "ALL",
-    postVisible: "ALL",
-    likePostVisible: "ALL"
+    accountVisible: "PUB",
+    relationBadge: "ALL"
   });
 
   const [notiForm, setNotiForm] = useState({
@@ -48,13 +43,8 @@ function Setting() {
   const [blockList, setBlockList] = useState([]);
 
   const [privacyEditForm, setPrivacyEditForm] = useState({
-    relationBadge: "ALL",
-    dmScope: "ALL",
-    followVisible: "ALL",
-    aloneVisible: "ALL",
-    likeVisible: "ALL",
-    postVisible: "ALL",
-    likePostVisible: "ALL"
+    accountVisible: "PUB",
+    relationBadge: "ALL"
   });
 
   const [notiEditForm, setNotiEditForm] = useState({
@@ -134,13 +124,8 @@ function Setting() {
         });
 
         setPrivacyForm({
-          relationBadge: data.user.RELATION_BADGE || "ALL",
-          dmScope: data.privacy.DM_SCOPE,
-          followVisible: data.privacy.FOLLOW_VISIBLE,
-          aloneVisible: data.privacy.ALONE_VISIBLE,
-          likeVisible: data.privacy.LIKE_VISIBLE,
-          postVisible: data.privacy.POST_VISIBLE,
-          likePostVisible: data.privacy.LIKE_POST_VISIBLE
+          accountVisible: data.user.ACCOUNT_VISIBLE || "PUB",
+          relationBadge: data.user.RELATION_BADGE || "ALL"
         });
 
         setNotiForm({
@@ -173,11 +158,6 @@ function Setting() {
 
     return () => clearTimeout(timer);
   }, [phoneTimer]);
-
-  const handlePrivacyChange = (e) => {
-    const { name, value } = e.target;
-    setPrivacyForm({ ...privacyForm, [name]: value });
-  };
 
   const handleNotiChange = (e) => {
     const { name, checked } = e.target;
@@ -392,6 +372,15 @@ function Setting() {
       });
   };
 
+  function getAccountVisibleLabel(value) {
+    const map = {
+      PUB: "공개 계정",
+      PRV: "비공개 계정"
+    };
+
+    return map[value] || "공개 계정";
+  }
+
   return (
     <div className="setting-page">
       <Sidebar />
@@ -404,7 +393,7 @@ function Setting() {
 
         <div className="setting-section-wrap">
           <div className="setting-section-top">
-            <h3>공개 범위 설정</h3>
+            <h3>계정 공개 설정</h3>
 
             <button className="setting-row-btn" onClick={openPrivacyEditModal}>
               수정하기
@@ -412,13 +401,17 @@ function Setting() {
           </div>
           <section className="setting-section">
             <div className="setting-list">
-              <SettingViewRow title="관계 뱃지" desc="닉네임 옆에 표시될 관계 거리 뱃지" value={getBadgeLabel(privacyForm.relationBadge)} />
-              <SettingViewRow title="DM" desc="나에게 메시지를 보낼 수 있는 범위" value={getScopeLabel(privacyForm.dmScope)} />
-              <SettingViewRow title="팔로우 목록" desc="내 팔로우/팔로워 목록 공개범위" value={getScopeLabel(privacyForm.followVisible)} />
-              <SettingViewRow title="SO:LOG" desc="내 혼자 활동 기록 공개범위" value={getScopeLabel(privacyForm.aloneVisible)} />
-              <SettingViewRow title="좋아요 수" desc="내 글의 좋아요 수 공개범위" value={getScopeLabel(privacyForm.likeVisible)} />
-              <SettingViewRow title="게시글" desc="내 게시글 공개범위" value={getScopeLabel(privacyForm.postVisible)} />
-              <SettingViewRow title="좋아요한 글" desc="내가 좋아요한 글 목록 공개범위" value={getScopeLabel(privacyForm.likePostVisible)} />
+              <SettingViewRow
+                title="계정 공개 상태"
+                desc="공개 계정은 모두에게 보이고, 비공개 계정은 나를 팔로우한 사람에게만 보입니다."
+                value={getAccountVisibleLabel(privacyForm.accountVisible)}
+              />
+
+              <SettingViewRow
+                title="관계 뱃지"
+                desc="닉네임 옆에 표시되는 나의 소통 성향입니다."
+                value={getBadgeLabel(privacyForm.relationBadge)}
+              />
             </div>
           </section>
         </div>
@@ -495,13 +488,21 @@ function Setting() {
             {modal.type === "privacy" && (
               <div className="modal-form">
                 <div className="modal-form">
-                  <SettingSelect title="관계 뱃지" desc="닉네임 옆에 표시될 관계 거리 뱃지" name="relationBadge" value={privacyEditForm.relationBadge} onChange={handlePrivacyEditChange} badge />
-                  <SettingSelect title="DM" desc="나에게 메시지를 보낼 수 있는 범위" name="dmScope" value={privacyEditForm.dmScope} onChange={handlePrivacyEditChange} />
-                  <SettingSelect title="팔로우 목록" desc="내 팔로우/팔로워 목록 공개범위" name="followVisible" value={privacyEditForm.followVisible} onChange={handlePrivacyEditChange} />
-                  <SettingSelect title="SO:LOG" desc="내 혼자 활동 기록 공개범위" name="aloneVisible" value={privacyEditForm.aloneVisible} onChange={handlePrivacyEditChange} />
-                  <SettingSelect title="좋아요 수" desc="내 글의 좋아요 수 공개범위" name="likeVisible" value={privacyEditForm.likeVisible} onChange={handlePrivacyEditChange} />
-                  <SettingSelect title="게시글" desc="내 게시글 공개범위" name="postVisible" value={privacyEditForm.postVisible} onChange={handlePrivacyEditChange} post />
-                  <SettingSelect title="좋아요한 글" desc="내가 좋아요한 글 목록 공개범위" name="likePostVisible" value={privacyEditForm.likePostVisible} onChange={handlePrivacyEditChange} />
+                  <AccountVisibleSelect
+                    title="계정 공개 상태"
+                    desc="비공개 계정은 나를 팔로우한 사람에게만 공개합니다."
+                    name="accountVisible"
+                    value={privacyEditForm.accountVisible}
+                    onChange={handlePrivacyEditChange}
+                  />
+
+                  <SettingSelect
+                    title="관계 뱃지"
+                    desc="닉네임 옆에 표시되는 나의 소통 성향입니다."
+                    name="relationBadge"
+                    value={privacyEditForm.relationBadge}
+                    onChange={handlePrivacyEditChange}
+                  />
                 </div>
               </div>
             )}
@@ -635,26 +636,14 @@ function Setting() {
   );
 }
 
-function getScopeLabel(value) {
-  const map = {
-    ALL: "전체 공개",
-    FRD: "상호 팔로잉만 공개",
-    FLW: "팔로워에게만 공개",
-    OFF: "전체 비공개"
-  };
-
-  return map[value] || "설정 없음";
-}
-
 function getBadgeLabel(value) {
   const map = {
-    ALL: "광장 공유",
-    FRD: "서로",
-    FLW: "단골 손님",
-    OFF: "나만의 방"
+    ALL: "편한 대화",
+    FLW: "천천히",
+    OFF: "혼자 선호"
   };
 
-  return map[value] || "광장 공유";
+  return map[value] || "편한 대화";
 }
 
 function getYnLabel(value) {
@@ -673,7 +662,28 @@ function SettingViewRow({ title, desc, value }) {
   );
 }
 
-function SettingSelect({ title, desc, name, value, onChange, post, badge }) {
+function SettingSelect({ title, desc, name, value, onChange }) {
+  return (
+    <div className="setting-row">
+      <div>
+        <strong>{title}</strong>
+        <p>{desc}</p>
+      </div>
+
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+      >
+        <option value="ALL">편한 대화</option>
+        <option value="FLW">천천히</option>
+        <option value="OFF">혼자 선호</option>
+      </select>
+    </div>
+  );
+}
+
+function AccountVisibleSelect({ title, desc, name, value, onChange }) {
   return (
     <div className="setting-row">
       <div>
@@ -682,21 +692,8 @@ function SettingSelect({ title, desc, name, value, onChange, post, badge }) {
       </div>
 
       <select name={name} value={value} onChange={onChange}>
-        {badge ? (
-          <>
-            <option value="ALL">광장 공유</option>
-            <option value="FLW">단골 손님</option>
-            <option value="FRD">서로</option>
-            <option value="OFF">나만의 방</option>
-          </>
-        ) : (
-          <>
-            <option value="ALL">전체 공개</option>
-            <option value="FLW">팔로워에게만 공개</option>
-            <option value="FRD">상호 팔로잉만 공개</option>
-            {!post && <option value="OFF">전체 비공개</option>}
-          </>
-        )}
+        <option value="PUB">공개 계정</option>
+        <option value="PRV">비공개 계정</option>
       </select>
     </div>
   );

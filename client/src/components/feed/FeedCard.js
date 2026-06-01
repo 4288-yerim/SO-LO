@@ -29,9 +29,16 @@ function FeedCard({
               navigate(`/so:lo/profile/${feed.userId}`);
             }}
           >
-            {feed.userNickname.slice(0, 1)}
+            {feed.userProfileImg ? (
+              <img
+                src={feed.userProfileImg}
+                alt={feed.userNickname}
+                className="feed-profile-real-img"
+              />
+            ) : (
+              feed.userNickname.slice(0, 1)
+            )}
           </div>
-
           <strong
             onClick={(e) => {
               e.stopPropagation();

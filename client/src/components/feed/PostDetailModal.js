@@ -86,14 +86,28 @@ function PostDetailModal({
           <div className="post-detail-user">
             <div
               className="feed-profile-img"
-              onClick={() => navigate(`/so:lo/profile/${selectedPost.userId}`)}
+              onClick={() => {
+                setSelectedPost(null);
+                navigate(`/so:lo/profile/${selectedPost.userId}`);
+              }}
             >
-              {selectedPost.userNickname.slice(0, 1)}
+              {selectedPost.userProfileImg ? (
+                <img
+                  src={selectedPost.userProfileImg}
+                  alt={selectedPost.userNickname}
+                  className="feed-profile-real-img"
+                />
+              ) : (
+                selectedPost.userNickname.slice(0, 1)
+              )}
             </div>
 
             <div>
               <strong
-                onClick={() => navigate(`/so:lo/profile/${selectedPost.userId}`)}
+                onClick={() => {
+                  setSelectedPost(null);
+                  navigate(`/so:lo/profile/${selectedPost.userId}`);
+                }}
               >
                 {selectedPost.userNickname}
               </strong>
