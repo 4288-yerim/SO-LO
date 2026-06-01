@@ -76,7 +76,7 @@ function Profile() {
 
             <div className="profile-info">
               <h2>{profile.userNickname}</h2>
-              <p className="profile-user-id">@{profile.userId}</p>
+              <p className="profile-user-id"></p>
               <p className="profile-intro">
                 {profile.userIntro || "아직 소개글이 없습니다."}
               </p>

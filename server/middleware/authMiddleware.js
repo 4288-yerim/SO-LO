@@ -27,7 +27,26 @@ function authMiddleware(req, res, next) {
       nickname: decoded.nickname
     };
 
+    const now = Math.floor(Date.now() / 1000);
+    const remainTime = decoded.exp - now;
+
+    if (remainTime <= 60 * 10) {
+      const newToken = jwt.sign(
+        {
+          userId: decoded.userId,
+          nickname: decoded.nickname
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h"
+        }
+      );
+
+      res.setHeader("Authorization", `Bearer ${newToken}`);
+    }
+
     next();
+
   } catch (err) {
     return res.status(401).json({
       result: "fail",

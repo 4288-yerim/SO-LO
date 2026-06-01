@@ -4,12 +4,12 @@ import PrivateRoute from "./components/routes/PrivateRoute";
 import PublicRoute from "./components/routes/PublicRoute";
 import SignupPrivacyRoute from "./components/routes/SignupPrivRoute";
 
-import Signup from "./components/Signup";
-import Login from "./components/Login";
-import FindId from "./components/FindId";
-import FindPassword from "./components/FindPassword";
+import Signup from "./components/user/Signup";
+import Login from "./components/user/Login";
+import FindId from "./components/user/FindId";
+import FindPassword from "./components/user/FindPassword";
+import SignupPrivacy from "./components/user/SignupPrivacy";
 import Feed from "./components/Feed";
-import SignupPrivacy from "./components/SignupPrivacy";
 import Post from "./components/Post";
 import Message from "./components/Message";
 import Notification from "./components/Notification";

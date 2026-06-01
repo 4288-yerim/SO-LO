@@ -148,6 +148,13 @@ router.post("/write", authMiddleware, upload.array("files", 5), async (req, res)
     });
   }
 
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({
+      result: "fail",
+      message: "사진 또는 영상을 1개 이상 등록해주세요."
+    });
+  }
+
   if (title.length > 100) {
     return res.status(400).json({
       result: "fail",

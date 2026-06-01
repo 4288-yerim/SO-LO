@@ -35,7 +35,9 @@ function Post() {
   const [placeKeyword, setPlaceKeyword] = useState("");
   const [placeList, setPlaceList] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [tempPlace, setTempPlace] = useState(null);
   const [showPlaceInfo, setShowPlaceInfo] = useState(true);
+  const [isPlaceModalOpen, setIsPlaceModalOpen] = useState(false);
 
   useEffect(() => {
   if (!placeKeyword.trim()) {
@@ -169,30 +171,40 @@ function Post() {
     const lat = Number(place.y);
     const lng = Number(place.x);
 
-    setForm((prev) => ({
-      ...prev,
-      placeName: place.place_name,
-      placeAddress: place.road_address_name || place.address_name,
+    const nextTempPlace = {
+      name: place.place_name,
+      address: place.road_address_name || place.address_name,
       lat,
       lng
-    }));
+    };
+
+    setTempPlace(nextTempPlace);
 
     setMapCenter({
       lat,
       lng
     });
 
-    setSelectedPlace({
-      name: place.place_name,
-      address: place.road_address_name || place.address_name,
-      lat,
-      lng
-    });
-
     setShowPlaceInfo(true);
+  };
 
-    setPlaceKeyword(place.place_name);
+  const confirmPlaceSelect = () => {
+    if (!tempPlace) return;
+
+    setForm((prev) => ({
+      ...prev,
+      placeName: tempPlace.name,
+      placeAddress: tempPlace.address,
+      lat: tempPlace.lat,
+      lng: tempPlace.lng
+    }));
+
+    setSelectedPlace(tempPlace);
+
+    setPlaceKeyword("");
     setPlaceList([]);
+    setTempPlace(null);
+    setIsPlaceModalOpen(false);
   };
 
   const handleFileChange = (e) => {
@@ -262,6 +274,11 @@ function Post() {
 
     if (!form.categoryNo || !form.title || !form.content) {
       setMessage("카테고리, 제목, 내용을 입력해주세요.");
+      return;
+    }
+
+    if (fileList.length === 0) {
+      setMessage("사진 또는 영상을 1개 이상 등록해주세요.");
       return;
     }
 
@@ -338,74 +355,22 @@ function Post() {
             </label>
 
             <div className="form-group">
-              <label>장소 검색</label>
+              <label>장소</label>
 
-              <div className="place-area">
-                <div className="place-search-box">
-                  <input
-                    type="text"
-                    value={placeKeyword}
-                    onChange={(e) => setPlaceKeyword(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handlePlaceSearch();
-                      }
-                    }}
-                    placeholder="장소를 검색하세요"
-                  />
+              <button
+                type="button"
+                className="place-open-btn"
+                onClick={() => setIsPlaceModalOpen(true)}
+              >
+                장소 검색하기
+              </button>
 
-                  <button type="button" onClick={handlePlaceSearch}>
-                    검색
-                  </button>
+              {selectedPlace && (
+                <div className="selected-place-box">
+                  <strong>{selectedPlace.name}</strong>
+                  <p>{selectedPlace.address}</p>
                 </div>
-
-                {placeList.length > 0 && (
-                  <div className="place-result-list">
-                    {placeList.map((place) => (
-                      <div
-                        key={place.id}
-                        className="place-result-item"
-                        onClick={() => handlePlaceSelect(place)}
-                      >
-                        <strong>{place.place_name}</strong>
-                        <p>{place.road_address_name || place.address_name}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="write-map-box">
-                <Map
-                  center={mapCenter}
-                  style={{
-                    width: "100%",
-                    height: "250px"
-                  }}
-                  level={3}
-                >
-                  <MapMarker
-                    position={mapCenter}
-                    onClick={() => setShowPlaceInfo((prev) => !prev)}
-                  />
-
-                  {selectedPlace && showPlaceInfo && (
-                    <CustomOverlayMap
-                      position={{
-                        lat: selectedPlace.lat,
-                        lng: selectedPlace.lng
-                      }}
-                      yAnchor={1.76}
-                    >
-                      <div className="place-map-label">
-                        <strong>{selectedPlace.name}</strong>
-                        <p>{selectedPlace.address}</p>
-                      </div>
-                    </CustomOverlayMap>
-                  )}
-                </Map>
-              </div>
+              )}
             </div>
 
             <label>
@@ -555,6 +520,125 @@ function Post() {
               기록하기
             </button>
           </form>
+
+          {isPlaceModalOpen && (
+            <div className="place-modal-backdrop">
+              <div className="place-modal place-map-modal">
+                <div className="place-modal-header">
+                  <h2>장소 검색</h2>
+
+                  <button
+                    type="button"
+                    className="place-modal-close"
+                    onClick={() => {
+                      setIsPlaceModalOpen(false);
+                      setPlaceKeyword("");
+                      setPlaceList([]);
+                      setTempPlace(null);
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="place-modal-search">
+                  <input
+                    type="text"
+                    value={placeKeyword}
+                    onChange={(e) => setPlaceKeyword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handlePlaceSearch();
+                      }
+                    }}
+                    placeholder="장소를 검색하세요"
+                    autoFocus
+                  />
+
+                  <button type="button" onClick={handlePlaceSearch}>
+                    검색
+                  </button>
+                </div>
+
+                <div className="place-modal-body">
+                  <div className="place-modal-left">
+                    <div className="place-modal-result-list">
+                      {placeList.length === 0 ? (
+                        <p className="place-empty-text">
+                          검색어를 입력해 장소를 찾아보세요.
+                        </p>
+                      ) : (
+                        placeList.map((place) => (
+                          <div
+                            key={place.id}
+                            className={
+                              tempPlace?.name === place.place_name &&
+                              tempPlace?.address === (place.road_address_name || place.address_name)
+                                ? "place-modal-result-item active"
+                                : "place-modal-result-item"
+                            }
+                            onClick={() => handlePlaceSelect(place)}
+                          >
+                            <div className="place-result-text">
+                              <strong>{place.place_name}</strong>
+                              <span>{place.road_address_name || place.address_name}</span>
+                            </div>
+
+                            {tempPlace?.name === place.place_name &&
+                              tempPlace?.address === (place.road_address_name || place.address_name) && (
+                                <button
+                                  type="button"
+                                  className="place-select-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    confirmPlaceSelect();
+                                  }}
+                                >
+                                  선택
+                                </button>
+                              )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="place-modal-right">
+                    <Map
+                      center={mapCenter}
+                      style={{
+                        width: "100%",
+                        height: "100%"
+                      }}
+                      level={3}
+                    >
+                      <MapMarker
+                        position={mapCenter}
+                        onClick={() => setShowPlaceInfo((prev) => !prev)}
+                      />
+
+                      {tempPlace && showPlaceInfo && (
+                        <CustomOverlayMap
+                          position={{
+                            lat: tempPlace.lat,
+                            lng: tempPlace.lng
+                          }}
+                          yAnchor={1.76}
+                        >
+                          <div className="place-map-label">
+                            <strong>{tempPlace.name}</strong>
+                            <p>{tempPlace.address}</p>
+                          </div>
+                        </CustomOverlayMap>
+                      )}
+                    </Map>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
         </section>
       </main>
     </div>

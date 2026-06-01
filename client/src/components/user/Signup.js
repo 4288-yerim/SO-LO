@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../css/Signup.css";
-import logo from "../assets/soloLogo.png";
+import "../../css/user/Signup.css";
+import logo from "../../assets/soloLogo.png";
 
 function Signup() {
   const [form, setForm] = useState({
@@ -135,16 +135,9 @@ function Signup() {
       };
     }
 
-    if (!form.userName) {
-      return {
-        className: "input-guide",
-        text: "이름을 입력해주세요."
-      };
-    }
-
     return {
-      className: "verified-message",
-      text: "입력되었습니다."
+      className: "input-guide",
+      text: "이름을 입력해주세요."
     };
   };
 
@@ -443,9 +436,11 @@ const signup = () => {
             onChange={changeInput}
           />
 
-          <p className={getUserNameMessage().className}>
-            {getUserNameMessage().text}
-          </p>
+          {getUserNameMessage() && (
+            <p className={getUserNameMessage().className}>
+              {getUserNameMessage().text}
+            </p>
+          )}
 
           <input
             name="userNickname"

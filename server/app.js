@@ -4,7 +4,9 @@ const path = require("path");
 require("dotenv").config();
 
 const sampleRouter = require("./routes/sample");
-const userRouter = require("./routes/user");
+const loginRouter = require("./routes/user/login");
+const signupRouter = require("./routes/user/signup");
+const findAccountRouter = require("./routes/user/findAccount");
 const feedRouter = require("./routes/feed");
 const postRouter = require("./routes/post");
 const profileRouter = require("./routes/profile");
@@ -16,7 +18,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors({
   origin: "http://localhost:3000",
-  credentials: true
+  credentials: true,
+  exposedHeaders: ["Authorization"]
 }));
 
 app.use(express.json());
@@ -28,7 +31,9 @@ app.get("/", (req, res) => {
 });
 
 app.use("/sample", sampleRouter);
-app.use("/user", userRouter);
+app.use("/user", loginRouter);
+app.use("/user", signupRouter);
+app.use("/user", findAccountRouter);
 app.use("/feed", feedRouter);
 app.use("/post", postRouter);
 app.use("/profile", profileRouter);

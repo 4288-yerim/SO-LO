@@ -26,25 +26,28 @@
   color: #8a7f73;
 }
 
-.setting-section {
-  background: #ffffff;
-  border: 1px solid #e8e0d8;
-  border-radius: 22px;
-  padding: 26px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 28px rgba(60, 45, 30, 0.06);
+.setting-section-wrap {
+  margin-bottom: 34px;
 }
 
-.setting-section-title {
+.setting-section-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-.setting-section-title h3 {
+.setting-section-top h3 {
   font-size: 20px;
   color: #2f2a24;
+}
+
+.setting-section {
+  background: #faf9f7;
+  border: 1px solid #e8e0d8;
+  border-radius: 10px;
+  padding: 8px 24px;
+  box-shadow: none;
 }
 
 .setting-section-title button,
@@ -52,7 +55,7 @@
 .modal-sub-btn,
 .modal-list-row button {
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #3f6f5f;
   color: #ffffff;
   padding: 10px 16px;
@@ -91,10 +94,16 @@
   justify-content: space-between;
   align-items: center;
   gap: 28px;
-  padding: 18px 20px;
-  border: 1px solid #eee7df;
-  border-radius: 16px;
-  background: #fffdfb;
+  padding: 16px 0;
+  border: none;
+  border-bottom: 1px solid #eee7df;
+  border-radius: 0;
+  background: transparent;
+}
+
+.setting-list .setting-row:last-child,
+.setting-list .setting-check-row:last-child {
+  border-bottom: none;
 }
 
 .setting-row strong {
@@ -113,7 +122,7 @@
   width: 210px;
   height: 42px;
   border: 1px solid #ddd2c8;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #ffffff;
   padding: 0 12px;
   font-size: 14px;
@@ -126,9 +135,35 @@
   color: #2f2a24;
 }
 
-.setting-check-row input {
-  width: 18px;
-  height: 18px;
+.setting-check-row input[type="checkbox"] {
+  appearance: none;
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #d8d0c8;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.setting-check-row input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: left 0.2s ease;
+}
+
+.setting-check-row input[type="checkbox"]:checked {
+  background: #3f6f5f;
+}
+
+.setting-check-row input[type="checkbox"]:checked::before {
+  left: 23px;
 }
 
 .setting-modal-bg {
@@ -146,7 +181,7 @@
   max-height: 80vh;
   overflow-y: auto;
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 28px;
   box-shadow: 0 18px 40px rgba(31, 26, 21, 0.18);
 }
@@ -176,7 +211,7 @@
   width: 100%;
   height: 42px;
   border: 1px solid #ddd2c8;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 0 12px;
   outline: none;
 }
@@ -198,7 +233,7 @@
   align-items: center;
   gap: 14px;
   border: 1px solid #eee7df;
-  border-radius: 14px;
+  border-radius: 10px;
   padding: 14px;
   background: #fffdfb;
 }
@@ -228,7 +263,7 @@
 
 .setting-modal-btns button {
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 10px 18px;
   font-weight: 700;
   cursor: pointer;
@@ -286,4 +321,151 @@
   .setting-row-btn {
     width: 100%;
   }
+}
+
+.setting-value-text {
+  min-width: 160px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3f6f5f;
+}
+
+.setting-view-row {
+  cursor: default;
+}
+
+.setting-modal .setting-row,
+.setting-modal .setting-check-row {
+  padding: 14px 0;
+}
+
+.setting-modal .setting-row select {
+  width: 180px;
+}
+
+.setting-modal .setting-check-row {
+  border-bottom: 1px solid #eee7df;
+}
+
+.setting-edit-btn {
+  border: none;
+  background: transparent;
+  color: #3f6f5f;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.setting-edit-btn:hover {
+  opacity: 0.8;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 68px;
+}
+
+.setting-value-text {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 120px;
+
+  font-size: 14px;
+  font-weight: 700;
+  color: #3f6f5f;
+}
+
+.setting-modal .setting-row {
+  min-height: auto;
+  padding: 12px 0;
+  gap: 14px;
+}
+
+.setting-modal .setting-row strong {
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.setting-modal .setting-row p {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.setting-modal .setting-row select {
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.setting-modal .setting-check-row {
+  min-height: auto;
+  padding: 14px 0;
+}
+
+.setting-modal .modal-ok-btn,
+.setting-modal .modal-cancel-btn,
+.setting-modal .modal-danger-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.phone-cert-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.phone-cert-row input {
+  flex: 1;
+}
+
+.phone-cert-row .modal-sub-btn {
+  width: auto;
+  height: 42px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.phone-cert-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.phone-cert-row input {
+  flex: 1;
+}
+
+.phone-cert-row .modal-sub-btn {
+  width: auto;
+  min-width: 110px;
+  height: 42px;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.phone-cert-row,
+.phone-auth-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.phone-cert-row input,
+.phone-auth-row input {
+  flex: 1;
+}
+
+.phone-cert-row .modal-sub-btn,
+.phone-auth-row .phone-auth-space {
+  width: auto;
+  min-width: 110px;
+  height: 42px;
 }

@@ -27,7 +27,14 @@ router.get("/:userId", async (req, res) => {
 
     const userResult = await connection.execute(
       `
-      SELECT USER_ID, USER_NAME, USER_NICKNAME, USER_PHONE, USER_BIZ, USER_STATUS
+      SELECT 
+        USER_ID,
+        USER_NAME,
+        USER_NICKNAME,
+        USER_PHONE,
+        USER_BIZ,
+        USER_STATUS,
+        RELATION_BADGE
       FROM SNS_USERS
       WHERE USER_ID = :userId
       `,
@@ -103,6 +110,7 @@ router.get("/:userId", async (req, res) => {
 router.put("/privacy", async (req, res) => {
   const {
     userId,
+    relationBadge,
     dmScope,
     followVisible,
     aloneVisible,
@@ -113,6 +121,7 @@ router.put("/privacy", async (req, res) => {
 
   if (
     !userId ||
+    !isValidScope(relationBadge) ||
     !isValidScope(dmScope) ||
     !isValidScope(followVisible) ||
     !isValidScope(aloneVisible) ||
@@ -140,6 +149,21 @@ router.put("/privacy", async (req, res) => {
 
     await connection.execute(
       `
+      UPDATE SNS_USERS
+      SET
+        RELATION_BADGE = :relationBadge,
+        UDATE = SYSDATE
+      WHERE USER_ID = :userId
+      `,
+      {
+        userId,
+        relationBadge
+      },
+      { autoCommit: false }
+    );
+
+    await connection.execute(
+      `
       UPDATE SNS_USER_PRIVACY
       SET
         DM_SCOPE = :dmScope,
@@ -160,14 +184,20 @@ router.put("/privacy", async (req, res) => {
         postVisible,
         likePostVisible
       },
-      { autoCommit: true }
+      { autoCommit: false }
     );
+
+    await connection.commit();
 
     res.json({
       result: "success",
       message: "설정이 저장되었습니다."
     });
   } catch (err) {
+    if (connection) {
+      await connection.rollback();
+    }
+
     console.error("Privacy update error", err);
 
     res.status(500).json({
@@ -612,128 +642,6 @@ router.put("/withdraw", async (req, res) => {
     if (connection) {
       await connection.close();
     }
-  }
-});
-
-// 특정 유저 알림 목록 조회
-router.get("/noti-user/:userId", async (req, res) => {
-  const { userId } = req.params;
-  let connection;
-
-  try {
-    connection = await oracledb.getConnection(dbConfig);
-
-    const result = await connection.execute(
-      `
-      SELECT 
-        N.NOTI_USER_NO,
-        N.TARGET_USER_ID,
-        U.USER_NICKNAME,
-        U.USER_NAME
-      FROM SNS_USER_NOTI_USER N
-      JOIN SNS_USERS U ON N.TARGET_USER_ID = U.USER_ID
-      WHERE N.USER_ID = :userId
-      ORDER BY N.CDATE DESC
-      `,
-      { userId },
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }
-    );
-
-    res.json({
-      result: "success",
-      list: result.rows
-    });
-  } catch (err) {
-    console.error("Noti user list error", err);
-    res.status(500).json({ result: "fail", message: "특정 유저 알림 조회 실패" });
-  } finally {
-    if (connection) await connection.close();
-  }
-});
-
-// 특정 유저 알림 저장
-// 특정 유저 알림 받기
-router.post("/noti-user", async (req, res) => {
-  const { userId, targetUserId } = req.body;
-  let connection;
-
-  if (!userId || !targetUserId) {
-    return res.status(400).json({
-      result: "fail",
-      message: "필수 정보가 없습니다."
-    });
-  }
-
-  if (userId === targetUserId) {
-    return res.status(400).json({
-      result: "fail",
-      message: "본인 알림은 설정할 수 없습니다."
-    });
-  }
-
-  try {
-    connection = await oracledb.getConnection(dbConfig);
-
-    await connection.execute(
-      `
-      INSERT INTO SNS_USER_NOTI_USER (
-        NOTI_USER_NO,
-        USER_ID,
-        TARGET_USER_ID,
-        CDATE
-      )
-      VALUES (
-        SEQ_SNS_USER_NOTI_USER.NEXTVAL,
-        :userId,
-        :targetUserId,
-        SYSDATE
-      )
-      `,
-      { userId, targetUserId },
-      { autoCommit: true }
-    );
-
-    res.json({
-      result: "success",
-      message: "특정 유저 알림을 받도록 설정했습니다."
-    });
-  } catch (err) {
-    console.error("Noti user insert error", err);
-
-    res.status(500).json({
-      result: "fail",
-      message: "특정 유저 알림 설정 실패"
-    });
-  } finally {
-    if (connection) {
-      await connection.close();
-    }
-  }
-});
-
-// 특정 유저 알림 설정 삭제
-router.delete("/noti-user/:notiUserNo", async (req, res) => {
-  const { notiUserNo } = req.params;
-  let connection;
-
-  try {
-    connection = await oracledb.getConnection(dbConfig);
-
-    await connection.execute(
-      `
-      DELETE FROM SNS_USER_NOTI_USER
-      WHERE NOTI_USER_NO = :notiUserNo
-      `,
-      { notiUserNo },
-      { autoCommit: true }
-    );
-
-    res.json({ result: "success", message: "특정 유저 알림 설정이 삭제되었습니다." });
-  } catch (err) {
-    console.error("Noti user delete error", err);
-    res.status(500).json({ result: "fail", message: "특정 유저 알림 삭제 실패" });
-  } finally {
-    if (connection) await connection.close();
   }
 });
 

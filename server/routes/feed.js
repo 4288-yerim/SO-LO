@@ -29,7 +29,41 @@ router.get("/", authMiddleware, async (req, res) => {
       FROM SNS_POST P
       JOIN SNS_USERS U
         ON P.USER_ID = U.USER_ID
-      WHERE P.USER_ID = :userId
+      JOIN SNS_USER_PRIVACY PR
+        ON P.USER_ID = PR.USER_ID
+      WHERE U.USER_STATUS NOT IN ('BLK', 'DEL')
+        AND P.FEED_STATUS != 'BLK'
+        AND (
+          PR.POST_VISIBLE = 'ALL'
+
+          OR (
+            PR.POST_VISIBLE = 'FLW'
+            AND EXISTS (
+              SELECT 1
+              FROM SNS_FOLLOWS F
+              WHERE F.FOLLOWER_ID = :userId
+                AND F.FOLLOWING_ID = P.USER_ID
+            )
+          )
+
+          OR (
+            PR.POST_VISIBLE = 'FRD'
+            AND EXISTS (
+              SELECT 1
+              FROM SNS_FOLLOWS F1
+              WHERE F1.FOLLOWER_ID = :userId
+                AND F1.FOLLOWING_ID = P.USER_ID
+            )
+            AND EXISTS (
+              SELECT 1
+              FROM SNS_FOLLOWS F2
+              WHERE F2.FOLLOWER_ID = P.USER_ID
+                AND F2.FOLLOWING_ID = :userId
+            )
+          )
+
+          OR P.USER_ID = :userId
+        )
       ORDER BY P.CDATE DESC
       `,
       { userId },
@@ -164,6 +198,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
       return {
         postId: post.POST_NO,
+        userId: post.USER_ID,
         userNickname: post.USER_NICKNAME,
         timeAgo: post.CDATE,
         category: post.CATEGORY_NO,

@@ -1,19 +1,30 @@
-export function authFetch(url, options = {}) {
+export async function authFetch(url, options = {}) {
   const token = localStorage.getItem("token");
 
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...(options.headers || {}),
-      Authorization: `Bearer ${token}`
-    }
-  }).then((res) => {
-    if (res.status === 401) {
-      localStorage.removeItem("token");
-      window.location.replace("/so:lo/login");
-      throw new Error("Unauthorized");
-    }
+  const headers = {
+    ...(options.headers || {})
+  };
 
-    return res;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(url, {
+    ...options,
+    headers
   });
+
+  const newToken = res.headers.get("Authorization");
+
+  if (newToken) {
+    localStorage.setItem("token", newToken.replace("Bearer ", ""));
+  }
+
+  if (res.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/so:lo/login";
+  }
+
+  return res;
 }

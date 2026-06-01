@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../css/FindId.css";
-import logo from "../assets/soloLogo.png";
+import "../../css/user/FindPassword.css";
+import logo from "../../assets/soloLogo.png";
 
-function FindId() {
+function FindPassword() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    userId: "",
     userPhone: "",
-    authCode: ""
+    authCode: "",
+    newPassword: "",
+    confirmPassword: ""
   });
 
-  const [foundIds, setFoundIds] = useState([]);
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("guide");
@@ -30,16 +32,17 @@ function FindId() {
   };
 
   const sendCode = async () => {
-    if (!form.userPhone) {
-      setMessage("휴대폰 번호를 입력해주세요.");
+    if (!form.userId || !form.userPhone) {
+      setMessage("아이디와 휴대폰 번호를 입력해주세요.");
       setMessageType("error");
       return;
     }
 
     try {
       const res = await axios.post(
-        "http://localhost:3010/user/find-id/send-code",
+        "http://localhost:3010/user/find-password/send-code",
         {
+          userId: form.userId,
           userPhone: form.userPhone
         }
       );
@@ -77,20 +80,47 @@ function FindId() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3010/user/find-id/verify-code",
+        "http://localhost:3010/user/find-password/verify-code",
         {
+          userId: form.userId,
           userPhone: form.userPhone,
           authCode: form.authCode
         }
       );
 
       setVerified(true);
-      setFoundIds(res.data.userIds || []);
       setMessage(res.data.message);
       setMessageType("success");
     } catch (err) {
       setVerified(false);
-      setFoundIds([]);
+      setMessage(
+        err.response ? err.response.data.message : "서버 연결 실패"
+      );
+      setMessageType("error");
+    }
+  };
+
+  const resetPassword = async () => {
+    if (!verified) {
+      setMessage("휴대폰 인증을 완료해주세요.");
+      setMessageType("error");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3010/user/find-password/reset",
+        {
+          userId: form.userId,
+          userPhone: form.userPhone,
+          newPassword: form.newPassword,
+          confirmPassword: form.confirmPassword
+        }
+      );
+
+      sessionStorage.removeItem("signupData");
+      navigate("/so:lo/login");
+    } catch (err) {
       setMessage(
         err.response ? err.response.data.message : "서버 연결 실패"
       );
@@ -99,20 +129,28 @@ function FindId() {
   };
 
   return (
-    <div className="find-id-page">
-      <div className="find-id-container">
-        <div className="find-id-logo">
+    <div className="find-password-page">
+      <div className="find-password-container">
+        <div className="find-password-logo">
           <img src={logo} alt="SO:LO" />
         </div>
 
-        <section className="find-id-card">
-          <div className="find-id-header">
-            <h2>아이디 찾기</h2>
-            <p>가입한 전화번호 인증으로 아이디를 확인해요.</p>
+        <section className="find-password-card">
+          <div className="find-password-header">
+            <h2>비밀번호 찾기</h2>
+            <p>가입한 아이디와 전화번호 인증으로 비밀번호를 다시 설정해요.</p>
           </div>
 
-          <div className="find-id-form">
-            <div className="find-id-row">
+          <div className="find-password-form">
+            <input
+              name="userId"
+              placeholder="아이디"
+              value={form.userId}
+              onChange={changeInput}
+              disabled={verified}
+            />
+
+            <div className="find-password-row">
               <input
                 name="userPhone"
                 placeholder="전화번호"
@@ -123,7 +161,7 @@ function FindId() {
 
               <button
                 type="button"
-                className="find-id-sub-button"
+                className="find-password-sub-button"
                 onClick={sendCode}
                 disabled={sendDisabled || verified}
               >
@@ -135,7 +173,7 @@ function FindId() {
               </button>
             </div>
 
-            <div className="find-id-row">
+            <div className="find-password-row">
               <input
                 name="authCode"
                 placeholder="인증번호"
@@ -146,7 +184,7 @@ function FindId() {
 
               <button
                 type="button"
-                className="find-id-sub-button"
+                className="find-password-sub-button"
                 onClick={verifyCode}
                 disabled={verified}
               >
@@ -154,40 +192,44 @@ function FindId() {
               </button>
             </div>
 
-            <p className={`find-id-message ${messageType}`}>
+            {verified && (
+              <>
+                <input
+                  name="newPassword"
+                  type="password"
+                  placeholder="새 비밀번호"
+                  value={form.newPassword}
+                  onChange={changeInput}
+                />
+
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="새 비밀번호 확인"
+                  value={form.confirmPassword}
+                  onChange={changeInput}
+                />
+              </>
+            )}
+
+            <p className={`find-password-message ${messageType}`}>
               {message}
             </p>
 
-            {verified && (
-              <div className="find-id-result">
-                <h3>찾은 아이디</h3>
-
-                {foundIds.length > 0 ? (
-                  foundIds.map((item) => (
-                    <div className="find-id-item" key={item.userId}>
-                      <strong>{item.userId}</strong>
-                    </div>
-                  ))
-                ) : (
-                  <p>가입된 아이디가 없습니다.</p>
-                )}
-              </div>
-            )}
-
             <button
               type="button"
-              className="find-id-main-button"
-              onClick={() => navigate("/so:lo/login")}
+              className="find-password-main-button"
+              onClick={resetPassword}
             >
-              로그인하러 가기
+              비밀번호 변경
             </button>
 
             <button
               type="button"
-              className="find-id-back-button"
-              onClick={() => navigate("/so:lo/find-password")}
+              className="find-password-back-button"
+              onClick={() => navigate("/so:lo/login")}
             >
-              비밀번호 찾기
+              로그인으로 돌아가기
             </button>
           </div>
         </section>
@@ -196,4 +238,4 @@ function FindId() {
   );
 }
 
-export default FindId;
+export default FindPassword;

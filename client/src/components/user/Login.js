@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, TextField, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import "../css/Login.css";
-import soloLogo from "../assets/soloLogo.png";
+import "../../css/user/Login.css";
+import soloLogo from "../../assets/soloLogo.png";;
 
 function Login() {
   const navigate = useNavigate();
