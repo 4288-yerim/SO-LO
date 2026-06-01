@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import PrivateRoute from "./components/routes/PrivateRoute";
+import PublicRoute from "./components/routes/PublicRoute";
+import SignupPrivacyRoute from "./components/routes/SignupPrivRoute";
 
 import Signup from "./components/Signup";
 import Login from "./components/Login";
@@ -104,7 +107,7 @@ function App() {
         />
 
         <Route
-          path="/so:lo/profile"
+          path="/so:lo/profile/:userId"
           element={
             <PrivateRoute>
               <Profile />
@@ -130,40 +133,13 @@ function App() {
           }
         />
 
+          <Route path="/" element={<Navigate to="/so:lo/feed" replace />} />
+          <Route path="*" element={<Navigate to="/so:lo/feed" replace />} />
+
       </Routes>
 
     </BrowserRouter>
   );
-}
-
-function PrivateRoute({ children }) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    return <Navigate to="/so:lo/login" replace />;
-  }
-
-  return children;
-}
-
-function PublicRoute({ children }) {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    return <Navigate to="/so:lo/feed" replace />;
-  }
-
-  return children;
-}
-
-function SignupPrivacyRoute({ children }) {
-  const location = useLocation();
-
-  if (!location.state?.fromSignup) {
-    return <Navigate to="/so:lo/signup" replace />;
-  }
-
-  return children;
 }
 
 export default App;

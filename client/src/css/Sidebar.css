@@ -95,3 +95,20 @@
 .feed-sidebar:hover .feed-menu-text {
   opacity: 1;
 }
+
+.logout-menu-item {
+  color: #c0392b;
+}
+
+.logout-menu-item .feed-menu-icon {
+  color: #c0392b;
+}
+
+.logout-menu-item:hover {
+  background: rgba(180, 75, 75, 0.08);
+  color: #a23d3d;
+}
+
+.logout-menu-item:hover .feed-menu-icon {
+  color: #a23d3d;
+}

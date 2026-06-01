@@ -7,6 +7,8 @@ const sampleRouter = require("./routes/sample");
 const userRouter = require("./routes/user");
 const feedRouter = require("./routes/feed");
 const postRouter = require("./routes/post");
+const profileRouter = require("./routes/profile");
+const settingRouter = require("./routes/setting");
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use("/sample", sampleRouter);
 app.use("/user", userRouter);
 app.use("/feed", feedRouter);
 app.use("/post", postRouter);
+app.use("/profile", profileRouter);
+app.use("/setting", settingRouter);
 
 const PORT = process.env.PORT || 3010;
 

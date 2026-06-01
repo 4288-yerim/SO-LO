@@ -1,0 +1,289 @@
+.setting-page {
+  min-height: 100vh;
+  background: #faf9f7;
+  display: flex;
+}
+
+.setting-main {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 54px 28px 80px;
+}
+
+.setting-title-box {
+  margin-bottom: 28px;
+}
+
+.setting-title-box h2 {
+  font-size: 30px;
+  color: #2f2a24;
+  margin-bottom: 8px;
+}
+
+.setting-title-box p {
+  font-size: 14px;
+  color: #8a7f73;
+}
+
+.setting-section {
+  background: #ffffff;
+  border: 1px solid #e8e0d8;
+  border-radius: 22px;
+  padding: 26px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 28px rgba(60, 45, 30, 0.06);
+}
+
+.setting-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.setting-section-title h3 {
+  font-size: 20px;
+  color: #2f2a24;
+}
+
+.setting-section-title button,
+.setting-row-btn,
+.modal-sub-btn,
+.modal-list-row button {
+  border: none;
+  border-radius: 12px;
+  background: #3f6f5f;
+  color: #ffffff;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.setting-section-title button:hover,
+.setting-row-btn:hover,
+.modal-sub-btn:hover,
+.modal-list-row button:hover {
+  opacity: 0.9;
+}
+
+.setting-row-btn:disabled {
+  background: #6f8f7a;
+  color: #ffffff;
+  cursor: default;
+  opacity: 1;
+}
+
+.setting-row-btn.danger {
+  background: #a94b4b;
+}
+
+.setting-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-row,
+.setting-check-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 28px;
+  padding: 18px 20px;
+  border: 1px solid #eee7df;
+  border-radius: 16px;
+  background: #fffdfb;
+}
+
+.setting-row strong {
+  display: block;
+  font-size: 16px;
+  color: #2f2a24;
+  margin-bottom: 5px;
+}
+
+.setting-row p {
+  font-size: 13px;
+  color: #8a7f73;
+}
+
+.setting-row select {
+  width: 210px;
+  height: 42px;
+  border: 1px solid #ddd2c8;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #3a332d;
+  outline: none;
+}
+
+.setting-check-row {
+  font-size: 15px;
+  color: #2f2a24;
+}
+
+.setting-check-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.setting-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 26, 21, 0.38);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.setting-modal {
+  width: 430px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 18px 40px rgba(31, 26, 21, 0.18);
+}
+
+.setting-modal h3 {
+  font-size: 20px;
+  color: #2f2a24;
+  margin-bottom: 20px;
+}
+
+.setting-modal p {
+  font-size: 14px;
+  color: #6f6258;
+  line-height: 0.8;
+  white-space: pre-line;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modal-form input,
+.modal-form select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #ddd2c8;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+}
+
+.modal-sub-btn {
+  width: 100%;
+}
+
+.modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.modal-list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #eee7df;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fffdfb;
+}
+
+.modal-list-row strong {
+  font-size: 14px;
+  color: #2f2a24;
+}
+
+.modal-list-row p,
+.empty-text {
+  font-size: 13px;
+  color: #8a7f73;
+}
+
+.modal-list-row button {
+  background: #6f6258;
+  white-space: nowrap;
+}
+
+.setting-modal-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.setting-modal-btns button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-cancel-btn {
+  background: #eee7df;
+  color: #3a332d;
+}
+
+.modal-ok-btn {
+  background: #3f6f5f;
+  color: #ffffff;
+}
+
+.modal-danger-btn {
+  background: #a94b4b;
+  color: #ffffff;
+}
+
+.setting-modal-btns button:hover {
+  opacity: 0.9;
+}
+
+.modal-error-text {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #b44b4b;
+  line-height: 1.4;
+}
+
+.modal-sub-btn:disabled {
+  background: #b8b0a8;
+  cursor: default;
+  opacity: 1;
+}
+
+.modal-form input:disabled {
+  background: #f1eee9;
+  color: #8a7f73;
+}
+
+@media (max-width: 820px) {
+  .setting-main {
+    padding: 40px 18px 70px;
+  }
+
+  .setting-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .setting-row select,
+  .setting-row-btn {
+    width: 100%;
+  }
+}

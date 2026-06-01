@@ -363,7 +363,8 @@ router.post("/signup", async (req, res) => {
     followVisible,
     aloneVisible,
     likeVisible,
-    postVisible
+    postVisible,
+    likePostVisible
   } = req.body;
 
   let connection;
@@ -408,7 +409,8 @@ router.post("/signup", async (req, res) => {
         FOLLOW_VISIBLE,
         ALONE_VISIBLE,
         LIKE_VISIBLE,
-        POST_VISIBLE
+        POST_VISIBLE,
+        LIKE_POST_VISIBLE
       )
       VALUES (
         :userId,
@@ -416,7 +418,8 @@ router.post("/signup", async (req, res) => {
         :followVisible,
         :aloneVisible,
         :likeVisible,
-        :postVisible
+        :postVisible,
+        :likePostVisible
       )
       `,
       {
@@ -425,7 +428,8 @@ router.post("/signup", async (req, res) => {
         followVisible,
         aloneVisible,
         likeVisible,
-        postVisible
+        postVisible,
+        likePostVisible
       },
       { autoCommit: false }
     );

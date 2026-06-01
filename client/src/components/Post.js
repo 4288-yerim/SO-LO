@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authFetch } from "./routes/authFetch";
 import Sidebar from "./Sidebar";
 import "../css/Post.css";
 import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
@@ -284,11 +285,8 @@ function Post() {
         formData.append("files", item.file);
       });
 
-      const res = await fetch("http://localhost:3010/post/write", {
+      const res = await authFetch("http://localhost:3010/post/write", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
         body: formData
       });
 

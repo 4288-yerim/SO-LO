@@ -7,15 +7,27 @@ import {
   Bell,
   MessageCircle,
   Settings,
-  Search
+  Search,
+  LogOut
 } from "lucide-react";
-
 import "../css/Sidebar.css";
 import soloLogo from "../assets/soloLogo.png";
 import soloLogoMini from "../assets/soloLogo_n.png";
 
 function Sidebar() {
   const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  let loginUserId = "";
+
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      loginUserId = payload.userId;
+    } catch (err) {
+      console.error("Token decode error:", err);
+    }
+  }
 
   const menuList = [
     { name: "홈", path: "/so:lo/feed", icon: <Home size={22} /> },
@@ -24,7 +36,8 @@ function Sidebar() {
     { name: "기록하기", path: "/so:lo/post", icon: <PenLine size={22} /> },
     { name: "알림", path: "/so:lo/notification", icon: <Bell size={22} /> },
     { name: "메시지", path: "/so:lo/message", icon: <MessageCircle size={22} /> },
-    { name: "설정", path: "/so:lo/setting", icon: <Settings size={22} /> }
+    { name: "설정", path: "/so:lo/setting", icon: <Settings size={22} /> },
+    { name: "로그아웃", path: "/so:lo/login", icon: <LogOut size={22} /> }
   ];
 
   return (
@@ -45,9 +58,30 @@ function Sidebar() {
       <nav>
         {menuList.map((menu) => (
           <button
-            className="feed-menu-item"
+            className={`feed-menu-item ${
+              menu.name === "로그아웃" ? "logout-menu-item" : ""
+            }`}
             key={menu.name}
-            onClick={() => navigate(menu.path)}
+            onClick={() => {
+              if (menu.name === "프로필") {
+                if (!loginUserId) {
+                  navigate("/so:lo/login");
+                  return;
+                }
+
+                navigate(`/so:lo/profile/${loginUserId}`);
+                return;
+              }
+
+              if (menu.name === "로그아웃") {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                navigate("/so:lo/login");
+                return;
+              }
+
+              navigate(menu.path);
+            }}
           >
             <span className="feed-menu-icon">{menu.icon}</span>
             <span className="feed-menu-text">{menu.name}</span>
