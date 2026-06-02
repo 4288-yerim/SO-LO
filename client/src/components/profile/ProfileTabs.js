@@ -16,14 +16,14 @@ function ProfileTabs({ activeTab, setActiveTab }) {
         className={activeTab === "likes" ? "active" : ""}
         onClick={() => setActiveTab("likes")}
       >
-        좋아요한 글
+        좋아요 기록
       </button>
 
       <button
-        className={activeTab === "solog" ? "active" : ""}
-        onClick={() => setActiveTab("solog")}
+        className={activeTab === "favorites" ? "active" : ""}
+        onClick={() => setActiveTab("favorites")}
       >
-        SO:LOG
+        찜 업체
       </button>
     </section>
   );

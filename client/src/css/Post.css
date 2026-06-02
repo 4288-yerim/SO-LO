@@ -386,10 +386,7 @@
 
   line-height:1;
   padding:0;
-}
-
-.file-remove-btn:hover{
-  background:#e2d6ca;
+  cursor: pointer;
 }
 
 .file-upload-box{
@@ -421,10 +418,6 @@
 .file-upload-count{
   font-size:13px;
   color:#8a7b6d;
-}
-
-.file-hidden-input{
-  display:none;
 }
 
 .file-hidden-input{
@@ -522,10 +515,6 @@
   cursor: pointer;
 }
 
-/* .place-modal-close:hover {
-  background: #e2d6ca;
-} */
-
 .place-modal-search {
   display: flex;
   gap: 8px;
@@ -555,48 +544,6 @@
 
 .place-modal-search button:hover {
   background: #3a342d;
-}
-
-.place-modal-result-list {
-  max-height: 480px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.place-modal-result-item {
-  width: 100%;
-  padding: 13px 14px;
-  border: 1px solid #e6dfd5;
-  border-radius: 14px;
-  background: #faf9f7;
-  text-align: left;
-  cursor: pointer;
-}
-
-.place-modal-result-item:hover {
-  background: #f5f1eb;
-}
-
-.place-modal-result-item strong {
-  display: block;
-  font-size: 14px;
-  color: #2f2a24;
-}
-
-.place-modal-result-item span {
-  display: block;
-  margin-top: 5px;
-  font-size: 13px;
-  color: #8a8177;
-}
-
-.place-empty-text {
-  margin: 30px 0;
-  text-align: center;
-  color: #8a8177;
-  font-size: 14px;
 }
 
 .place-map-modal {

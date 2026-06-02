@@ -1,6 +1,7 @@
 // 팔로워/ 팔로잉 클릭했을 때 뜨는 모달 담당.
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function FollowModal({
   followModalType,
@@ -9,6 +10,8 @@ function FollowModal({
   closeFollowModal,
   getRelationBadgeLabel
 }) {
+
+  const navigate = useNavigate();
   if (!followModalType) {
     return null;
   }
@@ -41,7 +44,14 @@ function FollowModal({
             </p>
           ) : (
             followList.map((user) => (
-              <div className="follow-user-row" key={user.userId}>
+              <div
+                className="follow-user-row"
+                key={user.userId}
+                onClick={() => {
+                  closeFollowModal();
+                  navigate(`/so:lo/profile/${user.userId}`);
+                }}
+              >
                 <div className="follow-user-avatar">
                   {user.profileImg ? (
                     <img src={user.profileImg} alt="프로필 이미지" />

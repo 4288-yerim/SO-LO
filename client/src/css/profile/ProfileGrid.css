@@ -19,10 +19,6 @@
   cursor: pointer;
 }
 
-.profile-post-card:hover {
-  opacity: 0.88;
-}
-
 .profile-post-media {
   width: 100%;
   height: 100%;

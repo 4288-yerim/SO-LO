@@ -1,18 +1,75 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const http = require("http");
+const { Server } = require("socket.io");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const sampleRouter = require("./routes/sample");
+
 const loginRouter = require("./routes/user/login");
 const signupRouter = require("./routes/user/signup");
 const findAccountRouter = require("./routes/user/findAccount");
+
+const profileHeaderRouter = require("./routes/profile/profileHeader");
+const profileContentRouter = require("./routes/profile/profileContent");
+const profileEtcRouter = require("./routes/profile/profileEtc");
+const profilefollow = require("./routes/profile/follow");
+
+const favoriteRouter = require("./routes/favorite");
 const feedRouter = require("./routes/feed");
 const postRouter = require("./routes/post");
-const profileRouter = require("./routes/profile");
 const settingRouter = require("./routes/setting");
+const notificationRouter = require("./routes/notification");
+
+const dmRouter = require("./routes/dm");
 
 const app = express();
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true
+  }
+});
+
+app.set("io", io);
+
+io.use((socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+
+    if (!token) {
+      return next(new Error("로그인이 필요합니다."));
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    socket.user = {
+      userId: decoded.userId,
+      nickname: decoded.nickname
+    };
+
+    next();
+  } catch (err) {
+    next(new Error("소켓 인증 실패"));
+  }
+});
+
+io.on("connection", (socket) => {
+  socket.on("joinRoom", (roomNo) => {
+    socket.join(`dm-${roomNo}`);
+  });
+
+  socket.on("leaveRoom", (roomNo) => {
+    socket.leave(`dm-${roomNo}`);
+  });
+
+  socket.on("disconnect", () => {});
+});
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -41,12 +98,15 @@ app.use("/profile", require("./routes/profile/profileContent"));
 app.use("/profile", require("./routes/profile/profileEtc"));
 app.use("/profile", require("./routes/profile/follow"));
 
+app.use("/favorite", favoriteRouter);
+app.use("/notification", notificationRouter);
+app.use("/dm", dmRouter);
 app.use("/feed", feedRouter);
 app.use("/post", postRouter);
 app.use("/setting", settingRouter);
 
 const PORT = process.env.PORT || 3010;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

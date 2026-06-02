@@ -12,7 +12,6 @@ import SignupPrivacy from "./components/user/SignupPrivacy";
 import Feed from "./components/Feed";
 import Post from "./components/Post";
 import Message from "./components/Message";
-import Notification from "./components/Notification";
 import Profile from "./components/profile/Profile";
 import Search from "./components/Search";
 import Setting from "./components/Setting";
@@ -93,15 +92,6 @@ function App() {
           element={
             <PrivateRoute>
               <Message />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/so:lo/notification"
-          element={
-            <PrivateRoute>
-              <Notification />
             </PrivateRoute>
           }
         />

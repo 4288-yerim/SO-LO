@@ -10,7 +10,9 @@ function authMiddleware(req, res, next) {
     });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
 
   if (!token) {
     return res.status(401).json({
@@ -38,7 +40,7 @@ function authMiddleware(req, res, next) {
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "1h"
+          expiresIn: "7d"
         }
       );
 
@@ -46,7 +48,6 @@ function authMiddleware(req, res, next) {
     }
 
     next();
-
   } catch (err) {
     return res.status(401).json({
       result: "fail",

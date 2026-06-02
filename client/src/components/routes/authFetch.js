@@ -1,5 +1,9 @@
 export async function authFetch(url, options = {}) {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
+
+  if (token) {
+    token = token.replace(/^Bearer\s+/i, "");
+  }
 
   const headers = {
     ...(options.headers || {})
@@ -17,13 +21,12 @@ export async function authFetch(url, options = {}) {
   const newToken = res.headers.get("Authorization");
 
   if (newToken) {
-    localStorage.setItem("token", newToken.replace("Bearer ", ""));
+    const cleanToken = newToken.replace(/^Bearer\s+/i, "");
+    localStorage.setItem("token", cleanToken);
   }
 
   if (res.status === 401) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/so:lo/login";
+    return res;
   }
 
   return res;

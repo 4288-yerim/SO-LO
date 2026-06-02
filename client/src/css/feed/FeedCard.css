@@ -124,10 +124,6 @@
   cursor: pointer;
 }
 
-.feed-actions button:hover {
-  opacity: 0.72;
-}
-
 .feed-location {
   display: flex;
   align-items: center;
@@ -150,11 +146,6 @@
   justify-content: center;
   transform: translateY(-4px);
   cursor: pointer;
-}
-
-.feed-more-btn:hover {
-  background: transparent !important;
-  opacity: 0.75;
 }
 
 .feed-more-menu {

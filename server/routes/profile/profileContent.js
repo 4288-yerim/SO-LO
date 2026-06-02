@@ -80,6 +80,84 @@ async function getFilesByPost(connection, postRows) {
   return filesByPost;
 }
 
+async function getStatsByPost(connection, postRows, loginUserId) {
+  const postNos = postRows.map((post) => post.POST_NO);
+
+  if (postNos.length === 0) {
+    return {
+      likeCountByPost: {},
+      likedPostSet: new Set(),
+      commentCountByPost: {}
+    };
+  }
+
+  const binds = {};
+  const placeholders = postNos
+    .map((postNo, index) => {
+      const key = `postNo${index}`;
+      binds[key] = postNo;
+      return `:${key}`;
+    })
+    .join(", ");
+
+  const likeResult = await connection.execute(
+    `
+    SELECT POST_NO, COUNT(*) AS LIKE_COUNT
+    FROM SNS_POST_LIKE
+    WHERE POST_NO IN (${placeholders})
+    GROUP BY POST_NO
+    `,
+    binds,
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  const likedResult = await connection.execute(
+    `
+    SELECT POST_NO
+    FROM SNS_POST_LIKE
+    WHERE POST_NO IN (${placeholders})
+      AND USER_ID = :loginUserId
+    `,
+    {
+      ...binds,
+      loginUserId
+    },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  const commentResult = await connection.execute(
+    `
+    SELECT POST_NO, COUNT(*) AS COMMENT_COUNT
+    FROM SNS_COMMENTS
+    WHERE POST_NO IN (${placeholders})
+      AND CMT_STATUS = 'ACT'
+    GROUP BY POST_NO
+    `,
+    binds,
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  const likeCountByPost = {};
+  likeResult.rows.forEach((row) => {
+    likeCountByPost[row.POST_NO] = row.LIKE_COUNT;
+  });
+
+  const likedPostSet = new Set(
+    likedResult.rows.map((row) => row.POST_NO)
+  );
+
+  const commentCountByPost = {};
+  commentResult.rows.forEach((row) => {
+    commentCountByPost[row.POST_NO] = row.COMMENT_COUNT;
+  });
+
+  return {
+    likeCountByPost,
+    likedPostSet,
+    commentCountByPost
+  };
+}
+
 // 작성한 글 목록 조회
 router.get("/:userId/posts", authMiddleware, async (req, res) => {
   let connection;
@@ -109,6 +187,8 @@ router.get("/:userId/posts", authMiddleware, async (req, res) => {
         P.CATEGORY_NO,
         P.PLACE_NAME,
         P.PLACE_ADDRESS,
+        P.LAT,
+        P.LNG,
         P.CMT_YN,
         P.CDATE
       FROM SNS_POST P
@@ -122,6 +202,12 @@ router.get("/:userId/posts", authMiddleware, async (req, res) => {
 
     const filesByPost = await getFilesByPost(connection, postResult.rows);
 
+    const {
+      likeCountByPost,
+      likedPostSet,
+      commentCountByPost
+    } = await getStatsByPost(connection, postResult.rows, loginUserId);
+
     const postList = postResult.rows.map((post) => {
       const files = filesByPost[post.POST_NO] || [];
       const firstFile = files[0];
@@ -134,11 +220,22 @@ router.get("/:userId/posts", authMiddleware, async (req, res) => {
         category: post.CATEGORY_NO,
         placeName: post.PLACE_NAME || "",
         placeAddress: post.PLACE_ADDRESS || "",
+        lat: post.LAT,
+        lng: post.LNG,
         cmtYn: post.CMT_YN,
         timeAgo: post.CDATE,
         imageUrl: firstFile ? firstFile.fileUrl : null,
         fileType: firstFile ? firstFile.fileType : null,
-        files
+        files,
+
+        tags: [],
+
+        likeCount: likeCountByPost[post.POST_NO] || 0,
+        likedYn: likedPostSet.has(post.POST_NO),
+        commentCount: commentCountByPost[post.POST_NO] || 0,
+
+        location: post.PLACE_NAME || "",
+        locationAddress: post.PLACE_ADDRESS || ""
       };
     });
 
@@ -188,6 +285,8 @@ router.get("/:userId/likes", authMiddleware, async (req, res) => {
         P.CATEGORY_NO,
         P.PLACE_NAME,
         P.PLACE_ADDRESS,
+        P.LAT,
+        P.LNG,
         P.CMT_YN,
         P.CDATE
       FROM SNS_POST_LIKE L
@@ -207,6 +306,12 @@ router.get("/:userId/likes", authMiddleware, async (req, res) => {
 
     const filesByPost = await getFilesByPost(connection, postResult.rows);
 
+    const {
+      likeCountByPost,
+      likedPostSet,
+      commentCountByPost
+    } = await getStatsByPost(connection, postResult.rows, loginUserId);
+
     const likedPostList = postResult.rows.map((post) => {
       const files = filesByPost[post.POST_NO] || [];
       const firstFile = files[0];
@@ -224,7 +329,16 @@ router.get("/:userId/likes", authMiddleware, async (req, res) => {
         timeAgo: post.CDATE,
         imageUrl: firstFile ? firstFile.fileUrl : null,
         fileType: firstFile ? firstFile.fileType : null,
-        files
+        files,
+
+        tags: [],
+
+        likeCount: likeCountByPost[post.POST_NO] || 0,
+        likedYn: likedPostSet.has(post.POST_NO),
+        commentCount: commentCountByPost[post.POST_NO] || 0,
+
+        location: post.PLACE_NAME || "",
+        locationAddress: post.PLACE_ADDRESS || ""
       };
     });
 
@@ -244,8 +358,8 @@ router.get("/:userId/likes", authMiddleware, async (req, res) => {
   }
 });
 
-// SO:LOG 조회
-router.get("/:userId/solog", authMiddleware, async (req, res) => {
+// 찜한 업체 목록 조회
+router.get("/:userId/favorites", authMiddleware, async (req, res) => {
   let connection;
 
   try {
@@ -253,26 +367,115 @@ router.get("/:userId/solog", authMiddleware, async (req, res) => {
 
     const { userId } = req.params;
     const loginUserId = req.user.userId;
+    const isMyProfile = loginUserId === userId;
 
-    const canView = await checkCanViewProfileContents(connection, loginUserId, userId);
+    const canView = await checkCanViewProfileContents(
+      connection,
+      loginUserId,
+      userId
+    );
 
     if (!canView) {
       return res.json({
         result: "success",
-        sologList: []
+        canViewFavorites: false,
+        favoriteFolderList: []
       });
     }
 
+    const folderSql = `
+      SELECT
+        F.FOLDER_NO,
+        F.USER_ID,
+        F.FOLDER_NAME,
+        F.FOLDER_INFO,
+        F.IS_SHARED,
+        F.CDATE,
+        COUNT(P.FAVORITE_NO) AS PLACE_COUNT
+      FROM SNS_FAVORITE_FOLDER F
+      LEFT JOIN SNS_FAVORITE_PLACE P
+        ON F.FOLDER_NO = P.FOLDER_NO
+      WHERE F.USER_ID = :userId
+        ${isMyProfile ? "" : "AND F.IS_SHARED = 'Y'"}
+      GROUP BY
+        F.FOLDER_NO,
+        F.USER_ID,
+        F.FOLDER_NAME,
+        F.FOLDER_INFO,
+        F.IS_SHARED,
+        F.CDATE
+      ORDER BY F.CDATE DESC
+    `;
+
+    const folderResult = await connection.execute(
+      folderSql,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const placeResult = await connection.execute(
+      `
+      SELECT
+        P.FAVORITE_NO,
+        P.FOLDER_NO,
+        P.PLACE_NAME,
+        P.PLACE_ADDRESS,
+        P.LAT,
+        P.LNG,
+        P.MEMO,
+        P.CDATE
+      FROM SNS_FAVORITE_PLACE P
+      JOIN SNS_FAVORITE_FOLDER F
+        ON P.FOLDER_NO = F.FOLDER_NO
+      WHERE P.USER_ID = :userId
+        ${isMyProfile ? "" : "AND F.IS_SHARED = 'Y'"}
+      ORDER BY P.CDATE DESC
+      `,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const placesByFolder = {};
+
+    placeResult.rows.forEach((place) => {
+      if (!placesByFolder[place.FOLDER_NO]) {
+        placesByFolder[place.FOLDER_NO] = [];
+      }
+
+      placesByFolder[place.FOLDER_NO].push({
+        favoriteNo: place.FAVORITE_NO,
+        folderNo: place.FOLDER_NO,
+        placeName: place.PLACE_NAME,
+        placeAddress: place.PLACE_ADDRESS,
+        lat: place.LAT,
+        lng: place.LNG,
+        memo: place.MEMO || "",
+        cdate: place.CDATE
+      });
+    });
+
+    const favoriteFolderList = folderResult.rows.map((folder) => ({
+      folderNo: folder.FOLDER_NO,
+      userId: folder.USER_ID,
+      folderName: folder.FOLDER_NAME,
+      folderInfo: folder.FOLDER_INFO || "",
+      isShared: folder.IS_SHARED,
+      placeCount: folder.PLACE_COUNT || 0,
+      cdate: folder.CDATE,
+      placeList: placesByFolder[folder.FOLDER_NO] || []
+    }));
+
     res.json({
       result: "success",
-      sologList: []
+      canViewFavorites: true,
+      favoriteFolderList
     });
   } catch (err) {
-    console.error("SO:LOG error:", err);
+    console.error("Profile favorite list error:", err);
 
     res.status(500).json({
       result: "fail",
-      message: "SO:LOG를 불러오지 못했습니다."
+      message: "찜한 업체를 불러오지 못했습니다."
     });
   } finally {
     if (connection) await connection.close();

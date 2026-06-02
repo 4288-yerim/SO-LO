@@ -2,7 +2,15 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const auth = (req, res, next) => {
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "토큰 없음" });
+  }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
 
   if (!token) {
     return res.status(401).json({ message: "토큰 없음" });

@@ -205,7 +205,9 @@ router.get("/", authMiddleware, async (req, res) => {
         commentCount: commentCountByPost[post.POST_NO] || 0,
 
         location: post.PLACE_NAME || "",
-        locationAddress: post.PLACE_ADDRESS || ""
+        locationAddress: post.PLACE_ADDRESS || "",
+        lat: post.LAT,
+        lng: post.LNG
       };
     });
 
@@ -355,42 +357,115 @@ router.post("/", authMiddleware, async (req, res) => {
       });
     }
 
-    await connection.execute(
+    const postOwnerResult = await connection.execute(
+  `
+  SELECT USER_ID
+  FROM SNS_POST
+  WHERE POST_NO = :postNo
+  `,
+  { postNo },
+  { outFormat: oracledb.OUT_FORMAT_OBJECT }
+);
+
+if (postOwnerResult.rows.length === 0) {
+  return res.status(404).json({
+    result: "fail",
+    message: "존재하지 않는 게시글입니다."
+  });
+}
+
+const postOwnerId = postOwnerResult.rows[0].USER_ID;
+
+  await connection.execute(
+    `
+    INSERT INTO SNS_COMMENTS (
+      COMMENT_NO,
+      USER_ID,
+      POST_NO,
+      PARENT_COMMENT_NO,
+      MENTION_USER_ID,
+      CONTENT,
+      CMT_STATUS,
+      CDATE
+    ) VALUES (
+      SEQ_SNS_COMMENTS.NEXTVAL,
+      :userId,
+      :postNo,
+      :parentCommentNo,
+      :mentionUserId,
+      :content,
+      'ACT',
+      SYSDATE
+    )
+    `,
+    {
+      userId,
+      postNo,
+      parentCommentNo: parentCommentNo || null,
+      mentionUserId: mentionUserId || null,
+      content
+    },
+    { autoCommit: false }
+  );
+
+  if (postOwnerId !== userId) {
+    const notiSettingResult = await connection.execute(
       `
-      INSERT INTO SNS_COMMENTS (
-        COMMENT_NO,
-        USER_ID,
-        POST_NO,
-        PARENT_COMMENT_NO,
-        MENTION_USER_ID,
-        CONTENT,
-        CMT_STATUS,
-        CDATE
-      ) VALUES (
-        SEQ_SNS_COMMENTS.NEXTVAL,
-        :userId,
-        :postNo,
-        :parentCommentNo,
-        :mentionUserId,
-        :content,
-        'ACT',
-        SYSDATE
-      )
+      SELECT COMMENT_NOTI
+      FROM SNS_USER_NOTI
+      WHERE USER_ID = :postOwnerId
       `,
-      {
-        userId,
-        postNo,
-        parentCommentNo: parentCommentNo || null,
-        mentionUserId: mentionUserId || null,
-        content
-      },
-      { autoCommit: true }
+      { postOwnerId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
-    res.json({
-      result: "success",
-      message: "댓글이 등록되었습니다."
-    });
+    const commentNoti =
+      notiSettingResult.rows.length > 0
+        ? notiSettingResult.rows[0].COMMENT_NOTI
+        : "Y";
+
+    if (commentNoti === "Y") {
+      await connection.execute(
+        `
+        INSERT INTO SNS_NOTIFICATION (
+          NOTI_NO,
+          USER_ID,
+          SENDER_ID,
+          NOTI_TYPE,
+          TARGET_TYPE,
+          TARGET_ID,
+          CONTENT,
+          READ_YN,
+          CDATE
+        )
+        VALUES (
+          SEQ_SNS_NOTIFICATION.NEXTVAL,
+          :postOwnerId,
+          :userId,
+          'CMT',
+          'PST',
+          :postNo,
+          '님이 회원님의 글에 댓글을 남겼습니다.',
+          'N',
+          SYSDATE
+        )
+        `,
+        {
+          postOwnerId,
+          userId,
+          postNo
+        },
+        { autoCommit: false }
+      );
+    }
+  }
+
+  await connection.commit();
+
+  res.json({
+    result: "success",
+    message: "댓글이 등록되었습니다."
+  });
   } catch (err) {
     console.error("Comment insert error:", err);
     res.status(500).json({
@@ -446,32 +521,105 @@ router.post("/like", authMiddleware, async (req, res) => {
       });
     }
 
-    await connection.execute(
+    const postOwnerResult = await connection.execute(
+  `
+  SELECT USER_ID
+  FROM SNS_POST
+  WHERE POST_NO = :postNo
+  `,
+  { postNo },
+  { outFormat: oracledb.OUT_FORMAT_OBJECT }
+);
+
+if (postOwnerResult.rows.length === 0) {
+  return res.status(404).json({
+    result: "fail",
+    message: "존재하지 않는 게시글입니다."
+  });
+}
+
+const postOwnerId = postOwnerResult.rows[0].USER_ID;
+
+  await connection.execute(
+    `
+    INSERT INTO SNS_POST_LIKE (
+      LIKE_NO,
+      USER_ID,
+      POST_NO,
+      CDATE
+    )
+    VALUES (
+      SEQ_SNS_POST_LIKE.NEXTVAL,
+      :userId,
+      :postNo,
+      SYSDATE
+    )
+    `,
+    {
+      userId,
+      postNo
+    },
+    { autoCommit: false }
+  );
+
+  if (postOwnerId !== userId) {
+    const notiSettingResult = await connection.execute(
       `
-      INSERT INTO SNS_POST_LIKE (
-        LIKE_NO,
-        USER_ID,
-        POST_NO,
-        CDATE
-      )
-      VALUES (
-        SEQ_SNS_POST_LIKE.NEXTVAL,
-        :userId,
-        :postNo,
-        SYSDATE
-      )
+      SELECT LIKE_NOTI
+      FROM SNS_USER_NOTI
+      WHERE USER_ID = :postOwnerId
       `,
-      {
-        userId,
-        postNo
-      },
-      { autoCommit: true }
+      { postOwnerId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
-    res.json({
-      result: "success",
-      likedYn: true
-    });
+    const likeNoti =
+      notiSettingResult.rows.length > 0
+        ? notiSettingResult.rows[0].LIKE_NOTI
+        : "Y";
+
+    if (likeNoti === "Y") {
+      await connection.execute(
+        `
+        INSERT INTO SNS_NOTIFICATION (
+          NOTI_NO,
+          USER_ID,
+          SENDER_ID,
+          NOTI_TYPE,
+          TARGET_TYPE,
+          TARGET_ID,
+          CONTENT,
+          READ_YN,
+          CDATE
+        )
+        VALUES (
+          SEQ_SNS_NOTIFICATION.NEXTVAL,
+          :postOwnerId,
+          :userId,
+          'LKE',
+          'PST',
+          :postNo,
+          '님이 회원님의 글을 좋아합니다.',
+          'N',
+          SYSDATE
+        )
+        `,
+        {
+          postOwnerId,
+          userId,
+          postNo
+        },
+        { autoCommit: false }
+      );
+    }
+  }
+
+  await connection.commit();
+
+  res.json({
+    result: "success",
+    likedYn: true
+  });
 
   } catch (err) {
     console.error("Like error:", err);

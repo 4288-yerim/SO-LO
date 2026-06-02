@@ -1,7 +1,11 @@
 // 프로필 상단 영역
 
-import React from "react";
-import { Bell, Loader2 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Loader2,
+  MessageCircle,
+  MoreHorizontal
+} from "lucide-react";
 
 function ProfileHeader({
   profile,
@@ -11,8 +15,38 @@ function ProfileHeader({
   openFollowModal,
   openEditModal,
   toggleFollow,
-  followLoading
-}) {
+  followLoading,
+  openDmRoom
+})
+{
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const canShowDmButton =
+    !isMyProfile &&
+    (
+      profile.accountVisible === "PUB" ||
+      profile.followStatus === "FOLLOWING"
+    );
+
+  const moreMenuRef = useRef(null);
+
+  useEffect(() => {
+    const closeMoreMenu = (e) => {
+      if (
+        moreMenuRef.current &&
+        !moreMenuRef.current.contains(e.target)
+      ) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeMoreMenu);
+
+    return () => {
+      document.removeEventListener("mousedown", closeMoreMenu);
+    };
+  }, []);
+
   return (
     <section className="profile-header">
       <div className="profile-left">
@@ -115,11 +149,48 @@ function ProfileHeader({
             </button>
           )}
 
-          {!isMyProfile && (
-            <button className="profile-noti-btn" type="button">
-              <Bell size={18} />
-            </button>
-          )}
+          <>
+            {canShowDmButton && (
+              <button
+                className="profile-dm-btn"
+                type="button"
+                title="메시지 보내기"
+                onClick={openDmRoom}
+              >
+                <MessageCircle size={18} />
+              </button>
+            )}
+
+            <div className="profile-more-wrap" ref={moreMenuRef}>
+              <button
+                className="profile-more-btn"
+                type="button"
+                title="더보기"
+                onClick={() => setOpenMenu(!openMenu)}
+              >
+                <MoreHorizontal size={18} />
+              </button>
+
+              {openMenu && (
+                <div className="profile-more-menu">
+                  <button type="button">
+                    공유
+                  </button>
+
+                  <button type="button">
+                    차단
+                  </button>
+
+                  <button
+                    type="button"
+                    className="danger"
+                  >
+                    신고
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
         </div>
       </div>
     </section>

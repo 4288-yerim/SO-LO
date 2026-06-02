@@ -64,6 +64,69 @@ async function checkCanViewProfileContents(connection, loginUserId, profileUserI
   return followResult.rows[0].CNT > 0;
 }
 
+// 사용자 검색
+router.get("/search/user", authMiddleware, async (req, res) => {
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const keyword = (req.query.keyword || "").trim();
+
+    if (!keyword) {
+      return res.json({
+        result: "success",
+        list: []
+      });
+    }
+
+    const searchKeyword = `%${keyword.toLowerCase()}%`;
+
+    const result = await connection.execute(
+      `
+      SELECT
+        USER_ID,
+        USER_NICKNAME,
+        USER_INTRO,
+        PROFILE_IMG
+      FROM SNS_USERS
+      WHERE USER_STATUS = 'ACT'
+        AND (
+          LOWER(USER_NICKNAME) LIKE :searchKeyword
+          OR LOWER(USER_INTRO) LIKE :searchKeyword
+        )
+      ORDER BY USER_NICKNAME
+      FETCH FIRST 20 ROWS ONLY
+      `,
+      { searchKeyword },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const list = result.rows.map((user) => ({
+      userId: user.USER_ID,
+      userNickname: user.USER_NICKNAME,
+      userIntro: user.USER_INTRO || "",
+      profileImg: user.PROFILE_IMG
+        ? `http://localhost:3010${user.PROFILE_IMG}`
+        : null
+    }));
+
+    res.json({
+      result: "success",
+      list
+    });
+  } catch (err) {
+    console.error("User search error:", err);
+
+    res.status(500).json({
+      result: "fail",
+      message: "검색 중 오류가 발생했습니다."
+    });
+  } finally {
+    if (connection) await connection.close();
+  }
+});
+
 // 프로필 헤더 조회
 router.get("/:userId", authMiddleware, async (req, res) => {
   let connection;
@@ -197,7 +260,6 @@ router.get("/:userId", authMiddleware, async (req, res) => {
       canViewProfileContents
     });
   } catch (err) {
-    console.error("Profile header error:", err);
 
     res.status(500).json({
       result: "fail",
@@ -300,8 +362,6 @@ router.put("/", authMiddleware, profileUpload.single("profileImg"), async (req, 
       }
     });
   } catch (err) {
-    console.error("Profile update error:", err);
-
     res.status(500).json({
       result: "fail",
       message: err.message || "프로필 수정 중 오류가 발생했습니다."

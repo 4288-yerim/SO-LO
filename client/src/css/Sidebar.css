@@ -112,3 +112,23 @@
 .logout-menu-item:hover .feed-menu-icon {
   color: #a23d3d;
 }
+
+.feed-menu-icon {
+  position: relative;
+}
+
+.sidebar-notification-count {
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+}

@@ -96,7 +96,14 @@ function Feed() {
   }
 
   function openDetailFromFeed(feed) {
-    setSelectedPost(feed);
+    setSelectedPost({
+      ...feed,
+      location: feed.location || feed.placeName || "",
+      locationAddress: feed.locationAddress || feed.placeAddress || "",
+      lat: feed.lat,
+      lng: feed.lng
+    });
+
     setDetailFileIndex(0);
     setCommentInput("");
     setReplyTarget(null);
@@ -117,7 +124,12 @@ function Feed() {
     }, 100);
   }
 
-  function toggleLike(postId) {
+  function toggleLike(postOrId) {
+    const postId =
+      typeof postOrId === "object"
+        ? postOrId.postId
+        : postOrId;
+
     authFetch("http://localhost:3010/feed/like", {
       method: "POST",
       headers: {
@@ -189,6 +201,25 @@ function Feed() {
     }
   }, [location.state]);
 
+  useEffect(() => {
+    if (!location.state?.notificationPostNo) return;
+    if (feedList.length === 0) return;
+
+    const targetPost = feedList.find(
+      (feed) => String(feed.postId) === String(location.state.notificationPostNo)
+    );
+
+    if (!targetPost) return;
+
+    if (location.state.notificationType === "CMT") {
+      openDetailToComment(targetPost);
+    } else {
+      openDetailFromFeed(targetPost);
+    }
+
+    navigate("/so:lo/feed", { replace: true });
+  }, [location.state, feedList]);
+
   return (
     <div className="feed-page">
       <Sidebar />
@@ -233,6 +264,7 @@ function Feed() {
           selectedPost={selectedPost}
           setSelectedPost={setSelectedPost}
           detailFileIndex={detailFileIndex}
+          toggleLike={toggleLike}
           setDetailFileIndex={setDetailFileIndex}
           commentList={commentList}
           commentInput={commentInput}

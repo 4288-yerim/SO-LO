@@ -4,6 +4,52 @@ const router = express.Router();
 const { oracledb, dbConfig } = require("../../db");
 const authMiddleware = require("../../middleware/authMiddleware");
 
+// 프로필 내용 공개 여부 확인
+async function checkCanViewProfileContents(
+  connection,
+  loginUserId,
+  profileUserId
+) {
+  const userResult = await connection.execute(
+    `
+    SELECT ACCOUNT_VISIBLE
+    FROM SNS_USERS
+    WHERE USER_ID = :profileUserId
+      AND USER_STATUS = 'ACT'
+    `,
+    { profileUserId },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  if (userResult.rows.length === 0) {
+    return false;
+  }
+
+  const accountVisible =
+    userResult.rows[0].ACCOUNT_VISIBLE || "PUB";
+
+  if (loginUserId === profileUserId) {
+    return true;
+  }
+
+  if (accountVisible === "PUB") {
+    return true;
+  }
+
+  const followResult = await connection.execute(
+    `
+    SELECT COUNT(*) AS CNT
+    FROM SNS_FOLLOWS
+    WHERE FOLLOWER_ID = :loginUserId
+      AND FOLLOWING_ID = :profileUserId
+    `,
+    { loginUserId, profileUserId },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+  return followResult.rows[0].CNT > 0;
+}
+
 // 팔로워 목록 조회
 router.get("/:userId/followers", authMiddleware, async (req, res) => {
   let connection;
@@ -236,25 +282,71 @@ router.post("/:userId/follow", authMiddleware, async (req, res) => {
     // 공개 계정이면 바로 팔로우
     if (accountVisible === "PUB") {
       await connection.execute(
+      `
+      INSERT INTO SNS_FOLLOWS (
+        FOLLOW_NO,
+        FOLLOWER_ID,
+        FOLLOWING_ID,
+        CDATE
+      )
+      VALUES (
+        SEQ_SNS_FOLLOWS.NEXTVAL,
+        :loginUserId,
+        :userId,
+        SYSDATE
+      )
+      `,
+      { loginUserId, userId },
+      { autoCommit: false }
+    );
+
+    const notiSettingResult = await connection.execute(
+      `
+      SELECT FOLLOW_NOTI
+      FROM SNS_USER_NOTI
+      WHERE USER_ID = :userId
+      `,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const followNoti =
+      notiSettingResult.rows.length > 0
+        ? notiSettingResult.rows[0].FOLLOW_NOTI
+        : "Y";
+
+    if (followNoti === "Y") {
+      await connection.execute(
         `
-        INSERT INTO SNS_FOLLOWS (
-          FOLLOW_NO,
-          FOLLOWER_ID,
-          FOLLOWING_ID,
+        INSERT INTO SNS_NOTIFICATION (
+          NOTI_NO,
+          USER_ID,
+          SENDER_ID,
+          NOTI_TYPE,
+          TARGET_TYPE,
+          TARGET_ID,
+          CONTENT,
+          READ_YN,
           CDATE
         )
         VALUES (
-          SEQ_SNS_FOLLOWS.NEXTVAL,
-          :loginUserId,
+          SEQ_SNS_NOTIFICATION.NEXTVAL,
           :userId,
+          :loginUserId,
+          'FLW',
+          'USR',
+          NULL,
+          '님이 회원님을 팔로우했습니다.',
+          'N',
           SYSDATE
         )
         `,
-        { loginUserId, userId },
+        { userId, loginUserId },
         { autoCommit: false }
       );
+    }
 
-      await connection.commit();
+    await connection.commit();
 
       return res.json({
         result: "success",
@@ -285,6 +377,52 @@ router.post("/:userId/follow", authMiddleware, async (req, res) => {
       { loginUserId, userId },
       { autoCommit: false }
     );
+
+   const notiSettingResult = await connection.execute(
+      `
+      SELECT FOLLOW_NOTI
+      FROM SNS_USER_NOTI
+      WHERE USER_ID = :userId
+      `,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const followNoti =
+      notiSettingResult.rows.length > 0
+        ? notiSettingResult.rows[0].FOLLOW_NOTI
+        : "Y";
+
+    if (followNoti === "Y") {
+      await connection.execute(
+        `
+        INSERT INTO SNS_NOTIFICATION (
+          NOTI_NO,
+          USER_ID,
+          SENDER_ID,
+          NOTI_TYPE,
+          TARGET_TYPE,
+          TARGET_ID,
+          CONTENT,
+          READ_YN,
+          CDATE
+        )
+        VALUES (
+          SEQ_SNS_NOTIFICATION.NEXTVAL,
+          :userId,
+          :loginUserId,
+          'FLW',
+          'USR',
+          NULL,
+          '님이 팔로우를 요청했습니다.',
+          'N',
+          SYSDATE
+        )
+        `,
+        { userId, loginUserId },
+        { autoCommit: false }
+      );
+    }
 
     await connection.commit();
 

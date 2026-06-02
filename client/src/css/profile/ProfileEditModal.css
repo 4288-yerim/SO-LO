@@ -144,10 +144,6 @@
   cursor: pointer;
 }
 
-.profile-edit-preview.clickable:hover {
-  opacity: 0.86;
-}
-
 .profile-edit-img-guide {
   margin-top: 8px;
   font-size: 13px;
@@ -165,8 +161,4 @@
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-}
-
-.profile-edit-delete-img-btn:hover {
-  opacity: 0.85;
 }

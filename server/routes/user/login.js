@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h"
+        expiresIn: "30d"
       }
     );
 
@@ -87,8 +87,6 @@ router.post("/login", async (req, res) => {
       }
     });
   } catch (err) {
-    console.error("Login error", err);
-
     return res.status(500).json({
       result: "fail",
       message: "서버 오류가 발생했습니다."

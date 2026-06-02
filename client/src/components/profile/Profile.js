@@ -9,6 +9,8 @@ import ProfilePostGrid from "./ProfilePostGrid";
 import FollowModal from "./FollowModal";
 import ProfileEditModal from "./ProfileEditModal";
 import PostDetailModal from "../feed/PostDetailModal";
+import { Lock } from "lucide-react";
+import ProfileFavoriteModal from "./ProfileFavoriteModal";
 
 import "../../css/profile/ProfileEditModal.css";
 import "../../css/feed/PostDetailModal.css";
@@ -32,8 +34,11 @@ function ProfilePage() {
   const [likedPostList, setLikedPostList] = useState([]);
   const [likedPostLoaded, setLikedPostLoaded] = useState(false);
 
-  const [sologList, setSologList] = useState([]);
-  const [sologLoaded, setSologLoaded] = useState(false);
+  const [favoriteFolderList, setFavoriteFolderList] = useState([]);
+  const [favoriteLoaded, setFavoriteLoaded] = useState(false);
+  const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
+  const [selectedFavoriteFolder, setSelectedFavoriteFolder] = useState(null);
+  const [canViewFavorites, setCanViewFavorites] = useState(true);
 
   const [canViewProfileContents, setCanViewProfileContents] = useState(true);
 
@@ -50,6 +55,8 @@ function ProfilePage() {
   const [replyTarget, setReplyTarget] = useState(null);
   const [openReplyMap, setOpenReplyMap] = useState({});
   const [openCommentMenu, setOpenCommentMenu] = useState(null);
+  const [deleteFolderModalOpen, setDeleteFolderModalOpen] = useState(false);
+  const [deleteTargetFolder, setDeleteTargetFolder] = useState(null);
 
   const commentAreaRef = useRef(null);
 
@@ -119,22 +126,57 @@ function ProfilePage() {
       });
   };
 
-  const loadSologList = () => {
-    if (sologLoaded || !canViewProfileContents) return;
+  const loadFavoriteFolderList = () => {
+    if (favoriteLoaded) return;
 
-    authFetch(`http://localhost:3010/profile/${userId}/solog`)
+    authFetch(`http://localhost:3010/profile/${userId}/favorites`)
       .then((res) => res.json())
       .then((data) => {
         if (data.result === "success") {
-          setSologList(data.sologList);
-          setSologLoaded(true);
+          const folderList = data.favoriteFolderList || [];
+
+          setCanViewFavorites(data.canViewFavorites);
+          setFavoriteFolderList(folderList);
+          setFavoriteLoaded(true);
+
+          if (folderList.length > 0) {
+            setSelectedFavoriteFolder(folderList[0]);
+          }
         } else {
-          setMessage(data.message || "SO:LOG를 불러오지 못했습니다.");
+          setMessage(data.message || "찜한 업체를 불러오지 못했습니다.");
         }
       })
       .catch((err) => {
-        console.error("SO:LOG load error:", err);
-        setMessage("SO:LOG를 불러오지 못했습니다.");
+        console.error("Favorite folder load error:", err);
+        setMessage("찜한 업체를 불러오지 못했습니다.");
+      });
+  };
+
+  const deleteFavoriteFolder = (folder) => {
+    authFetch(`http://localhost:3010/favorite/folders/${folder.folderNo}`, {
+      method: "DELETE"
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          setMessage(data.message || "폴더 삭제에 실패했습니다.");
+          return;
+        }
+
+        setFavoriteFolderList((prev) =>
+          prev.filter((item) => item.folderNo !== folder.folderNo)
+        );
+
+        if (selectedFavoriteFolder?.folderNo === folder.folderNo) {
+          setSelectedFavoriteFolder(null);
+          setFavoriteModalOpen(false);
+        }
+
+        setDeleteTargetFolder(null);
+      })
+      .catch((err) => {
+        console.error("Favorite folder delete error:", err);
+        setMessage("폴더 삭제에 실패했습니다.");
       });
   };
 
@@ -213,15 +255,17 @@ function ProfilePage() {
       cmtYn: post.cmtYn || "N",
       location: post.location || post.placeName || "",
       locationAddress: post.locationAddress || post.placeAddress || "",
+      lat: post.lat,
+      lng: post.lng,
       files:
         post.files && post.files.length > 0
           ? post.files
           : [
-              {
-                fileUrl: post.imageUrl,
-                fileType: post.fileType
-              }
-            ]
+            {
+              fileUrl: post.imageUrl,
+              fileType: post.fileType
+            }
+          ]
     });
 
     setDetailFileIndex(0);
@@ -279,17 +323,47 @@ function ProfilePage() {
       .then((data) => {
         if (data.result !== "success") return;
 
+        const nextLikedYn = data.likedYn;
+
         setSelectedPost((prev) => {
           if (!prev || prev.postId !== post.postId) return prev;
 
           return {
             ...prev,
-            likedYn: data.likedYn,
-            likeCount: data.likedYn
+            likedYn: nextLikedYn,
+            likeCount: nextLikedYn
               ? (prev.likeCount || 0) + 1
               : Math.max((prev.likeCount || 0) - 1, 0)
           };
         });
+
+        setPostList((prev) =>
+          prev.map((item) => {
+            if (item.postId !== post.postId) return item;
+
+            return {
+              ...item,
+              likedYn: nextLikedYn,
+              likeCount: nextLikedYn
+                ? (item.likeCount || 0) + 1
+                : Math.max((item.likeCount || 0) - 1, 0)
+            };
+          })
+        );
+
+        setLikedPostList((prev) =>
+          prev.map((item) => {
+            if (item.postId !== post.postId) return item;
+
+            return {
+              ...item,
+              likedYn: nextLikedYn,
+              likeCount: nextLikedYn
+                ? (item.likeCount || 0) + 1
+                : Math.max((item.likeCount || 0) - 1, 0)
+            };
+          })
+        );
       })
       .catch((err) => {
         console.error("좋아요 처리 실패:", err);
@@ -351,6 +425,32 @@ function ProfilePage() {
     }
   };
 
+  const openDmRoom = async () => {
+    try {
+      const res = await authFetch("http://localhost:3010/dm/room", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          targetUserId: userId
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.result !== "success") {
+        alert(data.message || "메시지 방을 열 수 없습니다.");
+        return;
+      }
+
+      navigate(`/so:lo/message?roomNo=${data.roomNo}`);
+    } catch (err) {
+      console.error("DM room open error:", err);
+      alert("메시지 방을 열 수 없습니다.");
+    }
+  };
+
   useEffect(() => {
     setProfile(null);
     setMessage("");
@@ -360,8 +460,10 @@ function ProfilePage() {
     setPostLoaded(false);
     setLikedPostList([]);
     setLikedPostLoaded(false);
-    setSologList([]);
-    setSologLoaded(false);
+    setFavoriteFolderList([]);
+    setFavoriteLoaded(false);
+    setSelectedFavoriteFolder(null);
+    setCanViewFavorites(true);
 
     authFetch(`http://localhost:3010/profile/${userId}`)
       .then((res) => res.json())
@@ -426,6 +528,7 @@ function ProfilePage() {
           openEditModal={() => setEditModalOpen(true)}
           toggleFollow={toggleFollow}
           followLoading={followLoading}
+          openDmRoom={openDmRoom}
         />
 
         <ProfileTabs
@@ -441,8 +544,8 @@ function ProfilePage() {
               loadLikedPostList();
             }
 
-            if (tab === "solog") {
-              loadSologList();
+            if (tab === "favorites") {
+              loadFavoriteFolderList();
             }
           }}
         />
@@ -456,7 +559,7 @@ function ProfilePage() {
             />
           ) : (
             <div className="profile-empty">
-              비공개 계정입니다. 팔로우하면 작성한 기록을 볼 수 있어요.
+              비공개 계정입니다. 팔로워만 작성한 기록을 볼 수 있어요.
             </div>
           )
         )}
@@ -470,19 +573,84 @@ function ProfilePage() {
             />
           ) : (
             <div className="profile-empty">
-              비공개 계정입니다. 팔로우하면 좋아요한 글을 볼 수 있어요.
+              비공개 계정입니다. 팔로워만 좋아요 기록을 볼 수 있어요.
             </div>
           )
         )}
 
-        {activeTab === "solog" && (
-          canViewProfileContents ? (
-            <div className="profile-empty">
-              SO:LOG는 다음 단계에서 연결할 예정입니다.
-            </div>
+        {activeTab === "favorites" && (
+          canViewFavorites ? (
+            favoriteFolderList.length === 0 ? (
+              <div className="profile-empty">
+                {isMyProfile ? (
+                  <>
+                    아직 찜한 업체가 없습니다.
+                    <br />
+                    글에서 모핑아이콘을 누르면 업체 찜이 가능합니다.
+                  </>
+                ) : (
+                  "찜한 업체가 없습니다."
+                )}
+              </div>
+            ) : (
+              <div className="favorite-folder-list">
+                {favoriteFolderList.map((folder) => (
+                  <button
+                    type="button"
+                    key={folder.folderNo}
+                    className="favorite-folder-item"
+                    onClick={() => {
+                      setSelectedFavoriteFolder(folder);
+                      setFavoriteModalOpen(true);
+                    }}
+                  >
+                    <span className="favorite-folder-name">
+                      {folder.isShared === "N" && isMyProfile && (
+                        <Lock size={15} strokeWidth={2.2} />
+                      )}
+
+                      {folder.folderName}
+                    </span>
+
+                    <span className="favorite-folder-right">
+                      <small>{folder.placeCount}곳</small>
+
+                      {isMyProfile && (
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className="favorite-folder-delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+
+                            setDeleteTargetFolder(folder);
+                            setDeleteFolderModalOpen(true);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key !== "Enter") return;
+
+                            e.stopPropagation();
+
+                            const ok = window.confirm(
+                              `${folder.folderName} 폴더를 삭제하시겠습니까?`
+                            );
+
+                            if (!ok) return;
+
+                            deleteFavoriteFolder(folder);
+                          }}
+                        >
+                          삭제
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )
           ) : (
             <div className="profile-empty">
-              비공개 계정입니다. 팔로우하면 SO:LOG를 볼 수 있어요.
+              비공개 계정입니다. 팔로워만 찜 업체를 볼 수 있어요.
             </div>
           )
         )}
@@ -493,6 +661,22 @@ function ProfilePage() {
           followMessage={followMessage}
           closeFollowModal={closeFollowModal}
           getRelationBadgeLabel={getRelationBadgeLabel}
+        />
+
+        <ProfileFavoriteModal
+          open={favoriteModalOpen}
+          folder={selectedFavoriteFolder}
+          deleteTargetFolder={deleteTargetFolder}
+          onClose={() => {
+            setFavoriteModalOpen(false);
+            setSelectedFavoriteFolder(null);
+          }}
+          onCloseDeleteFolder={() => {
+            setDeleteTargetFolder(null);
+          }}
+          onConfirmDeleteFolder={() => {
+            deleteFavoriteFolder(deleteTargetFolder);
+          }}
         />
 
         {editModalOpen && (

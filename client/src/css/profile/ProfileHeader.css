@@ -117,10 +117,6 @@
   cursor: pointer;
 }
 
-.profile-stat-btn:hover {
-  opacity: 0.75;
-}
-
 .profile-stats strong {
   font-size: 24px;
   color: #111;
@@ -177,18 +173,6 @@
   }
 }
 
-.follow-btn:hover {
-  opacity: 0.92;
-}
-
-.following-btn:hover {
-  opacity: 0.92;
-}
-
-.requested-btn:hover {
-  opacity: 0.92;
-}
-
 .requested-btn {
   background: #f2ede5;
   color: #8a7865;
@@ -201,16 +185,12 @@
   color: #333;
 }
 
-.profile-main-btn:hover,
-.profile-sub-btn:hover {
-  opacity: 0.82;
-}
-
-.profile-noti-btn {
+.profile-dm-btn,
+.profile-more-btn {
   width: 42px;
   height: 42px;
   border: 1px solid #ccc;
-  border-radius: 50%;
+  border-radius: 10px;
   background: #faf9f7;
   color: #555;
   display: flex;
@@ -219,8 +199,9 @@
   cursor: pointer;
 }
 
-.profile-noti-btn:hover {
-  opacity: 0.82;
+.profile-dm-btn {
+  background: #faf9f7;
+  color: #555;
 }
 
 .profile-avatar-img,
@@ -242,4 +223,36 @@
   justify-content: center;
   font-size: 44px;
   font-weight: 800;
+}
+
+.profile-more-wrap {
+  position: relative;
+}
+
+.profile-more-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #e6ddd3;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  z-index: 100;
+}
+
+.profile-more-menu button {
+  width: 100%;
+  border: none;
+  background: white;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #444;
+}
+
+.profile-more-menu .danger {
+  color: #b04a4a;
 }

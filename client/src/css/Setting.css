@@ -64,13 +64,6 @@
   cursor: pointer;
 }
 
-.setting-section-title button:hover,
-.setting-row-btn:hover,
-.modal-sub-btn:hover,
-.modal-list-row button:hover {
-  opacity: 0.9;
-}
-
 .setting-row-btn:disabled {
   background: #6f8f7a;
   color: #ffffff;
@@ -284,10 +277,6 @@
   color: #ffffff;
 }
 
-.setting-modal-btns button:hover {
-  opacity: 0.9;
-}
-
 .modal-error-text {
   margin-top: 4px;
   font-size: 13px;
@@ -356,10 +345,6 @@
   font-weight: 700;
   cursor: pointer;
   padding: 0;
-}
-
-.setting-edit-btn:hover {
-  opacity: 0.8;
 }
 
 .setting-row {
