@@ -13,7 +13,7 @@ import Feed from "./components/Feed";
 import Post from "./components/Post";
 import Message from "./components/Message";
 import Notification from "./components/Notification";
-import Profile from "./components/Profile";
+import Profile from "./components/profile/Profile";
 import Search from "./components/Search";
 import Setting from "./components/Setting";
 

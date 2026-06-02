@@ -1,7 +1,7 @@
 // 프로필 상단 영역
 
 import React from "react";
-import { Bell } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
 
 function ProfileHeader({
   profile,
@@ -9,7 +9,9 @@ function ProfileHeader({
   canViewFollowInfo,
   getRelationBadgeLabel,
   openFollowModal,
-  openEditModal
+  openEditModal,
+  toggleFollow,
+  followLoading
 }) {
   return (
     <section className="profile-header">
@@ -83,9 +85,34 @@ function ProfileHeader({
 
         <div className="profile-actions">
           {isMyProfile ? (
-            <button className="profile-main-btn" onClick={openEditModal}>프로필 수정</button>
+            <button
+              className="profile-main-btn"
+              onClick={openEditModal}
+            >
+              프로필 수정
+            </button>
           ) : (
-            <button className="profile-main-btn">팔로잉</button>
+            <button
+              className={`profile-main-btn ${
+                profile.followStatus === "FOLLOWING"
+                  ? "following-btn"
+                  : profile.followStatus === "REQUESTED"
+                    ? "requested-btn"
+                    : "follow-btn"
+              }`}
+              onClick={toggleFollow}
+              disabled={followLoading}
+            >
+              {followLoading ? (
+                <Loader2 size={16} className="follow-loading-icon" />
+              ) : profile.followStatus === "FOLLOWING" ? (
+                "팔로잉"
+              ) : profile.followStatus === "REQUESTED" ? (
+                "요청 중"
+              ) : (
+                "팔로우"
+              )}
+            </button>
           )}
 
           {!isMyProfile && (

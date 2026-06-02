@@ -36,15 +36,11 @@
   height: 32px;
   border: none;
   border-radius: 50%;
-  background: #eee5dc;
+  background: #faf9f7;
   color: #5f554c;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-}
-
-.follow-modal-close:hover {
-  background: #e2d6ca;
 }
 
 .follow-modal-list {

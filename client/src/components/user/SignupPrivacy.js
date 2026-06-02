@@ -19,9 +19,9 @@ function SignupPrivacy() {
     {
       key: "OPEN",
       icon: plazaIcon,
-      title: "광장 공유",
-      desc: "누구나 자유롭게 내 기록을 발견할 수 있어요.",
-      detail: "모든 유저가 DM 신청 및 내 팔로우/팔로잉, 글 등을 볼 수 있어요.",
+      title: "편한 대화",
+      desc: "가벼운 대화는 언제든 괜찮아요.",
+      detail: "혼자 있는 시간을 즐기지만 좋은 대화가 있다면 부담 없이 나눌 수 있어요.",
       privacy: {
         dmScope: "ALL",
         followVisible: "ALL",
@@ -33,27 +33,11 @@ function SignupPrivacy() {
       }
     },
     {
-      key: "FOLLOWER",
-      icon: follower,
-      title: "단골 손님",
-      desc: "나를 찾아와준 사람들에게만 공개해요.",
-      detail: "나를 팔로우한 유저만 DM 신청 및 내 팔로우/팔로잉, 글 등을 볼 수 있어요.",
-      privacy: {
-        dmScope: "FLW",
-        followVisible: "FLW",
-        aloneVisible: "FLW",
-        likeVisible: "FLW",
-        postVisible: "FLW",
-        likePostVisible: "FLW",
-        relationBadge: "FLW"
-      }
-    },
-    {
       key: "DISTANCE",
       icon: distanceIcon,
-      title: "서로",
-      desc: "서로 팔로우한 사람들과만 조용히 나눠요.",
-      detail: "서로 팔로우한 유저만 DM 신청 및 내 팔로우/팔로잉, 글 등을 볼 수 있어요.",
+      title: "천천히",
+      desc: "서두르지 않고 천천히 알아가요.",
+      detail: "관계에도 적당한 거리가 필요하다고 생각해요. 자연스럽게 이어지는 소통을 선호해요.",
       privacy: {
         dmScope: "FRD",
         followVisible: "FRD",
@@ -67,9 +51,9 @@ function SignupPrivacy() {
     {
       key: "ROOM",
       icon: roomIcon,
-      title: "나만의 방",
-      desc: "온전히 나만을 위한 기록 공간이에요.",
-      detail: "서로 팔로우한 유저만 글을 볼 수 있고, 모든 유저는 DM 신청 및 내 팔로우/팔로잉 등을 볼 수 없어요.",
+      title: "혼자 선호",
+      desc: "혼자만의 시간이 가장 편안해요.",
+      detail: "혼자 보내는 시간을 소중하게 생각하며, 꼭 필요한 순간에만 가볍게 소통하는 편이에요.",
       privacy: {
         dmScope: "OFF",
         followVisible: "OFF",
@@ -125,9 +109,9 @@ function SignupPrivacy() {
 
         <section className="privacy-card">
           <div className="privacy-header">
-            <h2>관계 거리 설정</h2>
-            <p>SO:LO에서 내 활동을 어디까지 공개할지 선택해주세요.</p>
-            <p>가입 후 설정에서 관계 거리 설정을 세부적으로 변경 가능합니다.</p>
+            <h2>관계 거리 뱃지</h2>
+            <p>사람마다 편안하게 느끼는 관계의 거리와 소통 방식은 다를 수 있어요.</p>
+            <p>관계 뱃지는 나의 소통 성향을 보여주며, 서로의 방식을 존중하기 위한 표시예요.</p>
           </div>
 
           <div className="privacy-options">

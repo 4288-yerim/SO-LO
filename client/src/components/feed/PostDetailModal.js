@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import { Heart, MapPin } from "lucide-react";
 
 function PostDetailModal({
   selectedPost,
@@ -16,6 +16,7 @@ function PostDetailModal({
   setOpenCommentMenu,
   commentAreaRef,
   submitComment,
+  toggleLike,
   getTimeAgo,
   getShortAddress,
   navigate
@@ -121,8 +122,27 @@ function PostDetailModal({
               <p>{selectedPost.content}</p>
             </div>
 
+            <div className="post-detail-bottom-info">
+              {selectedPost.location && (
+                <div className="post-detail-location">
+                  <MapPin size={17} />
+                  <span>
+                    {getShortAddress(selectedPost.locationAddress)
+                      ? `${getShortAddress(selectedPost.locationAddress)}, ${selectedPost.location}`
+                      : selectedPost.location}
+                  </span>
+                </div>
+              )}
+
+              <div className="post-detail-tags">
+                {selectedPost.tags.map((tag) => (
+                  <span key={tag}>#{tag}</span>
+                ))}
+              </div>
+            </div>
+
             {selectedPost.cmtYn === "Y" && (
-              <div className="post-detail-comment-area" ref={commentAreaRef}>
+            <div className="comment-input-box">
                 <div className="comment-list">
                   {commentList.length === 0 ? (
                     <p className="empty-comment">아직 댓글이 없습니다.</p>
@@ -263,28 +283,23 @@ function PostDetailModal({
             )}
           </div>
 
-          <div className="post-detail-bottom-info">
-            <div className="post-detail-tags">
-              {selectedPost.tags.map((tag) => (
-                <span key={tag}>#{tag}</span>
-              ))}
-            </div>
-
-            {selectedPost.location && (
-              <div className="post-detail-location">
-                <MapPin size={17} />
-                <span>
-                  {getShortAddress(selectedPost.locationAddress)
-                    ? `${getShortAddress(selectedPost.locationAddress)}, ${selectedPost.location}`
-                    : selectedPost.location}
-                </span>
-              </div>
-            )}
-          </div>
-
           {selectedPost.cmtYn === "Y" && (
-            <div className="comment-input-box">
-              <input
+            <>
+              <div className="post-detail-like-box">
+                <button
+                  className={`post-detail-like-btn ${selectedPost.likedYn ? "active" : ""}`}
+                  onClick={() => toggleLike(selectedPost)}
+                >
+                  <Heart
+                    size={22}
+                    fill={selectedPost.likedYn ? "currentColor" : "none"}
+                  />
+                  <span>{selectedPost.likeCount || 0}</span>
+                </button>
+              </div>
+
+              <div className="comment-input-box">
+                <input
                 type="text"
                 value={commentInput}
                 onChange={(e) => setCommentInput(e.target.value)}
@@ -302,6 +317,7 @@ function PostDetailModal({
               />
               <button onClick={submitComment}>게시</button>
             </div>
+            </>
           )}
         </div>
       </div>

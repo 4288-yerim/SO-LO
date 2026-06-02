@@ -295,14 +295,13 @@ router.post("/signup", async (req, res) => {
     userName,
     userNickname,
     userPhone,
-    dmScope,
-    followVisible,
-    aloneVisible,
-    likeVisible,
-    postVisible,
-    likePostVisible,
     relationBadge
   } = req.body;
+
+  const accountVisible =
+    relationBadge === "OFF"
+      ? "PRV"
+      : "PUB";
 
   let connection;
 
@@ -319,7 +318,8 @@ router.post("/signup", async (req, res) => {
         USER_NAME,
         USER_NICKNAME,
         USER_PHONE,
-        RELATION_BADGE
+        RELATION_BADGE,
+        ACCOUNT_VISIBLE
       )
       VALUES (
         :userId,
@@ -327,7 +327,8 @@ router.post("/signup", async (req, res) => {
         :userName,
         :userNickname,
         :userPhone,
-        :relationBadge
+        :relationBadge,
+        :accountVisible
       )
       `,
       {
@@ -336,40 +337,8 @@ router.post("/signup", async (req, res) => {
         userName,
         userNickname,
         userPhone,
-        relationBadge: relationBadge || "ALL"
-      },
-      { autoCommit: false }
-    );
-
-    await connection.execute(
-      `
-      INSERT INTO SNS_USER_PRIVACY (
-        USER_ID,
-        DM_SCOPE,
-        FOLLOW_VISIBLE,
-        ALONE_VISIBLE,
-        LIKE_VISIBLE,
-        POST_VISIBLE,
-        LIKE_POST_VISIBLE
-      )
-      VALUES (
-        :userId,
-        :dmScope,
-        :followVisible,
-        :aloneVisible,
-        :likeVisible,
-        :postVisible,
-        :likePostVisible
-      )
-      `,
-      {
-        userId,
-        dmScope,
-        followVisible,
-        aloneVisible,
-        likeVisible,
-        postVisible,
-        likePostVisible
+        relationBadge: relationBadge || "ALL",
+        accountVisible
       },
       { autoCommit: false }
     );

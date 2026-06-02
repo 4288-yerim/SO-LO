@@ -152,6 +152,49 @@
   color: white;
 }
 
+.follow-btn {
+  background: #8b7355;
+  color: #fff;
+}
+
+.following-btn {
+  background: #e9e2d8;
+  color: #5d5145;
+  border: 1px solid #d6c9b8;
+}
+
+.follow-loading-icon {
+  animation: followSpin 0.8s linear infinite;
+}
+
+@keyframes followSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.follow-btn:hover {
+  opacity: 0.92;
+}
+
+.following-btn:hover {
+  opacity: 0.92;
+}
+
+.requested-btn:hover {
+  opacity: 0.92;
+}
+
+.requested-btn {
+  background: #f2ede5;
+  color: #8a7865;
+  border: 1px solid #ddd0bf;
+}
+
 .profile-sub-btn {
   border: 1px solid #ccc;
   background: white;

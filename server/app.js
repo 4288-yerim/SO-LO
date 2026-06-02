@@ -31,12 +31,18 @@ app.get("/", (req, res) => {
 });
 
 app.use("/sample", sampleRouter);
+
 app.use("/user", loginRouter);
 app.use("/user", signupRouter);
 app.use("/user", findAccountRouter);
+
+app.use("/profile", require("./routes/profile/profileHeader"));
+app.use("/profile", require("./routes/profile/profileContent"));
+app.use("/profile", require("./routes/profile/profileEtc"));
+app.use("/profile", require("./routes/profile/follow"));
+
 app.use("/feed", feedRouter);
 app.use("/post", postRouter);
-app.use("/profile", profileRouter);
 app.use("/setting", settingRouter);
 
 const PORT = process.env.PORT || 3010;

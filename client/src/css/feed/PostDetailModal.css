@@ -146,7 +146,7 @@
 
 .post-detail-info > .comment-input-box {
   padding-top: 12px;
-  border-top: 1px solid #eee;
+  /* border-top: 1px solid #eee; */
 }
 
 .post-file-arrow {
@@ -370,4 +370,30 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.post-detail-like-box {
+  padding: 10px 0 2px;
+  border-top: 1px solid #eee;
+}
+
+.post-detail-like-btn {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6f6258;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.post-detail-like-btn:hover {
+  opacity: 0.75;
+}
+
+.post-detail-like-btn.active {
+  color: #b44b4b;
 }
