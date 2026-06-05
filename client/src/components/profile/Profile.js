@@ -31,9 +31,6 @@ function ProfilePage() {
   const [postList, setPostList] = useState([]);
   const [postLoaded, setPostLoaded] = useState(false);
 
-  const [likedPostList, setLikedPostList] = useState([]);
-  const [likedPostLoaded, setLikedPostLoaded] = useState(false);
-
   const [favoriteFolderList, setFavoriteFolderList] = useState([]);
   const [favoriteLoaded, setFavoriteLoaded] = useState(false);
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
@@ -47,6 +44,9 @@ function ProfilePage() {
   const [followMessage, setFollowMessage] = useState("");
 
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const [blockModalOpen, setBlockModalOpen] = useState(false);
+  const [blockMessage, setBlockMessage] = useState("");
 
   const [selectedPost, setSelectedPost] = useState(null);
   const [detailFileIndex, setDetailFileIndex] = useState(0);
@@ -104,25 +104,6 @@ function ProfilePage() {
       .catch((err) => {
         console.error("Profile post load error:", err);
         setMessage("작성한 글을 불러오지 못했습니다.");
-      });
-  };
-
-  const loadLikedPostList = () => {
-    if (likedPostLoaded || !canViewProfileContents) return;
-
-    authFetch(`http://localhost:3010/profile/${userId}/likes`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.result === "success") {
-          setLikedPostList(data.likedPostList);
-          setLikedPostLoaded(true);
-        } else {
-          setMessage(data.message || "좋아요한 글을 불러오지 못했습니다.");
-        }
-      })
-      .catch((err) => {
-        console.error("Liked post load error:", err);
-        setMessage("좋아요한 글을 불러오지 못했습니다.");
       });
   };
 
@@ -350,20 +331,6 @@ function ProfilePage() {
             };
           })
         );
-
-        setLikedPostList((prev) =>
-          prev.map((item) => {
-            if (item.postId !== post.postId) return item;
-
-            return {
-              ...item,
-              likedYn: nextLikedYn,
-              likeCount: nextLikedYn
-                ? (item.likeCount || 0) + 1
-                : Math.max((item.likeCount || 0) - 1, 0)
-            };
-          })
-        );
       })
       .catch((err) => {
         console.error("좋아요 처리 실패:", err);
@@ -425,29 +392,64 @@ function ProfilePage() {
     }
   };
 
-  const openDmRoom = async () => {
+    const openDmRoom = async () => {
+      try {
+        const res = await authFetch("http://localhost:3010/dm/room", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            targetUserId: userId
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.result !== "success") {
+          alert(data.message || "메시지 방을 열 수 없습니다.");
+          return;
+        }
+
+        navigate(`/so:lo/message?roomNo=${data.roomNo}`);
+      } catch (err) {
+        console.error("DM room open error:", err);
+        alert("메시지 방을 열 수 없습니다.");
+      }
+    };
+
+  const openBlockModal = () => {
+    setBlockMessage("");
+    setBlockModalOpen(true);
+  };
+
+  const closeBlockModal = () => {
+    setBlockModalOpen(false);
+    setBlockMessage("");
+  };
+
+  const blockUser = async () => {
     try {
-      const res = await authFetch("http://localhost:3010/dm/room", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          targetUserId: userId
-        })
+      const res = await authFetch(`http://localhost:3010/profile/${userId}/block`, {
+        method: "POST"
       });
 
       const data = await res.json();
 
       if (data.result !== "success") {
-        alert(data.message || "메시지 방을 열 수 없습니다.");
+        setBlockMessage(data.message || "사용자 차단에 실패했습니다.");
         return;
       }
 
-      navigate(`/so:lo/message?roomNo=${data.roomNo}`);
+      closeBlockModal();
+      navigate("/so:lo/feed", {
+        state: {
+          toastMessage: "사용자를 차단했습니다."
+        }
+      });
     } catch (err) {
-      console.error("DM room open error:", err);
-      alert("메시지 방을 열 수 없습니다.");
+      console.error("User block error:", err);
+      setBlockMessage("사용자 차단에 실패했습니다.");
     }
   };
 
@@ -458,8 +460,6 @@ function ProfilePage() {
 
     setPostList([]);
     setPostLoaded(false);
-    setLikedPostList([]);
-    setLikedPostLoaded(false);
     setFavoriteFolderList([]);
     setFavoriteLoaded(false);
     setSelectedFavoriteFolder(null);
@@ -529,7 +529,44 @@ function ProfilePage() {
           toggleFollow={toggleFollow}
           followLoading={followLoading}
           openDmRoom={openDmRoom}
+          blockUser={openBlockModal}
         />
+
+        {blockModalOpen && (
+          <div className="block-user-modal-backdrop">
+            <div className="block-user-modal">
+              <h3>사용자를 차단하시겠습니까?</h3>
+
+              <p>
+                차단하면 서로의 프로필, 글, 댓글, DM을 볼 수 없고
+                팔로우 관계도 해제됩니다.
+              </p>
+
+              {blockMessage && (
+                <p className="block-user-modal-message">
+                  {blockMessage}
+                </p>
+              )}
+
+              <div className="block-user-modal-actions">
+                <button
+                  type="button"
+                  onClick={closeBlockModal}
+                >
+                  취소
+                </button>
+
+                <button
+                  type="button"
+                  className="danger"
+                  onClick={blockUser}
+                >
+                  차단
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <ProfileTabs
           activeTab={activeTab}
@@ -538,10 +575,6 @@ function ProfilePage() {
 
             if (tab === "posts") {
               loadPostList();
-            }
-
-            if (tab === "likes") {
-              loadLikedPostList();
             }
 
             if (tab === "favorites") {
@@ -560,20 +593,6 @@ function ProfilePage() {
           ) : (
             <div className="profile-empty">
               비공개 계정입니다. 팔로워만 작성한 기록을 볼 수 있어요.
-            </div>
-          )
-        )}
-
-        {activeTab === "likes" && (
-          canViewProfileContents ? (
-            <ProfilePostGrid
-              postList={likedPostList}
-              emptyText="좋아요한 글이 없습니다."
-              onPostClick={openProfilePostDetail}
-            />
-          ) : (
-            <div className="profile-empty">
-              비공개 계정입니다. 팔로워만 좋아요 기록을 볼 수 있어요.
             </div>
           )
         )}
@@ -708,6 +727,12 @@ function ProfilePage() {
             getTimeAgo={getTimeAgo}
             getShortAddress={getShortAddress}
             navigate={navigate}
+            showEditButton={isMyProfile}
+            onPostDeleted={(deletedPostId) => {
+              setPostList((prev) =>
+                prev.filter((item) => item.postId !== deletedPostId)
+              );
+            }}
           />
         )}
       </main>

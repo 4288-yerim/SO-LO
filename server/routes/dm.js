@@ -33,7 +33,7 @@ router.post("/room", authMiddleware, async (req, res) => {
       SELECT USER_ID, ACCOUNT_VISIBLE
       FROM SNS_USERS
       WHERE USER_ID = :targetUserId
-        AND USER_STATUS = 'ACT'
+        AND USER_STATUS IN ('ACT', 'REP')
       `,
       { targetUserId },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -206,7 +206,13 @@ router.get("/rooms", authMiddleware, async (req, res) => {
        AND ORU.USER_ID <> :loginUserId
       JOIN SNS_USERS U
         ON ORU.USER_ID = U.USER_ID
-      WHERE U.USER_STATUS = 'ACT'
+      WHERE U.USER_STATUS IN ('ACT', 'REP')
+        AND NOT EXISTS (
+          SELECT 1
+          FROM SNS_USER_BLOCK B
+          WHERE B.BLOCKER_ID = :loginUserId
+            AND B.BLOCKED_ID = U.USER_ID
+        )
       ORDER BY NVL(
         (
           SELECT MAX(M.CDATE)
@@ -276,6 +282,20 @@ router.get("/rooms/:roomNo/messages", authMiddleware, async (req, res) => {
       });
     }
 
+    const otherReadResult = await connection.execute(
+      `
+      SELECT NVL(LAST_READ_MESSAGE_NO, 0) AS OTHER_LAST_READ_MESSAGE_NO
+      FROM SNS_DM_ROOM_USER
+      WHERE ROOM_NO = :roomNo
+        AND USER_ID <> :loginUserId
+      `,
+      { roomNo, loginUserId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const otherLastReadMessageNo =
+      otherReadResult.rows[0]?.OTHER_LAST_READ_MESSAGE_NO || 0;
+
     const result = await connection.execute(
       `
       SELECT
@@ -310,7 +330,8 @@ router.get("/rooms/:roomNo/messages", authMiddleware, async (req, res) => {
 
     res.json({
       result: "success",
-      messageList
+      messageList,
+      otherLastReadMessageNo
     });
   } catch (err) {
     console.error("DM message list error:", err);
@@ -512,7 +533,20 @@ router.post("/rooms/:roomNo/messages", authMiddleware, async (req, res) => {
           ? notiSettingResult.rows[0].DM_NOTI
           : "Y";
 
-      if (dmNoti === "Y") {
+      const blockedByTargetResult = await connection.execute(
+        `
+        SELECT COUNT(*) AS CNT
+        FROM SNS_USER_BLOCK
+        WHERE BLOCKER_ID = :targetUserId
+          AND BLOCKED_ID = :loginUserId
+        `,
+        { targetUserId, loginUserId },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const blockedByTarget = blockedByTargetResult.rows[0].CNT > 0;
+
+      if (dmNoti === "Y" && !blockedByTarget) {
         await connection.execute(
           `
           INSERT INTO SNS_NOTIFICATION (

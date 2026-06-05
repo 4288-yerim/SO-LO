@@ -70,8 +70,6 @@ function FollowModal({
                       {getRelationBadgeLabel(user.relationBadge)}
                     </span>
                   </div>
-
-                  <span>@{user.userId}</span>
                 </div>
               </div>
             ))

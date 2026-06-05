@@ -11,12 +11,26 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const userId = req.user.userId;
 
+    const loginUserResult = await connection.execute(
+      `
+      SELECT USER_STATUS
+      FROM SNS_USERS
+      WHERE USER_ID = :userId
+      `,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const loginUserStatus = loginUserResult.rows[0]?.USER_STATUS || "";
+    const isAdmin = loginUserStatus === "ADM";
+
     const postResult = await connection.execute(
       `
       SELECT
         P.POST_NO,
         P.USER_ID,
         P.CATEGORY_NO,
+        P.IS_AD,
         P.TITLE,
         DBMS_LOB.SUBSTR(P.CONTENT, 4000, 1) AS CONTENT,
         P.PLACE_NAME,
@@ -32,6 +46,20 @@ router.get("/", authMiddleware, async (req, res) => {
         ON P.USER_ID = U.USER_ID
       WHERE U.USER_STATUS NOT IN ('BLK', 'DEL')
         AND P.FEED_STATUS != 'BLK'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM SNS_USER_BLOCK B
+          WHERE
+            (
+              B.BLOCKER_ID = :userId
+              AND B.BLOCKED_ID = P.USER_ID
+            )
+            OR
+            (
+              B.BLOCKER_ID = P.USER_ID
+              AND B.BLOCKED_ID = :userId
+            )
+        )
         AND (
           U.ACCOUNT_VISIBLE = 'PUB'
 
@@ -92,6 +120,36 @@ router.get("/", authMiddleware, async (req, res) => {
       JOIN SNS_TAG T
         ON PT.TAG_NO = T.TAG_NO
       WHERE PT.POST_NO IN (${placeholders})
+      `,
+      binds,
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const adTagResult = await connection.execute(
+      `
+      SELECT
+        APT.POST_NO,
+        AT.AD_TAG_NAME
+      FROM SNS_AD_POST_TAG APT
+      JOIN SNS_AD_TAG AT
+        ON APT.AD_TAG_NO = AT.AD_TAG_NO
+      WHERE APT.POST_NO IN (${placeholders})
+      `,
+      binds,
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const adLinkResult = await connection.execute(
+      `
+      SELECT
+        POST_NO,
+        LINK_NAME,
+        LINK_URL,
+        LINK_ICON,
+        LINK_ORDER
+      FROM SNS_AD_LINK
+      WHERE POST_NO IN (${placeholders})
+      ORDER BY LINK_ORDER
       `,
       binds,
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -161,6 +219,24 @@ router.get("/", authMiddleware, async (req, res) => {
       tagsByPost[tag.POST_NO].push(tag.TAG_NAME);
     });
 
+    const adTagByPost = {};
+    adTagResult.rows.forEach((tag) => {
+      adTagByPost[tag.POST_NO] = tag.AD_TAG_NAME;
+    });
+
+    const adLinkByPost = {};
+    adLinkResult.rows.forEach((link) => {
+      if (!adLinkByPost[link.POST_NO]) {
+        adLinkByPost[link.POST_NO] = [];
+      }
+
+      adLinkByPost[link.POST_NO].push({
+        linkName: link.LINK_NAME,
+        linkUrl: link.LINK_URL,
+        linkIcon: link.LINK_ICON
+      });
+    });
+
     const likeCountByPost = {};
     likeResult.rows.forEach((like) => {
       likeCountByPost[like.POST_NO] = like.LIKE_COUNT;
@@ -183,6 +259,10 @@ router.get("/", authMiddleware, async (req, res) => {
         postId: post.POST_NO,
         userId: post.USER_ID,
         userNickname: post.USER_NICKNAME,
+        canDeletePost: post.USER_ID === userId || isAdmin,
+        isAd: post.IS_AD === "Y",
+        adTag: adTagByPost[post.POST_NO] || null,
+        adLinks: adLinkByPost[post.POST_NO] || [],
 
         userProfileImg: post.PROFILE_IMG
           ? `http://localhost:3010${post.PROFILE_IMG}`
@@ -262,6 +342,7 @@ router.get("/:postNo", authMiddleware, async (req, res) => {
     connection = await oracledb.getConnection(dbConfig);
 
     const { postNo } = req.params;
+    const loginUserId = req.user.userId;
 
     const result = await connection.execute(
       `
@@ -282,9 +363,23 @@ router.get("/:postNo", authMiddleware, async (req, res) => {
         ON C.MENTION_USER_ID = MU.USER_ID
       WHERE C.POST_NO = :postNo
         AND C.CMT_STATUS = 'ACT'
+        AND NOT EXISTS (
+          SELECT 1
+          FROM SNS_USER_BLOCK B
+          WHERE
+            (
+              B.BLOCKER_ID = :loginUserId
+              AND B.BLOCKED_ID = C.USER_ID
+            )
+            OR
+            (
+              B.BLOCKER_ID = C.USER_ID
+              AND B.BLOCKED_ID = :loginUserId
+            )
+        )
       ORDER BY C.CDATE ASC
       `,
-      { postNo },
+      { postNo, loginUserId },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 

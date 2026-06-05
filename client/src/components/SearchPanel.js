@@ -7,7 +7,9 @@ function SearchPanel({ open, onClose }) {
   const navigate = useNavigate();
 
   const [keyword, setKeyword] = useState("");
+  const [activeTab, setActiveTab] = useState("user");
   const [userList, setUserList] = useState([]);
+  const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,25 +19,32 @@ function SearchPanel({ open, onClose }) {
 
     if (!trimmedKeyword) {
       setUserList([]);
+      setPostList([]);
       return;
     }
 
     const timer = setTimeout(() => {
       setLoading(true);
 
+      const searchType = activeTab === "user" ? "user" : "post";
+
       authFetch(
-        `http://localhost:3010/profile/search/user?keyword=${encodeURIComponent(
+        `http://localhost:3010/profile/search/${searchType}?keyword=${encodeURIComponent(
           trimmedKeyword
         )}`
       )
         .then((res) => res.json())
         .then((data) => {
-          if (data.result === "success") {
+          if (data.result !== "success") return;
+
+          if (activeTab === "user") {
             setUserList(data.list || []);
+          } else {
+            setPostList(data.list || []);
           }
         })
         .catch((err) => {
-          console.error("User search error:", err);
+          console.error("Search error:", err);
         })
         .finally(() => {
           setLoading(false);
@@ -43,11 +52,21 @@ function SearchPanel({ open, onClose }) {
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [keyword, open]);
+  }, [keyword, activeTab, open]);
 
   function moveProfile(userId) {
     onClose();
     navigate(`/so:lo/profile/${userId}`);
+  }
+
+  function movePost(postId) {
+    onClose();
+
+    navigate("/so:lo/feed", {
+      state: {
+        notificationPostNo: postId
+      }
+    });
   }
 
   if (!open) return null;
@@ -67,19 +86,48 @@ function SearchPanel({ open, onClose }) {
         <input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder="닉네임 또는 소개글 검색"
+          placeholder="검색"
           autoFocus
         />
+      </div>
+
+      <div className="search-tab-row">
+        <button
+          type="button"
+          className={activeTab === "user" ? "active" : ""}
+          onClick={() => setActiveTab("user")}
+        >
+          사용자
+        </button>
+
+        <button
+          type="button"
+          className={activeTab === "post" ? "active" : ""}
+          onClick={() => setActiveTab("post")}
+        >
+          기록
+        </button>
       </div>
 
       <div className="search-result-list">
         {loading && <div className="search-empty">검색 중...</div>}
 
-        {!loading && keyword.trim() && userList.length === 0 && (
-          <div className="search-empty">검색 결과가 없습니다.</div>
-        )}
+        {!loading &&
+          keyword.trim() &&
+          activeTab === "user" &&
+          userList.length === 0 && (
+            <div className="search-empty">검색 결과가 없습니다.</div>
+          )}
 
         {!loading &&
+          keyword.trim() &&
+          activeTab === "post" &&
+          postList.length === 0 && (
+            <div className="search-empty">검색 결과가 없습니다.</div>
+          )}
+
+        {!loading &&
+          activeTab === "user" &&
           userList.map((user) => (
             <button
               type="button"
@@ -99,6 +147,25 @@ function SearchPanel({ open, onClose }) {
                 <strong>{user.userNickname}</strong>
                 <p>{user.userIntro || "소개글이 없습니다."}</p>
               </div>
+            </button>
+          ))}
+
+        {!loading &&
+          activeTab === "post" &&
+          postList.map((post) => (
+            <button
+              type="button"
+              className="search-post-card"
+              key={post.postId}
+              onClick={() => movePost(post.postId)}
+            >
+              <strong>{post.title}</strong>
+
+              {post.fileType === "VDO" ? (
+                <video src={post.imageUrl} muted />
+              ) : (
+                <img src={post.imageUrl} alt={post.title} />
+              )}
             </button>
           ))}
       </div>

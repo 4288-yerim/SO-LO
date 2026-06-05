@@ -31,7 +31,8 @@ router.post("/login", async (req, res) => {
         USER_NAME,
         USER_NICKNAME,
         USER_STATUS,
-        RELATION_BADGE
+        RELATION_BADGE,
+        USER_BIZ
       FROM SNS_USERS
       WHERE USER_ID = :userId
       `,
@@ -48,7 +49,7 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    if (user.USER_STATUS !== "ACT") {
+    if (!["ACT", "REP", "ADM"].includes(user.USER_STATUS)) {
       return res.status(403).json({
         result: "fail",
         message: "사용할 수 없는 계정입니다."
@@ -67,7 +68,8 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       {
         userId: user.USER_ID,
-        nickname: user.USER_NICKNAME
+        nickname: user.USER_NICKNAME,
+        userBiz: user.USER_BIZ
       },
       process.env.JWT_SECRET,
       {
@@ -83,7 +85,8 @@ router.post("/login", async (req, res) => {
         userId: user.USER_ID,
         userName: user.USER_NAME,
         userNickname: user.USER_NICKNAME,
-        relationBadge: user.RELATION_BADGE
+        relationBadge: user.RELATION_BADGE,
+        userBiz: user.USER_BIZ
       }
     });
   } catch (err) {

@@ -1,7 +1,25 @@
 import {
   Heart,
   MessageCircleMore,
-  MapPin
+  MapPin,
+  Globe,
+  CalendarDays,
+  ShoppingBag,
+  Phone,
+  ExternalLink,
+  Store,
+  Utensils,
+  Coffee,
+  Gift,
+  Percent,
+  Megaphone,
+  Ticket,
+  Clock,
+  Star,
+  Home,
+  Car,
+  MessageCircle,
+  Link
 } from "lucide-react";
 
 function FeedCard({
@@ -15,6 +33,29 @@ function FeedCard({
   openDetailToComment,
   navigate
 }) {
+
+  const adLinkIconMap = {
+    Globe,
+    CalendarDays,
+    MapPin,
+    ShoppingBag,
+    Phone,
+    ExternalLink,
+    Store,
+    Utensils,
+    Coffee,
+    Gift,
+    Percent,
+    Megaphone,
+    Ticket,
+    Clock,
+    Star,
+    Home,
+    Car,
+    MessageCircle,
+    Link
+  };
+
   return (
     <article
       className="feed-card"
@@ -82,6 +123,16 @@ function FeedCard({
         )}
 
         <div className="feed-content">
+          {feed.isAd && (
+            <div className="feed-ad-badge-row">
+              <span className="feed-ad-badge">광고</span>
+
+              {feed.adTag && (
+                <span className="feed-ad-tag">{feed.adTag}</span>
+              )}
+            </div>
+          )}
+
           <h3>{feed.title}</h3>
           <p>{feed.content}</p>
 
@@ -90,6 +141,29 @@ function FeedCard({
               <span key={tag}>#{tag}</span>
             ))}
           </div>
+
+          {feed.isAd && feed.adLinks && feed.adLinks.length > 0 && (
+            <div className="feed-ad-links">
+              {feed.adLinks.map((link, index) => {
+                const LinkIcon = link.linkIcon
+                  ? adLinkIconMap[link.linkIcon]
+                  : null;
+
+                return (
+                  <a
+                    key={index}
+                    href={link.linkUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {LinkIcon && <LinkIcon size={15} />}
+                    <span>{link.linkName}</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

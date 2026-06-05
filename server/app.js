@@ -17,9 +17,11 @@ const profileContentRouter = require("./routes/profile/profileContent");
 const profileEtcRouter = require("./routes/profile/profileEtc");
 const profilefollow = require("./routes/profile/follow");
 
+const postRouter = require("./routes/post");
+const adPostRouter = require("./routes/adPost");
+
 const favoriteRouter = require("./routes/favorite");
 const feedRouter = require("./routes/feed");
-const postRouter = require("./routes/post");
 const settingRouter = require("./routes/setting");
 const notificationRouter = require("./routes/notification");
 
@@ -98,11 +100,13 @@ app.use("/profile", require("./routes/profile/profileContent"));
 app.use("/profile", require("./routes/profile/profileEtc"));
 app.use("/profile", require("./routes/profile/follow"));
 
+app.use("/post", postRouter);
+app.use("/adPost", adPostRouter);
+
 app.use("/favorite", favoriteRouter);
 app.use("/notification", notificationRouter);
 app.use("/dm", dmRouter);
 app.use("/feed", feedRouter);
-app.use("/post", postRouter);
 app.use("/setting", settingRouter);
 
 const PORT = process.env.PORT || 3010;

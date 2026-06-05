@@ -462,7 +462,11 @@ function Post() {
                       #{tag}
                       <button
                         type="button"
-                        onClick={() => removeTag(tag)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeTag(tag);
+                        }}
                       >
                         ×
                       </button>

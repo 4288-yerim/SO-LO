@@ -1,4 +1,27 @@
-import { Heart, MapPin, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  MessageCircle,
+  Share2,
+  MoreHorizontal,
+  Globe,
+  CalendarDays,
+  ShoppingBag,
+  Phone,
+  ExternalLink,
+  Store,
+  Utensils,
+  Coffee,
+  Gift,
+  Percent,
+  Megaphone,
+  Ticket,
+  Clock,
+  Star,
+  Home,
+  Car,
+  Link
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { authFetch } from "../routes/authFetch";
 
@@ -21,8 +44,32 @@ function PostDetailModal({
   toggleLike,
   getTimeAgo,
   getShortAddress,
-  navigate
+  navigate,
+  onPostDeleted,
+  showEditButton = false
 }) {
+  const adLinkIconMap = {
+    Globe,
+    CalendarDays,
+    MapPin,
+    ShoppingBag,
+    Phone,
+    ExternalLink,
+    Store,
+    Utensils,
+    Coffee,
+    Gift,
+    Percent,
+    Megaphone,
+    Ticket,
+    Clock,
+    Star,
+    Home,
+    Car,
+    MessageCircle,
+    Link
+  };
+
   const [openPostMenu, setOpenPostMenu] = useState(false);
   const postMenuRef = useRef(null);
   const [favoriteFolderList, setFavoriteFolderList] = useState([]);
@@ -34,6 +81,43 @@ function PostDetailModal({
   const [newFolderInfo, setNewFolderInfo] = useState("");
   const [newFolderShared, setNewFolderShared] = useState("N");
   const [folderCreateMessage, setFolderCreateMessage] = useState("");
+
+  const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
+  const [deletePostMessage, setDeletePostMessage] = useState("");
+
+  function openDeletePostModal() {
+    setDeletePostMessage("");
+    setDeletePostModalOpen(true);
+  }
+
+  function closeDeletePostModal() {
+    setDeletePostModalOpen(false);
+    setDeletePostMessage("");
+  }
+
+  function confirmDeletePost() {
+    authFetch(`http://localhost:3010/profile/posts/${selectedPost.postId}`, {
+      method: "DELETE"
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          setDeletePostMessage(data.message || "게시글 삭제에 실패했습니다.");
+          return;
+        }
+
+        if (onPostDeleted) {
+          onPostDeleted(selectedPost.postId);
+        }
+
+        closeDeletePostModal();
+        setSelectedPost(null);
+      })
+      .catch((err) => {
+        console.error("게시글 삭제 실패:", err);
+        setDeletePostMessage("게시글 삭제에 실패했습니다.");
+      });
+  }
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -282,8 +366,42 @@ function PostDetailModal({
 
           <div className="post-detail-scroll">
             <div className="post-detail-content">
+              {selectedPost.isAd && (
+                <div className="feed-ad-badge-row">
+                  <span className="feed-ad-badge">광고</span>
+
+                  {selectedPost.adTag && (
+                    <span className="feed-ad-tag">{selectedPost.adTag}</span>
+                  )}
+                </div>
+              )}
+
               <h2>{selectedPost.title}</h2>
               <p>{selectedPost.content}</p>
+
+              {selectedPost.isAd &&
+                selectedPost.adLinks &&
+                selectedPost.adLinks.length > 0 && (
+                  <div className="post-detail-ad-links">
+                    {selectedPost.adLinks.map((link, index) => {
+                      const LinkIcon = link.linkIcon
+                        ? adLinkIconMap[link.linkIcon]
+                        : null;
+
+                      return (
+                        <a
+                          key={index}
+                          href={link.linkUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {LinkIcon && <LinkIcon size={15} />}
+                          <span>{link.linkName}</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
             </div>
 
             <div className="post-detail-bottom-info">
@@ -505,9 +623,47 @@ function PostDetailModal({
               {openPostMenu && (
                 <div className="post-detail-more-menu">
                   <button type="button">차단하기</button>
+
                   <button type="button" className="danger-menu-btn">
                     신고하기
                   </button>
+
+                  {showEditButton && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPost(null);
+
+                        if (selectedPost.isAd) {
+                          navigate("/so:lo/ad-post", {
+                            state: {
+                              mode: "edit",
+                              postNo: selectedPost.postId
+                            }
+                          });
+                        } else {
+                          navigate("/so:lo/post", {
+                            state: {
+                              mode: "edit",
+                              postNo: selectedPost.postId
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      수정하기
+                    </button>
+                  )}
+
+                  {selectedPost.canDeletePost && (
+                    <button
+                      type="button"
+                      className="danger-menu-btn"
+                      onClick={openDeletePostModal}
+                    >
+                      삭제하기
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -535,6 +691,45 @@ function PostDetailModal({
             </div>
           )}
         </div>
+
+        {deletePostModalOpen && (
+          <div
+            className="delete-post-modal-backdrop"
+            onClick={closeDeletePostModal}
+          >
+            <div
+              className="delete-post-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>기록 삭제</h3>
+
+              <p>
+                이 기록글을 삭제하시겠습니까?
+                <br />
+                삭제한 기록은 다시 복구할 수 없습니다.
+              </p>
+
+              {deletePostMessage && (
+                <p className="delete-post-modal-message">
+                  {deletePostMessage}
+                </p>
+              )}
+
+              <div className="delete-post-modal-actions">
+                <button type="button" onClick={closeDeletePostModal}>
+                  취소
+                </button>
+
+                <button
+                  type="button"
+                  onClick={confirmDeletePost}
+                >
+                  삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {favoriteModalOpen && (
           <div

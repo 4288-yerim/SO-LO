@@ -16,7 +16,8 @@ function ProfileHeader({
   openEditModal,
   toggleFollow,
   followLoading,
-  openDmRoom
+  openDmRoom,
+  blockUser
 })
 {
   const [openMenu, setOpenMenu] = useState(false);
@@ -177,9 +178,18 @@ function ProfileHeader({
                     공유
                   </button>
 
-                  <button type="button">
-                    차단
-                  </button>
+                  {!isMyProfile && (
+                    <button
+                      type="button"
+                      className="danger"
+                      onClick={() => {
+                        setOpenMenu(false);
+                        blockUser();
+                      }}
+                    >
+                      차단
+                    </button>
+                  )}
 
                   <button
                     type="button"

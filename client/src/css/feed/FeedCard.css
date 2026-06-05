@@ -7,7 +7,6 @@
 .feed-card {
   border: 1px solid #eee1d5;
   border-radius: 12px;
-  /* background: rgba(255, 255, 255, 0.82); */
   padding: 18px 22px 14px;
   cursor: pointer;
 }
@@ -179,4 +178,63 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.feed-ad-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.feed-ad-badge {
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: #2f2a24;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.feed-ad-tag {
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #f1ede8;
+  color: #6f5f52;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.feed-ad-links,
+.post-detail-ad-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.feed-ad-links a,
+.post-detail-ad-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid #ddd5ca;
+  border-radius: 10px;
+  background: #faf9f7;
+  color: #3a342d;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.post-detail-ad-links a {
+  background: #ffffff;
+  border: none;
+  padding: 7px 0px;
+}
+
+.post-detail-ad-links a:hover,
+.feed-ad-links a:hover  {
+  color: #b4a18d;
 }

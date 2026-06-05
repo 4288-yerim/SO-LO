@@ -13,7 +13,7 @@ function Signup() {
     userNickname: "",
     userPhone: ""
   });
-
+  
   const [authCode, setAuthCode] = useState("");
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [errors, setErrors] = useState({

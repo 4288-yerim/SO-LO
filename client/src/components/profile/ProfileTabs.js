@@ -13,13 +13,6 @@ function ProfileTabs({ activeTab, setActiveTab }) {
       </button>
 
       <button
-        className={activeTab === "likes" ? "active" : ""}
-        onClick={() => setActiveTab("likes")}
-      >
-        좋아요 기록
-      </button>
-
-      <button
         className={activeTab === "favorites" ? "active" : ""}
         onClick={() => setActiveTab("favorites")}
       >

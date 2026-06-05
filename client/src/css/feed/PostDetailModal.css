@@ -247,6 +247,7 @@
 }
 
 .comment-text-box {
+  margin-top: 3px;
   flex: 1;
 }
 
@@ -311,6 +312,7 @@
 /* 댓글 메뉴 */
 
 .comment-more-wrap {
+  margin-top: 3px;
   position: relative;
   opacity: 0;
   transition: opacity 0.15s ease;
@@ -343,10 +345,10 @@
   top: 28px;
   right: 0;
   width: 90px;
-  background: #fffaf5;
+  background: #fff;
   border: 1px solid #eadfd4;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(80, 60, 40, 0.12);
+  box-shadow: 0 0px 5px rgba(80, 60, 40, 0.12);
   padding: 6px;
   z-index: 30;
 }
@@ -359,10 +361,6 @@
   text-align: left;
   font-size: 13px;
   cursor: pointer;
-}
-
-.danger-menu-btn {
-  color: #b44b4b !important;
 }
 
 .feed-profile-real-img {
@@ -445,7 +443,7 @@
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12);
   z-index: 20;
 }
 
@@ -678,5 +676,64 @@
 
 .favorite-modal-actions button:last-child {
   background: #70856b;
+  color: #fff;
+}
+
+.delete-post-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-post-modal {
+  width: 340px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+}
+
+.delete-post-modal h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.delete-post-modal p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.delete-post-modal-message {
+  margin-top: 12px !important;
+  color: #c0392b !important;
+}
+
+.delete-post-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.delete-post-modal-actions button {
+  flex: 1;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.delete-post-modal-actions button:first-child {
+  background: #f1f1f1;
+  color: #333;
+}
+
+.delete-post-modal-actions button:last-child {
+  background: #d46a6a;
   color: #fff;
 }

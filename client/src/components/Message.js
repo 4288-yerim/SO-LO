@@ -15,6 +15,7 @@ function Message() {
   const [messageInput, setMessageInput] = useState("");
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [message, setMessage] = useState("");
+  const [otherLastReadMessageNo, setOtherLastReadMessageNo] = useState(0);
 
   const messageEndRef = useRef(null);
   const socketRef = useRef(null);
@@ -101,6 +102,12 @@ function Message() {
     socketRef.current.on("readMessage", (data) => {
       if (String(data.roomNo) !== String(selectedRoomNo)) return;
 
+      if (data.userId !== loginUserId) {
+        setOtherLastReadMessageNo(
+          data.lastReadMessageNo || 0
+        );
+      }
+
       loadRoomList();
     });
 
@@ -141,6 +148,10 @@ function Message() {
       .then((data) => {
         if (data.result === "success") {
           setMessageList(data.messageList || []);
+          setOtherLastReadMessageNo(
+            data.otherLastReadMessageNo || 0
+          );
+
           readRoom(roomNo);
         } else {
           setMessage(data.message || "메시지를 불러오지 못했습니다.");
@@ -339,9 +350,18 @@ function Message() {
                           {item.message}
                         </div>
 
-                        <span className="message-bubble-time">
-                          {formatMessageTime(item.cdate)}
-                        </span>
+                        <div className="message-bubble-meta">
+                          {isMine &&
+                            Number(item.messageNo) > Number(otherLastReadMessageNo) && (
+                              <span className="message-read-status">
+                                1
+                              </span>
+                            )}
+
+                          <span className="message-bubble-time">
+                            {formatMessageTime(item.cdate)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );

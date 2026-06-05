@@ -266,3 +266,17 @@
   line-height: 18px;
   text-align: center;
 }
+
+.message-bubble-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.message-read-status {
+  display: inline-block;
+  font-size: 11px;
+  color: #888;
+  line-height: 1;
+}

@@ -132,3 +132,26 @@
   line-height: 17px;
   text-align: center;
 }
+
+.post-type-panel {
+  margin-left: 58px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  padding: 4px 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-type-panel button {
+  width: 120px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+  color: #2f2a24;
+  cursor: pointer;
+}

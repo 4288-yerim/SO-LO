@@ -221,7 +221,7 @@ router.get("/follow-requests", authMiddleware, async (req, res) => {
         ON R.REQUESTER_ID = U.USER_ID
       WHERE R.RECEIVER_ID = :loginUserId
         AND R.REQUEST_STATUS = 'REQ'
-        AND U.USER_STATUS = 'ACT'
+        AND U.USER_STATUS IN ('ACT', 'ADM')
       ORDER BY R.CDATE DESC
       `,
       { loginUserId },

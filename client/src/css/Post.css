@@ -677,3 +677,216 @@
 .place-select-btn:hover {
   opacity: 0.9;
 }
+
+.ad-link-icon-cell {
+  position: relative;
+}
+
+.ad-icon-select-btn {
+  width: 100%;
+  height: 38px;
+  border: 1px solid #ddd5ca;
+  border-radius: 10px;
+  background: #faf9f7;
+  color: #3a342d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ad-icon-select-btn span {
+  font-size: 12px;
+}
+
+.ad-icon-picker-popover {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  z-index: 50;
+  width: 228px;
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ad-icon-option {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  background-color: #fff;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ad-icon-option.selected {
+  border-color: #111;
+  background-color: #111;
+  color: #fff;
+}
+
+.ad-icon-none {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ad-link-remove-btn {
+  height: 38px;
+  border: none;
+  border-radius: 9px;
+  background-color: #f1f1f1;
+  color: #555;
+  cursor: pointer;
+}
+
+.ad-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ad-tag-option {
+  border: 1px solid #ddd;
+  background: #faf9f7;
+  color: #333;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ad-tag-option.selected {
+  border-color: #111;
+  background-color: #111;
+  color: #fff;
+}
+
+.ad-link-input-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1.4fr 64px;
+  gap: 10px;
+  align-items: start;
+}
+
+.ad-link-icon-cell {
+  position: relative;
+}
+
+.ad-icon-select-btn {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #faf9f7;
+  color: #3a342d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ad-icon-select-btn span {
+  font-size: 12px;
+}
+
+.ad-icon-picker-popover {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  z-index: 50;
+  width: 228px;
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #ddd5ca;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ad-icon-option {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  background-color: #fff;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ad-icon-option.selected {
+  border-color: #2f2a24;
+  background-color: #2f2a24;
+  color: #fff;
+}
+
+.ad-icon-none {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ad-link-add-small-btn {
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #2f2a24;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ad-link-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ad-link-chip-wrap {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #f1ede8;
+  color: #6f5f52;
+  overflow: hidden;
+}
+
+.ad-link-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 9px 8px 11px;
+  color: #6f5f52;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ad-link-chip-remove {
+  width: 26px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: #6f5f52;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.post-delete-message{
+  min-height: 18px;
+  margin: 10px 0 0;
+  color: #b44b4b;
+  font-size: 13px;
+}

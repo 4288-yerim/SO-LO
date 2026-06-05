@@ -462,10 +462,14 @@ function Setting() {
                     "business",
                     "비즈니스 계정 전환",
                     `비즈니스 계정으로 전환 후 다시 일반 계정으로 전환하실 수 없습니다.
+                    
 
             비즈니스 계정으로 전환하실 경우 광고 글 작성이 가능합니다.
 
-            광고 글은 노출 타겟과 업체 또는 제품 링크 설정이 가능합니다.
+
+            광고 글은 업체 또는 제품 링크 설정이 가능하고
+            
+            모든 사용자에게 노출됩니다.
             
 
             비즈니스 계정으로 전환하시겠습니까?`
@@ -571,7 +575,6 @@ function Setting() {
                     <div className="modal-list-row" key={item.BLOCK_NO}>
                       <div>
                         <strong>{item.USER_NICKNAME}</strong>
-                        <p>{item.BLOCKED_ID}</p>
                       </div>
                       <button onClick={() => unblockUser(item.BLOCK_NO)}>차단 취소</button>
                     </div>

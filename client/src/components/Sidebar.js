@@ -22,15 +22,18 @@ function Sidebar() {
   const navigate = useNavigate();
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [postMenuOpen, setPostMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const token = localStorage.getItem("token");
   let loginUserId = "";
+  let userBiz = "N";
 
   if (token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       loginUserId = payload.userId;
+      userBiz = payload.userBiz || "N";
     } catch (err) {
       console.error("Token decode error:", err);
     }
@@ -83,59 +86,107 @@ function Sidebar() {
 
       <nav>
         {menuList.map((menu) => (
-          <button
-            className={`feed-menu-item ${menu.name === "로그아웃" ? "logout-menu-item" : ""
-              }`}
+          <div
             key={menu.name}
-            onClick={() => {
-              if (menu.name === "프로필") {
-                if (!loginUserId) {
+            className="sidebar-menu-wrap"
+            onMouseLeave={() => {
+              if (menu.name === "기록하기") {
+                setPostMenuOpen(false);
+              }
+            }}
+          >
+            <button
+              className={`feed-menu-item ${menu.name === "로그아웃" ? "logout-menu-item" : ""}`}
+              onClick={() => {
+                if (menu.name === "기록하기") {
+                  if (userBiz === "Y") {
+                    setSearchOpen(false);
+                    setNotificationOpen(false);
+                    setPostMenuOpen((prev) => !prev);
+                    return;
+                  }
+
+                  navigate("/so:lo/post?type=normal");
+                  return;
+                }
+
+                if (menu.name === "프로필") {
+                  if (!loginUserId) {
+                    navigate("/so:lo/login");
+                    return;
+                  }
+
+                  navigate(`/so:lo/profile/${loginUserId}`);
+                  return;
+                }
+
+                if (menu.name === "검색") {
+                  setNotificationOpen(false);
+                  setPostMenuOpen(false);
+                  setSearchOpen((prev) => !prev);
+                  return;
+                }
+
+                if (menu.name === "알림") {
+                  setSearchOpen(false);
+                  setPostMenuOpen(false);
+                  setNotificationOpen((prev) => !prev);
+                  return;
+                }
+
+                if (menu.name === "로그아웃") {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
                   navigate("/so:lo/login");
                   return;
                 }
 
-                navigate(`/so:lo/profile/${loginUserId}`);
-                return;
-              }
-
-              if (menu.name === "검색") {
                 setNotificationOpen(false);
-                setSearchOpen((prev) => !prev);
-                return;
-              }
-
-              if (menu.name === "알림") {
                 setSearchOpen(false);
-                setNotificationOpen((prev) => !prev);
-                return;
-              }
+                setPostMenuOpen(false);
+                navigate(menu.path);
+              }}
+            >
+              <span className="feed-menu-icon">
+                {menu.icon}
 
-              if (menu.name === "로그아웃") {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                navigate("/so:lo/login");
-                return;
-              }
+                {menu.name === "알림" && unreadCount > 0 && (
+                  <span className="sidebar-notification-count">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </span>
 
-              setNotificationOpen(false);
-              setSearchOpen(false);
-              navigate(menu.path);
-            }}
-          >
-            <span className="feed-menu-icon">
-              {menu.icon}
+              <span className="feed-menu-text">{menu.name}</span>
+            </button>
 
-              {menu.name === "알림" && unreadCount > 0 && (
-                <span className="sidebar-notification-count">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </span>
+            {menu.name === "기록하기" && postMenuOpen && (
+              <div className="post-type-panel">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPostMenuOpen(false);
+                    navigate("/so:lo/post");
+                  }}
+                >
+                  일반 기록
+                </button>
 
-            <span className="feed-menu-text">{menu.name}</span>
-          </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPostMenuOpen(false);
+                    navigate("/so:lo/ad-post");
+                  }}
+                >
+                  광고글 작성
+                </button>
+              </div>
+            )}
+          </div>
         ))}
       </nav>
+
       <SearchPanel
         open={searchOpen}
         onClose={() => setSearchOpen(false)}

@@ -51,6 +51,9 @@ function Feed() {
   const [openPostMenu, setOpenPostMenu] = useState(null);
   const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const [openCommentMenu, setOpenCommentMenu] = useState(null);
+  const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
+  const [deleteTargetPost, setDeleteTargetPost] = useState(null);
+  const [deletePostMessage, setDeletePostMessage] = useState("");
 
   function loadComments(postNo) {
     authFetch(`http://localhost:3010/feed/${postNo}`)
@@ -85,9 +88,32 @@ function Feed() {
       .then((res) => res.json())
       .then((data) => {
         if (data.result === "success") {
+          const postId = selectedPost.postId;
+
           setCommentInput("");
           setReplyTarget(null);
-          loadComments(selectedPost.postId);
+
+          setFeedList((prev) =>
+            prev.map((post) =>
+              post.postId === postId
+                ? {
+                    ...post,
+                    commentCount: (post.commentCount || 0) + 1
+                  }
+                : post
+            )
+          );
+
+          setSelectedPost((prev) =>
+            prev && prev.postId === postId
+              ? {
+                  ...prev,
+                  commentCount: (prev.commentCount || 0) + 1
+                }
+              : prev
+          );
+
+          loadComments(postId);
         }
       })
       .catch((err) => {
@@ -111,6 +137,51 @@ function Feed() {
     setOpenDetailMenu(false);
     setOpenCommentMenu(null);
     loadComments(feed.postId);
+  }
+
+  function openDeletePostModal(post) {
+    setDeleteTargetPost(post);
+    setDeletePostMessage("");
+    setDeletePostModalOpen(true);
+  }
+
+  function closeDeletePostModal() {
+    setDeletePostModalOpen(false);
+    setDeleteTargetPost(null);
+    setDeletePostMessage("");
+  }
+
+  function confirmDeletePost() {
+    if (!deleteTargetPost) return;
+
+    authFetch(
+      `http://localhost:3010/profile/posts/${deleteTargetPost.postId}`,
+      {
+        method: "DELETE"
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          setDeletePostMessage(
+            data.message || "게시글 삭제에 실패했습니다."
+          );
+          return;
+        }
+
+        setFeedList((prev) =>
+          prev.filter(
+            (item) => item.postId !== deleteTargetPost.postId
+          )
+        );
+
+        setSelectedPost(null);
+        closeDeletePostModal();
+      })
+      .catch((err) => {
+        console.error("게시글 삭제 실패:", err);
+        setDeletePostMessage("게시글 삭제에 실패했습니다.");
+      });
   }
 
   function openDetailToComment(feed) {
@@ -175,7 +246,7 @@ function Feed() {
       });
   }
 
-  useEffect(() => {
+  function loadFeed() {
     authFetch("http://localhost:3010/feed")
       .then((res) => res.json())
       .then((data) => {
@@ -187,7 +258,24 @@ function Feed() {
       .catch((err) => {
         console.error("피드 불러오기 실패:", err);
       });
+  }
+
+  useEffect(() => {
+    loadFeed();
   }, []);
+
+  useEffect(() => {
+    if (!location.state?.refreshFeed) return;
+
+    loadFeed();
+
+    navigate(location.pathname, {
+      replace: true,
+      state: {
+        toastMessage: location.state.toastMessage || ""
+      }
+    });
+  }, [location.state]);
 
   useEffect(() => {
     if (location.state?.toastMessage) {
@@ -254,6 +342,7 @@ function Feed() {
               openDetailFromFeed={openDetailFromFeed}
               openDetailToComment={openDetailToComment}
               navigate={navigate}
+              deletePost={openDeletePostModal}
             />
           ))}
         </section>
@@ -280,6 +369,11 @@ function Feed() {
           getTimeAgo={getTimeAgo}
           getShortAddress={getShortAddress}
           navigate={navigate}
+          onPostDeleted={(deletedPostId) => {
+            setFeedList((prev) =>
+              prev.filter((item) => item.postId !== deletedPostId)
+            );
+          }}
         />
       )}
     </div>

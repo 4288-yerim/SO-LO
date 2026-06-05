@@ -15,7 +15,7 @@ async function checkCanViewProfileContents(
     SELECT ACCOUNT_VISIBLE
     FROM SNS_USERS
     WHERE USER_ID = :profileUserId
-      AND USER_STATUS = 'ACT'
+      AND USER_STATUS IN ('ACT', 'REP')
     `,
     { profileUserId },
     { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -81,7 +81,7 @@ router.get("/:userId/followers", authMiddleware, async (req, res) => {
       JOIN SNS_USERS U
         ON F.FOLLOWER_ID = U.USER_ID
       WHERE F.FOLLOWING_ID = :userId
-        AND U.USER_STATUS = 'ACT'
+        AND U.USER_STATUS IN ('ACT', 'REP')
       ORDER BY F.CDATE DESC
       `,
       { userId },
@@ -142,7 +142,7 @@ router.get("/:userId/followings", authMiddleware, async (req, res) => {
       JOIN SNS_USERS U
         ON F.FOLLOWING_ID = U.USER_ID
       WHERE F.FOLLOWER_ID = :userId
-        AND U.USER_STATUS = 'ACT'
+        AND U.USER_STATUS IN ('ACT', 'ADM')
       ORDER BY F.CDATE DESC
       `,
       { userId },
@@ -194,7 +194,7 @@ router.post("/:userId/follow", authMiddleware, async (req, res) => {
       SELECT USER_ID, ACCOUNT_VISIBLE
       FROM SNS_USERS
       WHERE USER_ID = :userId
-        AND USER_STATUS = 'ACT'
+        AND USER_STATUS IN ('ACT', 'REP')
       `,
       { userId },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
