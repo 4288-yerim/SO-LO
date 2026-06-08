@@ -206,10 +206,12 @@ router.get("/", authMiddleware, async (req, res) => {
 
       CASE
         WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 0
           AND POST_TAG_SCORE > 0
         THEN 1
 
         WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 0
           AND TARGET_USER_YN = 1
         THEN 2
 
@@ -219,7 +221,20 @@ router.get("/", authMiddleware, async (req, res) => {
 
         WHEN IS_AD = 'Y'
           AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+          AND POST_TAG_SCORE > 0
         THEN 4
+
+        WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+          AND TARGET_USER_YN = 1
+        THEN 5
+
+        WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+        THEN 6
 
         ELSE 99
       END AS AD_GROUP
@@ -534,6 +549,7 @@ router.get("/:postNo", authMiddleware, async (req, res) => {
         C.CONTENT,
         C.CDATE,
         U.USER_NICKNAME,
+        U.PROFILE_IMG,
         MU.USER_NICKNAME AS MENTION_USER_NICKNAME
       FROM SNS_COMMENTS C
       JOIN SNS_USERS U
@@ -572,6 +588,9 @@ router.get("/:postNo", authMiddleware, async (req, res) => {
         mentionUserId: row.MENTION_USER_ID,
         mentionUserNickname: row.MENTION_USER_NICKNAME,
         userNickname: row.USER_NICKNAME,
+        userProfileImg: row.PROFILE_IMG
+          ? `http://localhost:3010${row.PROFILE_IMG}`
+          : null,
         content: row.CONTENT,
         cdate: row.CDATE,
         replies: []
@@ -593,6 +612,9 @@ router.get("/:postNo", authMiddleware, async (req, res) => {
             mentionUserId: reply.MENTION_USER_ID,
             mentionUserNickname: reply.MENTION_USER_NICKNAME,
             userNickname: reply.USER_NICKNAME,
+            userProfileImg: reply.PROFILE_IMG
+              ? `http://localhost:3010${reply.PROFILE_IMG}`
+              : null,
             content: reply.CONTENT,
             cdate: reply.CDATE
           });

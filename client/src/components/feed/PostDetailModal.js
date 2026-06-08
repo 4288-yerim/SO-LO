@@ -552,7 +552,15 @@ function PostDetailModal({
                             }}
                           >
                             <div className="comment-profile-img">
-                              {comment.userNickname.slice(0, 1)}
+                              {comment.userProfileImg ? (
+                                <img
+                                  src={comment.userProfileImg}
+                                  alt={comment.userNickname}
+                                  className="comment-profile-real-img"
+                                />
+                              ) : (
+                                comment.userNickname.slice(0, 1)
+                              )}
                             </div>
 
                             <div className="comment-text-box">
@@ -636,7 +644,15 @@ function PostDetailModal({
                                 }}
                               >
                                 <div className="comment-profile-img small">
-                                  {reply.userNickname.slice(0, 1)}
+                                  {reply.userProfileImg ? (
+                                    <img
+                                      src={reply.userProfileImg}
+                                      alt={reply.userNickname}
+                                      className="comment-profile-real-img"
+                                    />
+                                  ) : (
+                                    reply.userNickname.slice(0, 1)
+                                  )}
                                 </div>
 
                                 <div className="comment-text-box">
