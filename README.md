@@ -4,12 +4,45 @@ react를 활용한 마케팅 요소가 추가된 SNS 사이트 만들기
 ---
 
 ## 📌프로젝트 소개
-혼자 있는 시간은 더 이상 외로움이 아니라 하나의 자연스러운 취향이 되었다고 생각합니다. 
-혼자 밥을 먹고, 혼자 술을 마시고, 혼자 여행을 떠나는 문화는 이제 자연스러운 일상으로 자리 잡고 있습니다.  
-하지만 기존 SNS는 여전히 많은 관계와 활발한 소통을 중심으로 구성되어 있으며, 화려한 일상이나 누군가와 함께하는 순간을 보여주는 콘텐츠가 중심이 되는 경우가 많다고 생각했습니다.  
-그로 인해 혼자만의 시간을 기록하고 공유하는 것에 부담을 느끼는 사람들도 많다고 느꼈습니다.
-‘SO:LO’는 혼자 있는 것을 외로움이 아닌 하나의 취향으로 바라보며, 혼자 보내는 일상과 취향을 편하게 기록하고 공유할 수 있는 공간이 되었으면 하는 마음으로 기획하게 되었습니다.
-또한 사용자가 직접 관계 거리와 공개 범위를 설정할 수 있도록 하여, 과한 소통보다 적당한 거리 속에서 서로의 시간을 공유할 수 있는 새로운 형태의 SNS 경험을 제공하고자 하였습니다.
+SO:LO는 혼밥, 혼술, 혼카페, 혼행 등 혼자만의 활동을 기록하고 공유할 수 있는 SNS 서비스입니다.  
+사용자 간 소통과 장소 정보 공유를 통해 1인 활동 문화를 위한 커뮤니티를 제공합니다.  
+
+---
+
+## 🛠 사용 기술
+
+<table>
+  <tr>
+    <th>분류</th>
+    <th>기술</th>
+  </tr>
+
+  <tr>
+    <td><b>Frontend</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td><b>Backend</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"/>
+      <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td><b>Database</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white"/>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 📌기획 및 설계
 
 
 ---
