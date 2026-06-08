@@ -485,11 +485,38 @@ router.put("/business", async (req, res) => {
   try {
     connection = await oracledb.getConnection(dbConfig);
 
+    const bizResult = await connection.execute(
+      `
+      SELECT USER_BIZ
+      FROM SNS_USERS
+      WHERE USER_ID = :userId
+      `,
+      { userId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (bizResult.rows.length === 0) {
+      return res.status(404).json({
+        result: "fail",
+        message: "회원 정보를 찾을 수 없습니다."
+      });
+    }
+
+    if (bizResult.rows[0].USER_BIZ === "Y") {
+      return res.status(403).json({
+        result: "fail",
+        message: "비즈니스 계정은 공개범위와 관계 뱃지를 변경할 수 없습니다."
+      });
+    }
+
     await connection.execute(
       `
       UPDATE SNS_USERS
-      SET USER_BIZ = 'Y',
-          UDATE = SYSDATE
+      SET
+        USER_BIZ = 'Y',
+        ACCOUNT_VISIBLE = 'PUB',
+        RELATION_BADGE = 'ALL',
+        UDATE = SYSDATE
       WHERE USER_ID = :userId
       `,
       { userId },

@@ -34,6 +34,8 @@ function Signup() {
   const [idMessage, setIdMessage] = useState("");
   const [nicknameChecked, setNicknameChecked] = useState(false);
   const [nicknameMessage, setNicknameMessage] = useState("");
+  const [logAgree, setLogAgree] = useState(false);
+  const [logAgreeMessage, setLogAgreeMessage] = useState("");
   const idRegex = /^[a-zA-Z0-9]{4,20}$/;
   const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/;
   const nicknameRegex = /^[a-zA-Z0-9._]{2,20}$/;
@@ -391,6 +393,13 @@ const signup = () => {
     return;
   }
 
+  if (!logAgree) {
+    setLogAgreeMessage("맞춤 피드 제공을 위해 활동 로그 수집에 동의해주세요.");
+    return;
+  }
+
+  setLogAgreeMessage("");
+
   const signupData = {
     userId: form.userId,
     userPwd: form.userPwd,
@@ -583,6 +592,30 @@ const signup = () => {
                 ? errors.authCode
                 : "전화번호를 입력 후 발송버튼을 눌러주세요."}
             </p>
+
+          <div className="signup-agree-box">
+            <label className="signup-agree-label">
+              <input
+                type="checkbox"
+                checked={logAgree}
+                onChange={(e) => {
+                  setLogAgree(e.target.checked);
+
+                  if (e.target.checked) {
+                    setLogAgreeMessage("");
+                  }
+                }}
+              />
+
+              <span>
+                맞춤 피드 제공 및 서비스 개선을 위한 사용자 활동 로그 수집에 동의합니다.
+              </span>
+            </label>
+
+            {logAgreeMessage && (
+              <p className="signup-agree-error-message">{logAgreeMessage}</p>
+            )}
+          </div>
 
           <button type="button" className="signup-button" onClick={signup}>
             가입하기

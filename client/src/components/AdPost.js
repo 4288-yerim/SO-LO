@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     Globe,
     CalendarDays,
@@ -28,6 +28,11 @@ import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 
 function AdPost() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const isEditMode = location.state?.mode === "edit";
+    const editPostNo = location.state?.postNo;
+
     const fileInputRef = useRef(null);
 
     const adLinkIconList = [
@@ -70,6 +75,7 @@ function AdPost() {
     const [tagSearchList, setTagSearchList] = useState([]);
 
     const [fileList, setFileList] = useState([]);
+    const [removedFileNos, setRemovedFileNos] = useState([]);
     const fileInputRefValue = fileInputRef;
 
     const [message, setMessage] = useState("");
@@ -129,6 +135,73 @@ function AdPost() {
                 console.error("광고 태그 불러오기 실패:", err);
             });
     }, []);
+
+    useEffect(() => {
+        if (!isEditMode || !editPostNo) return;
+
+        authFetch(`http://localhost:3010/adPost/edit/${editPostNo}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.result !== "success") {
+                    setMessage(data.message || "수정할 광고글을 불러오지 못했습니다.");
+                    return;
+                }
+
+                const post = data.post;
+
+                setForm({
+                    categoryNo: post.CATEGORY_NO || "",
+                    title: post.TITLE || "",
+                    content: post.CONTENT || "",
+                    placeName: post.PLACE_NAME || "",
+                    placeAddress: post.PLACE_ADDRESS || "",
+                    lat: post.LAT || "",
+                    lng: post.LNG || "",
+                    cmtYn: post.CMT_YN || "Y"
+                });
+
+                setSelectedTags(data.tags.map((tag) => tag.TAG_NAME));
+                setSelectedAdTag(data.adTag || "");
+
+                setLinkList(
+                    data.links.map((link) => ({
+                        linkIcon: link.LINK_ICON || "",
+                        linkName: link.LINK_NAME,
+                        linkUrl: link.LINK_URL
+                    }))
+                );
+
+                if (post.PLACE_NAME) {
+                    const place = {
+                        name: post.PLACE_NAME,
+                        address: post.PLACE_ADDRESS,
+                        lat: Number(post.LAT),
+                        lng: Number(post.LNG)
+                    };
+
+                    setSelectedPlace(place);
+
+                    setMapCenter({
+                        lat: place.lat,
+                        lng: place.lng
+                    });
+                }
+
+                setFileList(
+                    data.files.map((file) => ({
+                        existing: true,
+                        fileNo: file.FILE_NO,
+                        previewUrl: `http://localhost:3010${file.FILE_PATH}`,
+                        type: file.FILE_TYPE === "VDO" ? "video" : "image",
+                        name: file.ORIGIN_NAME
+                    }))
+                );
+            })
+            .catch((err) => {
+                console.error("광고글 수정 데이터 불러오기 실패:", err);
+                setMessage("수정할 광고글을 불러오지 못했습니다.");
+            });
+}, [isEditMode, editPostNo]);
 
     useEffect(() => {
         if (tagKeyword.trim() === "") {
@@ -362,7 +435,7 @@ function AdPost() {
         const files = Array.from(e.target.files);
         const maxSize = 200 * 1024 * 1024;
 
-        if (files.length > 5) {
+        if (fileList.length + files.length > 5) {
             setMessage("파일은 최대 5개까지 업로드할 수 있습니다.");
             e.target.value = "";
             return;
@@ -392,14 +465,18 @@ function AdPost() {
             type: file.type.startsWith("image/") ? "image" : "video"
         }));
 
-        setFileList(previewFiles);
+        setFileList((prev) => [...prev, ...previewFiles]);
         setMessage("");
     };
 
     const removeFile = (index) => {
         const removeTarget = fileList[index];
 
-        URL.revokeObjectURL(removeTarget.previewUrl);
+        if (removeTarget.existing) {
+            setRemovedFileNos((prev) => [...prev, removeTarget.fileNo]);
+        } else {
+            URL.revokeObjectURL(removeTarget.previewUrl);
+        }
 
         const newFileList = fileList.filter(
             (_, fileIndex) => fileIndex !== index
@@ -470,12 +547,24 @@ function AdPost() {
 
             formData.append("adLinks", JSON.stringify(validLinks));
 
-            fileList.forEach((item) => {
-                formData.append("files", item.file);
-            });
+            fileList
+                .filter((item) => !item.existing)
+                .forEach((item) => {
+                    formData.append("files", item.file);
+                });
 
-            const res = await authFetch("http://localhost:3010/adPost/write", {
-                method: "POST",
+            if (isEditMode) {
+                formData.append("removedFileNos", JSON.stringify(removedFileNos));
+            }
+
+            const requestUrl = isEditMode
+                ? `http://localhost:3010/adPost/edit/${editPostNo}`
+                : "http://localhost:3010/adPost/write";
+
+            const requestMethod = isEditMode ? "PUT" : "POST";
+
+            const res = await authFetch(requestUrl, {
+                method: requestMethod,
                 body: formData
             });
 
@@ -488,7 +577,7 @@ function AdPost() {
 
             navigate("/so:lo/feed", {
                 state: {
-                    toastMessage: "광고글이 등록되었습니다."
+                    toastMessage: isEditMode ? "광고글이 수정되었습니다." : "광고글이 등록되었습니다."
                 }
             });
         } catch (err) {
@@ -503,7 +592,7 @@ function AdPost() {
 
             <main className="write-main">
                 <section className="write-card">
-                    <h1>광고글 작성</h1>
+                    <h1>{isEditMode ? "광고글 수정" : "광고글 작성"}</h1>
                     <p className="write-subtitle"></p>
 
                     <form className="write-form" onSubmit={handleSubmit}>
@@ -602,14 +691,14 @@ function AdPost() {
                                     <div className="file-preview-item" key={index}>
                                         <div className="file-preview-media">
                                             {item.type === "image" ? (
-                                                <img src={item.previewUrl} alt={item.file.name} />
+                                                <img src={item.previewUrl} alt={item.file?.name || item.name || "첨부파일"} />
                                             ) : (
                                                 <video src={item.previewUrl} controls />
                                             )}
                                         </div>
 
                                         <div className="file-preview-info">
-                                            <span>{item.file.name}</span>
+                                            <span>{item.file?.name || item.name}</span>
                                             <small>{item.type === "image" ? "이미지" : "영상"}</small>
                                         </div>
 
@@ -846,7 +935,7 @@ function AdPost() {
                         {message && <p className="write-message">{message}</p>}
 
                         <button type="submit" className="write-submit-btn">
-                            광고글 등록
+                            {isEditMode ? "광고글 수정" : "광고글 등록"}
                         </button>
                     </form>
 

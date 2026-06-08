@@ -323,6 +323,30 @@ function Setting() {
       .then((res) => res.json())
       .then((data) => {
         if (data.result === "success") {
+          const savedUser = JSON.parse(localStorage.getItem("user"));
+
+          if (savedUser) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...savedUser,
+                userBiz: "Y",
+                relationBadge: "ALL",
+                accountVisible: "PUB"
+              })
+            );
+          }
+
+          setPrivacyForm({
+            accountVisible: "PUB",
+            relationBadge: "ALL"
+          });
+
+          setUserInfo((prev) => ({
+            ...prev,
+            userBiz: "Y"
+          }));
+
           loadSetting();
           openModal("alert", "전환 완료", data.message);
         } else {
@@ -395,8 +419,12 @@ function Setting() {
           <div className="setting-section-top">
             <h3>계정 공개 설정</h3>
 
-            <button className="setting-row-btn" onClick={openPrivacyEditModal}>
-              수정하기
+            <button
+              className="setting-row-btn"
+              onClick={openPrivacyEditModal}
+              disabled={userInfo.userBiz === "Y"}
+            >
+              {userInfo.userBiz === "Y" ? "수정 불가" : "수정하기"}
             </button>
           </div>
           <section className="setting-section">
@@ -464,7 +492,9 @@ function Setting() {
                     `비즈니스 계정으로 전환 후 다시 일반 계정으로 전환하실 수 없습니다.
                     
 
-            비즈니스 계정으로 전환하실 경우 광고 글 작성이 가능합니다.
+            비즈니스 계정으로 전환하실 경우 공개 계정으로 전환되고 
+
+            관계 뱃지가 편한 대화로 고정되며 광고 글 작성이 가능합니다.
 
 
             광고 글은 업체 또는 제품 링크 설정이 가능하고

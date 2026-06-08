@@ -14,7 +14,6 @@ import Post from "./components/Post";
 import AdPost from "./components/AdPost";
 import Message from "./components/Message";
 import Profile from "./components/profile/Profile";
-import Search from "./components/Search";
 import Setting from "./components/Setting";
 
 function App() {
@@ -111,15 +110,6 @@ function App() {
           element={
             <PrivateRoute>
               <Profile />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/so:lo/search"
-          element={
-            <PrivateRoute>
-              <Search />
             </PrivateRoute>
           }
         />

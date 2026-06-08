@@ -342,7 +342,7 @@
 
 .comment-more-menu {
   position: absolute;
-  top: 28px;
+  bottom: calc(100% + 1px);
   right: 0;
   width: 90px;
   background: #fff;
@@ -736,4 +736,83 @@
 .delete-post-modal-actions button:last-child {
   background: #d46a6a;
   color: #fff;
+}
+
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-modal {
+  width: 360px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(80, 60, 40, 0.18);
+}
+
+.report-modal h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  color: #3b2a1f;
+}
+
+.report-modal select,
+.report-modal textarea {
+  width: 100%;
+  border: 1px solid #eadfd4;
+  border-radius: 12px;
+  padding: 11px 12px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.report-modal textarea {
+  height: 110px;
+  margin-top: 10px;
+  resize: none;
+  line-height: 1.5;
+}
+
+.report-modal-message {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #d9534f;
+}
+
+.report-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.report-modal-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.report-modal-actions button:first-child {
+  background: #f3eee9;
+  color: #5f5147;
+}
+
+.report-modal-actions button:last-child {
+  background: #3b2a1f;
+  color: #fff;
+}
+
+.report-modal-message {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #7a5c45;
 }

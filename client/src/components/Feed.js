@@ -121,7 +121,52 @@ function Feed() {
       });
   }
 
+  function handleCommentDeleted() {
+    if (!selectedPost) return;
+
+    loadComments(selectedPost.postId);
+
+    setFeedList((prev) =>
+      prev.map((post) =>
+        post.postId === selectedPost.postId
+          ? {
+              ...post,
+              commentCount: Math.max(
+                0,
+                (post.commentCount || 0) - 1
+              )
+            }
+          : post
+      )
+    );
+
+    setSelectedPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            commentCount: Math.max(
+              0,
+              (prev.commentCount || 0) - 1
+            )
+          }
+        : prev
+    );
+  }
+
   function openDetailFromFeed(feed) {
+
+    authFetch("http://localhost:3010/feed/view", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        postNo: feed.postId
+      })
+    }).catch((err) => {
+      console.error("조회 로그 저장 실패:", err);
+    });
+
     setSelectedPost({
       ...feed,
       location: feed.location || feed.placeName || "",
@@ -322,12 +367,7 @@ function Feed() {
 
         <TodayCard todayStats={todayStats} />
 
-        <section className="feed-filter-row">
-          <div>
-            <button className="active">전체</button>
-            <button>팔로잉</button>
-          </div>
-        </section>
+        <section className="feed-filter-row"></section>
 
         <section className="feed-list">
           {feedList.map((feed) => (
@@ -374,6 +414,7 @@ function Feed() {
               prev.filter((item) => item.postId !== deletedPostId)
             );
           }}
+          onCommentDeleted={handleCommentDeleted}
         />
       )}
     </div>

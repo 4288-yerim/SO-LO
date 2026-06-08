@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { X } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { authFetch } from "./routes/authFetch";
 import "../css/Message.css";
 
 function Message() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedRoomNo = searchParams.get("roomNo");
@@ -222,6 +224,39 @@ function Message() {
       });
   }
 
+  function goOtherProfile() {
+    if (!selectedRoom?.otherUserId) return;
+
+    navigate(`/so:lo/profile/${selectedRoom.otherUserId}`);
+  }
+
+  function hideRoom(e, roomNo) {
+    e.stopPropagation();
+
+    authFetch(`http://localhost:3010/dm/rooms/${roomNo}`, {
+      method: "DELETE"
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          setMessage(data.message || "채팅방을 숨기지 못했습니다.");
+          return;
+        }
+
+        if (String(selectedRoomNo) === String(roomNo)) {
+          setSelectedRoom(null);
+          setMessageList([]);
+          setSearchParams({});
+        }
+
+        loadRoomList();
+      })
+      .catch((err) => {
+        console.error("DM room hide error:", err);
+        setMessage("채팅방을 숨기지 못했습니다.");
+      });
+  }
+
   useEffect(() => {
     loadRoomList();
   }, [selectedRoomNo]);
@@ -297,11 +332,21 @@ function Message() {
                   <p>{room.lastMessage || "아직 메시지가 없습니다."}</p>
                 </div>
 
-                {room.unreadCount > 0 && (
-                  <span className="message-unread-count">
-                    {room.unreadCount > 99 ? "99+" : room.unreadCount}
-                  </span>
-                )}
+                <div className="message-room-side">
+                  {room.unreadCount > 0 && (
+                    <span className="message-unread-count">
+                      {room.unreadCount > 99 ? "99+" : room.unreadCount}
+                    </span>
+                  )}
+
+                  <button
+                    type="button"
+                    className="message-room-hide-btn"
+                    onClick={(e) => hideRoom(e, room.roomNo)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </button>
             ))
           )}
@@ -315,7 +360,11 @@ function Message() {
           ) : (
             <>
               <div className="message-chat-header">
-                <div className="message-chat-profile">
+                <button
+                  type="button"
+                  className="message-chat-profile"
+                  onClick={goOtherProfile}
+                >
                   <div className="message-chat-img-wrap">
                     {selectedRoom.otherProfileImg ? (
                       <img
@@ -332,7 +381,7 @@ function Message() {
                   </div>
 
                   <strong>{selectedRoom.otherNickname}</strong>
-                </div>
+                </button>
               </div>
 
               <div className="message-chat-body">

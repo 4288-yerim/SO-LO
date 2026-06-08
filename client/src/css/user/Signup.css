@@ -251,3 +251,40 @@ input:disabled{
 .signup-login-button:hover {
   opacity: 0.7;
 }
+
+.signup-agree-box {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.signup-agree-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.5;
+  cursor: pointer;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.signup-agree-label input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex: 0 0 16px;
+}
+
+.signup-agree-label span {
+  flex: 1;
+  min-width: 0;
+}
+
+.signup-agree-error-message {
+  min-height: 18px;
+  margin: 6px 0 -12px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ff3b30
+}

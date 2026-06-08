@@ -29,7 +29,7 @@ function SearchPanel({ open, onClose }) {
       const searchType = activeTab === "user" ? "user" : "post";
 
       authFetch(
-        `http://localhost:3010/profile/search/${searchType}?keyword=${encodeURIComponent(
+        `http://localhost:3010/search/${searchType}?keyword=${encodeURIComponent(
           trimmedKeyword
         )}`
       )
@@ -54,9 +54,22 @@ function SearchPanel({ open, onClose }) {
     return () => clearTimeout(timer);
   }, [keyword, activeTab, open]);
 
-  function moveProfile(userId) {
+  function moveProfile(user) {
+
+    authFetch("http://localhost:3010/search/user-click", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        targetUserId: user.userId
+      })
+    }).catch((err) => {
+      console.error("사용자 검색 로그 저장 실패:", err);
+    });
+
     onClose();
-    navigate(`/so:lo/profile/${userId}`);
+    navigate(`/so:lo/profile/${user.userId}`);
   }
 
   function movePost(postId) {
@@ -133,7 +146,7 @@ function SearchPanel({ open, onClose }) {
               type="button"
               className="search-user-card"
               key={user.userId}
-              onClick={() => moveProfile(user.userId)}
+              onClick={() => moveProfile(user)}
             >
               <div className="search-user-img-wrap">
                 {user.profileImg ? (

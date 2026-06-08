@@ -24,8 +24,9 @@ const favoriteRouter = require("./routes/favorite");
 const feedRouter = require("./routes/feed");
 const settingRouter = require("./routes/setting");
 const notificationRouter = require("./routes/notification");
-
+const searchRouter = require("./routes/search");
 const dmRouter = require("./routes/dm");
+const reportRouter = require("./routes/report");
 
 const app = express();
 
@@ -108,6 +109,8 @@ app.use("/notification", notificationRouter);
 app.use("/dm", dmRouter);
 app.use("/feed", feedRouter);
 app.use("/setting", settingRouter);
+app.use("/search", searchRouter);
+app.use("/report", reportRouter);
 
 const PORT = process.env.PORT || 3010;
 

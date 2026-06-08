@@ -82,9 +82,22 @@ router.post("/room", authMiddleware, async (req, res) => {
     );
 
     if (roomResult.rows.length > 0) {
+      const roomNo = roomResult.rows[0].ROOM_NO;
+
+      await connection.execute(
+        `
+        UPDATE SNS_DM_ROOM_USER
+        SET DELETED_YN = 'N'
+        WHERE ROOM_NO = :roomNo
+          AND USER_ID = :loginUserId
+        `,
+        { roomNo, loginUserId },
+        { autoCommit: true }
+      );
+
       return res.json({
         result: "success",
-        roomNo: roomResult.rows[0].ROOM_NO
+        roomNo
       });
     }
 
@@ -200,7 +213,8 @@ router.get("/rooms", authMiddleware, async (req, res) => {
       FROM SNS_DM_ROOM R
       JOIN SNS_DM_ROOM_USER RU
         ON R.ROOM_NO = RU.ROOM_NO
-       AND RU.USER_ID = :loginUserId
+      AND RU.USER_ID = :loginUserId
+      AND NVL(RU.DELETED_YN, 'N') = 'N'
       JOIN SNS_DM_ROOM_USER ORU
         ON R.ROOM_NO = ORU.ROOM_NO
        AND ORU.USER_ID <> :loginUserId
@@ -426,6 +440,60 @@ router.put("/rooms/:roomNo/read", authMiddleware, async (req, res) => {
   }
 });
 
+// DM 채팅방 삭제 - 내 목록에서만 숨김
+router.delete("/rooms/:roomNo", authMiddleware, async (req, res) => {
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const loginUserId = req.user.userId;
+    const { roomNo } = req.params;
+
+    const memberResult = await connection.execute(
+      `
+      SELECT COUNT(*) AS CNT
+      FROM SNS_DM_ROOM_USER
+      WHERE ROOM_NO = :roomNo
+        AND USER_ID = :loginUserId
+      `,
+      { roomNo, loginUserId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (memberResult.rows[0].CNT === 0) {
+      return res.status(403).json({
+        result: "fail",
+        message: "삭제할 수 없는 메시지 방입니다."
+      });
+    }
+
+    await connection.execute(
+      `
+      UPDATE SNS_DM_ROOM_USER
+      SET DELETED_YN = 'Y'
+      WHERE ROOM_NO = :roomNo
+        AND USER_ID = :loginUserId
+      `,
+      { roomNo, loginUserId },
+      { autoCommit: true }
+    );
+
+    res.json({
+      result: "success"
+    });
+  } catch (err) {
+    console.error("DM room delete error:", err);
+
+    res.status(500).json({
+      result: "fail",
+      message: "메시지 방을 삭제하지 못했습니다."
+    });
+  } finally {
+    if (connection) await connection.close();
+  }
+});
+
 // 메시지 전송
 router.post("/rooms/:roomNo/messages", authMiddleware, async (req, res) => {
   let connection;
@@ -500,6 +568,16 @@ router.post("/rooms/:roomNo/messages", authMiddleware, async (req, res) => {
       readYn: "N",
       cdate: insertResult.outBinds.cdate[0]
     };
+
+    await connection.execute(
+      `
+      UPDATE SNS_DM_ROOM_USER
+      SET DELETED_YN = 'N'
+      WHERE ROOM_NO = :roomNo
+      `,
+      { roomNo },
+      { autoCommit: false }
+    );
 
     const targetUserResult = await connection.execute(
       `

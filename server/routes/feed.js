@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { oracledb, dbConfig } = require("../db");
 const authMiddleware = require("../middleware/authMiddleware");
+const { saveUserActLog } = require("./userActLog");
 
 router.get("/", authMiddleware, async (req, res) => {
   let connection;
@@ -25,7 +26,37 @@ router.get("/", authMiddleware, async (req, res) => {
     const isAdmin = loginUserStatus === "ADM";
 
     const postResult = await connection.execute(
-      `
+    `
+    WITH USER_TAG_SCORE AS (
+      SELECT
+        TARGET_NO AS TAG_NO,
+        SUM(SCORE) AS TAG_SCORE
+      FROM SNS_USER_ACT_LOG
+      WHERE USER_ID = :userId
+        AND TARGET_TYPE = 'TAG'
+        AND TARGET_NO IS NOT NULL
+      GROUP BY TARGET_NO
+    ),
+    USER_TARGET_USER AS (
+      SELECT DISTINCT
+        TARGET_ID AS TARGET_USER_ID
+      FROM SNS_USER_ACT_LOG
+      WHERE USER_ID = :userId
+        AND TARGET_TYPE = 'USR'
+        AND TARGET_ID IS NOT NULL
+    ),
+    POST_VIEW AS (
+      SELECT
+        TARGET_NO AS POST_NO,
+        MAX(CDATE) AS LAST_VIEW_DATE
+      FROM SNS_USER_ACT_LOG
+      WHERE USER_ID = :userId
+        AND ACT_TYPE = 'VIW'
+        AND TARGET_TYPE = 'PST'
+        AND TARGET_NO IS NOT NULL
+      GROUP BY TARGET_NO
+    ),
+    BASE_POST AS (
       SELECT
         P.POST_NO,
         P.USER_ID,
@@ -40,10 +71,63 @@ router.get("/", authMiddleware, async (req, res) => {
         P.CMT_YN,
         P.CDATE,
         U.USER_NICKNAME,
-        U.PROFILE_IMG
+        U.PROFILE_IMG,
+
+        CASE
+          WHEN EXISTS (
+            SELECT 1
+            FROM SNS_FOLLOWS F
+            WHERE F.FOLLOWER_ID = :userId
+              AND F.FOLLOWING_ID = P.USER_ID
+          )
+          THEN 1 ELSE 0
+        END AS FOLLOWED_YN,
+
+        CASE
+          WHEN PV.POST_NO IS NOT NULL
+          THEN 1 ELSE 0
+        END AS VIEWED_YN,
+
+        PV.LAST_VIEW_DATE,
+
+        CASE
+          WHEN EXISTS (
+            SELECT 1
+            FROM USER_TARGET_USER UTU
+            WHERE UTU.TARGET_USER_ID = P.USER_ID
+          )
+          THEN 1 ELSE 0
+        END AS TARGET_USER_YN,
+
+        NVL((
+          SELECT SUM(UTS.TAG_SCORE)
+          FROM SNS_POST_TAG PT
+          JOIN USER_TAG_SCORE UTS
+            ON PT.TAG_NO = UTS.TAG_NO
+          WHERE PT.POST_NO = P.POST_NO
+        ), 0) AS POST_TAG_SCORE,
+
+        CASE
+          WHEN EXISTS (
+            SELECT 1
+            FROM SNS_POST_TAG PT
+            WHERE PT.POST_NO = P.POST_NO
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM SNS_POST_TAG PT
+            JOIN USER_TAG_SCORE UTS
+              ON PT.TAG_NO = UTS.TAG_NO
+            WHERE PT.POST_NO = P.POST_NO
+          )
+          THEN 1 ELSE 0
+        END AS ONLY_UNKNOWN_TAG_YN
+
       FROM SNS_POST P
       JOIN SNS_USERS U
         ON P.USER_ID = U.USER_ID
+      LEFT JOIN POST_VIEW PV
+        ON P.POST_NO = PV.POST_NO
       WHERE U.USER_STATUS NOT IN ('BLK', 'DEL')
         AND P.FEED_STATUS != 'BLK'
         AND NOT EXISTS (
@@ -75,13 +159,108 @@ router.get("/", authMiddleware, async (req, res) => {
 
           OR P.USER_ID = :userId
         )
-      ORDER BY P.CDATE DESC
-      `,
-      { userId },
-      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+          
+        AND P.USER_ID <> :userId
+    )
+    SELECT
+      BASE_POST.*,
+
+      CASE
+        WHEN IS_AD = 'N'
+          AND FOLLOWED_YN = 1
+          AND VIEWED_YN = 0
+        THEN 0
+
+        WHEN IS_AD = 'N'
+          AND POST_TAG_SCORE > 0
+          AND VIEWED_YN = 0
+        THEN 1
+
+        WHEN IS_AD = 'N'
+          AND TARGET_USER_YN = 1
+          AND ONLY_UNKNOWN_TAG_YN = 1
+          AND VIEWED_YN = 0
+        THEN 2
+
+        WHEN IS_AD = 'N'
+          AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+          AND FOLLOWED_YN = 1
+        THEN 3
+
+        WHEN IS_AD = 'N'
+          AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+          AND POST_TAG_SCORE > 0
+        THEN 4
+
+        WHEN IS_AD = 'N'
+          AND VIEWED_YN = 1
+          AND LAST_VIEW_DATE < SYSDATE - 1
+          AND TARGET_USER_YN = 1
+          AND ONLY_UNKNOWN_TAG_YN = 1
+        THEN 5
+
+        ELSE 6
+      END AS FEED_GROUP,
+
+      CASE
+        WHEN IS_AD = 'Y'
+          AND POST_TAG_SCORE > 0
+        THEN 1
+
+        WHEN IS_AD = 'Y'
+          AND TARGET_USER_YN = 1
+        THEN 2
+
+        WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 0
+        THEN 3
+
+        WHEN IS_AD = 'Y'
+          AND VIEWED_YN = 1
+        THEN 4
+
+        ELSE 99
+      END AS AD_GROUP
+
+    FROM BASE_POST
+    WHERE IS_AD = 'N'
+      OR IS_AD = 'Y'
+    ORDER BY
+      CASE WHEN IS_AD = 'Y' THEN AD_GROUP ELSE FEED_GROUP END ASC,
+      POST_TAG_SCORE DESC,
+      CDATE DESC
+    `,
+    { userId },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+
+    const normalPosts = postResult.rows.filter(
+      (post) => post.IS_AD !== "Y" && post.FEED_GROUP !== 99
     );
 
-    const posts = postResult.rows;
+    const adPosts = postResult.rows.filter(
+      (post) => post.IS_AD === "Y" && post.AD_GROUP !== 99
+    );
+
+    const posts = [];
+
+    let adIndex = 0;
+
+    normalPosts.forEach((post, index) => {
+      posts.push(post);
+
+      if ((index + 1) % 3 === 0 && adIndex < adPosts.length) {
+        posts.push(adPosts[adIndex]);
+        adIndex += 1;
+      }
+    });
+
+    while (adIndex < adPosts.length) {
+      posts.push(adPosts[adIndex]);
+      adIndex += 1;
+    }
 
     if (posts.length === 0) {
       return res.status(200).json({
@@ -555,6 +734,13 @@ const postOwnerId = postOwnerResult.rows[0].USER_ID;
     }
   }
 
+  await saveUserActLog(connection, {
+    userId,
+    actType: "CMT",
+    targetType: "PST",
+    targetNo: postNo,
+  });
+
   await connection.commit();
 
   res.json({
@@ -566,6 +752,80 @@ const postOwnerId = postOwnerResult.rows[0].USER_ID;
     res.status(500).json({
       result: "fail",
       message: "댓글 등록에 실패했습니다."
+    });
+  } finally {
+    if (connection) await connection.close();
+  }
+});
+
+router.delete("/comment/:commentNo", authMiddleware, async (req, res) => {
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const loginUserId = req.user.userId;
+    const { commentNo } = req.params;
+
+    const userResult = await connection.execute(
+      `
+      SELECT USER_STATUS
+      FROM SNS_USERS
+      WHERE USER_ID = :loginUserId
+      `,
+      { loginUserId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const isAdmin =
+      userResult.rows[0]?.USER_STATUS === "ADM";
+
+    const commentResult = await connection.execute(
+      `
+      SELECT USER_ID
+      FROM SNS_COMMENTS
+      WHERE COMMENT_NO = :commentNo
+      `,
+      { commentNo },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (commentResult.rows.length === 0) {
+      return res.status(404).json({
+        result: "fail",
+        message: "존재하지 않는 댓글입니다."
+      });
+    }
+
+    const writerId = commentResult.rows[0].USER_ID;
+
+    if (writerId !== loginUserId && !isAdmin) {
+      return res.status(403).json({
+        result: "fail",
+        message: "삭제 권한이 없습니다."
+      });
+    }
+
+    await connection.execute(
+      `
+      UPDATE SNS_COMMENTS
+      SET CMT_STATUS = 'DEL'
+      WHERE COMMENT_NO = :commentNo
+      `,
+      { commentNo },
+      { autoCommit: true }
+    );
+
+    res.json({
+      result: "success"
+    });
+
+  } catch (err) {
+    console.error("Comment delete error:", err);
+
+    res.status(500).json({
+      result: "fail",
+      message: "댓글 삭제에 실패했습니다."
     });
   } finally {
     if (connection) await connection.close();
@@ -657,6 +917,13 @@ const postOwnerId = postOwnerResult.rows[0].USER_ID;
     { autoCommit: false }
   );
 
+  await saveUserActLog(connection, {
+    userId,
+    actType: "LKE",
+    targetType: "PST",
+    targetNo: postNo,
+  });
+
   if (postOwnerId !== userId) {
     const notiSettingResult = await connection.execute(
       `
@@ -726,6 +993,49 @@ const postOwnerId = postOwnerResult.rows[0].USER_ID;
     if (connection) {
       await connection.close();
     }
+  }
+});
+
+router.post("/view", authMiddleware, async (req, res) => {
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const userId = req.user.userId;
+    const { postNo } = req.body;
+
+    await saveUserActLog(connection, {
+      userId,
+      actType: "VIW",
+      targetType: "PST",
+      targetNo: postNo,
+    });
+
+    await connection.commit();
+
+    res.json({
+      result: "success"
+    });
+
+  } catch (err) {
+
+    if (connection) {
+      await connection.rollback();
+    }
+
+    console.error("View log error:", err);
+
+    res.status(500).json({
+      result: "fail"
+    });
+
+  } finally {
+
+    if (connection) {
+      await connection.close();
+    }
+
   }
 });
 

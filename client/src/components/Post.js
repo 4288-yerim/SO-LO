@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { authFetch } from "./routes/authFetch";
 import Sidebar from "./Sidebar";
 import "../css/Post.css";
@@ -7,6 +7,11 @@ import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 
 function Post() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isEditMode = location.state?.mode === "edit";
+  const editPostNo = location.state?.postNo;
+
   const [categoryList, setCategoryList] = useState([]);
 
   const [form, setForm] = useState({
@@ -24,6 +29,7 @@ function Post() {
   const [tagKeyword, setTagKeyword] = useState("");
   const [tagSearchList, setTagSearchList] = useState([]);
   const [fileList, setFileList] = useState([]);
+  const [removedFileNos, setRemovedFileNos] = useState([]);
   const fileInputRef = useRef(null);
 
   const [message, setMessage] = useState("");
@@ -74,6 +80,64 @@ function Post() {
         console.error("카테고리 불러오기 실패:", err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!isEditMode || !editPostNo) return;
+
+    authFetch(`http://localhost:3010/post/edit/${editPostNo}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          setMessage(data.message || "수정할 기록을 불러오지 못했습니다.");
+          return;
+        }
+
+        const post = data.post;
+
+        setForm({
+          categoryNo: post.CATEGORY_NO || "",
+          title: post.TITLE || "",
+          content: post.CONTENT || "",
+          placeName: post.PLACE_NAME || "",
+          placeAddress: post.PLACE_ADDRESS || "",
+          lat: post.LAT || "",
+          lng: post.LNG || "",
+          cmtYn: post.CMT_YN || "Y"
+        });
+
+        setSelectedTags(
+          data.tags.map((tag) => tag.TAG_NAME)
+        );
+
+        if (post.PLACE_NAME) {
+          setSelectedPlace({
+            name: post.PLACE_NAME,
+            address: post.PLACE_ADDRESS,
+            lat: post.LAT,
+            lng: post.LNG
+          });
+
+          setMapCenter({
+            lat: Number(post.LAT),
+            lng: Number(post.LNG)
+          });
+        }
+
+        setFileList(
+          data.files.map((file) => ({
+            existing: true,
+            fileNo: file.FILE_NO,
+            previewUrl: `http://localhost:3010${file.FILE_PATH}`,
+            type: file.FILE_TYPE === "VDO" ? "video" : "image",
+            name: file.ORIGIN_NAME
+          }))
+        );
+      })
+      .catch((err) => {
+        console.error("수정 데이터 불러오기 실패:", err);
+        setMessage("수정할 기록을 불러오지 못했습니다.");
+      });
+  }, [isEditMode, editPostNo]);
 
   useEffect(() => {
     if (tagKeyword.trim() === "") {
@@ -211,7 +275,7 @@ function Post() {
     const files = Array.from(e.target.files);
     const maxSize = 200 * 1024 * 1024;
 
-    if (files.length > 5) {
+    if (fileList.length + files.length > 5) {
       setMessage("파일은 최대 5개까지 업로드할 수 있습니다.");
       e.target.value = "";
       return;
@@ -241,14 +305,18 @@ function Post() {
       type: file.type.startsWith("image/") ? "image" : "video"
     }));
 
-    setFileList(previewFiles);
+    setFileList((prev) => [...prev, ...previewFiles]);
     setMessage("");
   };
 
   const removeFile = (index) => {
     const removeTarget = fileList[index];
 
-    URL.revokeObjectURL(removeTarget.previewUrl);
+    if (removeTarget.existing) {
+      setRemovedFileNos((prev) => [...prev, removeTarget.fileNo]);
+    } else {
+      URL.revokeObjectURL(removeTarget.previewUrl);
+    }
 
     const newFileList = fileList.filter(
       (_, fileIndex) => fileIndex !== index
@@ -298,12 +366,24 @@ function Post() {
         formData.append("tags", tag);
       });
 
-      fileList.forEach((item) => {
-        formData.append("files", item.file);
-      });
+      fileList
+        .filter((item) => !item.existing)
+        .forEach((item) => {
+          formData.append("files", item.file);
+        });
 
-      const res = await authFetch("http://localhost:3010/post/write", {
-        method: "POST",
+      if (isEditMode) {
+        formData.append("removedFileNos", JSON.stringify(removedFileNos));
+      }
+
+      const requestUrl = isEditMode
+        ? `http://localhost:3010/post/edit/${editPostNo}`
+        : "http://localhost:3010/post/write";
+
+      const requestMethod = isEditMode ? "PUT" : "POST";
+
+      const res = await authFetch(requestUrl, {
+        method: requestMethod,
         body: formData
       });
 
@@ -316,7 +396,7 @@ function Post() {
 
       navigate("/so:lo/feed", {
         state: {
-          toastMessage: "작성이 완료되었습니다."
+          toastMessage: isEditMode ? "수정이 완료되었습니다." : "작성이 완료되었습니다."
         }
       });
     } catch (err) {
@@ -331,7 +411,7 @@ function Post() {
 
       <main className="write-main">
         <section className="write-card">
-          <h1>기록하기</h1>
+          <h1>{isEditMode ? "기록 수정하기" : "기록하기"}</h1>
           <p className="write-subtitle"></p>
 
           <form className="write-form" onSubmit={handleSubmit}>
@@ -430,14 +510,14 @@ function Post() {
                   <div className="file-preview-item" key={index}>
                     <div className="file-preview-media">
                       {item.type === "image" ? (
-                        <img src={item.previewUrl} alt={item.file.name} />
+                        <img src={item.previewUrl} alt={item.file?.name || item.name || "첨부파일"} />
                       ) : (
                         <video src={item.previewUrl} controls />
                       )}
                     </div>
 
                     <div className="file-preview-info">
-                      <span>{item.file.name}</span>
+                      <span>{item.file?.name || item.name}</span>
                       <small>{item.type === "image" ? "이미지" : "영상"}</small>
                     </div>
 
@@ -521,7 +601,7 @@ function Post() {
             {message && <p className="write-message">{message}</p>}
 
             <button type="submit" className="write-submit-btn">
-              기록하기
+              {isEditMode ? "수정하기" : "기록하기"}
             </button>
           </form>
 

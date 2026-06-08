@@ -91,26 +91,6 @@ function FeedCard({
 
           <span>· {getTimeAgo(feed.timeAgo)}</span>
         </div>
-
-        <div className="feed-more-wrap">
-          <button
-            className="feed-more-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpenPostMenu(openPostMenu === feed.postId ? null : feed.postId);
-            }}
-          >
-            ...
-          </button>
-
-          {openPostMenu === feed.postId && (
-            <div className="feed-more-menu" onClick={(e) => e.stopPropagation()}>
-              <button className="danger-menu-btn">차단하기</button>
-              <button className="danger-menu-btn">신고하기</button>
-              <button>공유하기</button>
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="feed-card-body">

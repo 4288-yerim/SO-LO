@@ -46,8 +46,26 @@ function PostDetailModal({
   getShortAddress,
   navigate,
   onPostDeleted,
-  showEditButton = false
+  showEditButton = false,
+  onCommentDeleted
 }) {
+
+  const token = localStorage.getItem("token");
+
+  let loginUserId = "";
+
+  if (token) {
+    try {
+      const payload = JSON.parse(
+        atob(token.split(".")[1])
+      );
+
+      loginUserId = payload.userId;
+    } catch (err) {
+      console.error("Token decode error:", err);
+    }
+  }
+
   const adLinkIconMap = {
     Globe,
     CalendarDays,
@@ -85,6 +103,64 @@ function PostDetailModal({
   const [deletePostModalOpen, setDeletePostModalOpen] = useState(false);
   const [deletePostMessage, setDeletePostMessage] = useState("");
 
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportTarget, setReportTarget] = useState(null);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetail, setReportDetail] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
+
+  function openReportModal(targetType, targetId, targetNo) {
+    setReportTarget({ targetType, targetId, targetNo });
+    setReportReason("");
+    setReportDetail("");
+    setReportMessage("");
+    setReportModalOpen(true);
+    setOpenPostMenu(false);
+    setOpenCommentMenu(null);
+  }
+
+  function submitReport() {
+    if (!reportReason) {
+      setReportMessage("신고 사유를 선택해주세요.");
+      return;
+    }
+
+    authFetch("http://localhost:3010/report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        targetType: reportTarget.targetType,
+        targetId: reportTarget.targetId,
+        targetNo: reportTarget.targetNo,
+        reason: reportReason,
+        detail: reportDetail
+      })
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          setReportMessage(data.message || "신고 접수에 실패했습니다.");
+          return;
+        }
+
+        setReportModalOpen(false);
+        setSelectedPost(null);
+
+        navigate("/so:lo/feed", {
+          state: {
+            toastMessage: "신고가 접수되었습니다."
+          }
+        });
+      })
+      .catch((err) => {
+        console.error("Report error:", err);
+        setReportMessage("신고 접수에 실패했습니다.");
+      });
+  }
+
   function openDeletePostModal() {
     setDeletePostMessage("");
     setDeletePostModalOpen(true);
@@ -116,6 +192,27 @@ function PostDetailModal({
       .catch((err) => {
         console.error("게시글 삭제 실패:", err);
         setDeletePostMessage("게시글 삭제에 실패했습니다.");
+      });
+  }
+
+  function deleteComment(commentNo) {
+    authFetch(`http://localhost:3010/feed/comment/${commentNo}`, {
+      method: "DELETE"
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result !== "success") {
+          return;
+        }
+
+        setOpenCommentMenu(null);
+
+        if (onCommentDeleted) {
+          onCommentDeleted(commentNo);
+        }
+      })
+      .catch((err) => {
+        console.error("Comment delete error:", err);
       });
   }
 
@@ -481,7 +578,23 @@ function PostDetailModal({
 
                               {openCommentMenu === comment.commentNo && (
                                 <div className="comment-more-menu">
-                                  <button className="danger-menu-btn">신고하기</button>
+
+                                  {comment.userId === loginUserId && (
+                                    <button
+                                      className="danger-menu-btn"
+                                      onClick={() => deleteComment(comment.commentNo)}
+                                    >
+                                      삭제하기
+                                    </button>
+                                  )}
+
+                                  <button
+                                    className="danger-menu-btn"
+                                    onClick={() => openReportModal("CMT", comment.userId, comment.commentNo)}
+                                  >
+                                    신고하기
+                                  </button>
+
                                 </div>
                               )}
                             </div>
@@ -563,7 +676,22 @@ function PostDetailModal({
 
                                 {openCommentMenu === `reply-${reply.commentNo}` && (
                                   <div className="comment-more-menu">
-                                    <button className="danger-menu-btn">신고하기</button>
+
+                                    {reply.userId === loginUserId && (
+                                      <button
+                                        className="danger-menu-btn"
+                                        onClick={() => deleteComment(reply.commentNo)}
+                                      >
+                                        삭제하기
+                                      </button>
+                                    )}
+
+                                    <button
+                                      className="danger-menu-btn"
+                                      onClick={() => openReportModal("CMT", reply.userId, reply.commentNo)}
+                                    >
+                                      신고하기
+                                    </button>
                                   </div>
                                 )}
                               </div>
@@ -622,9 +750,11 @@ function PostDetailModal({
 
               {openPostMenu && (
                 <div className="post-detail-more-menu">
-                  <button type="button">차단하기</button>
-
-                  <button type="button" className="danger-menu-btn">
+                  <button
+                    type="button"
+                    className="danger-menu-btn"
+                    onClick={() => openReportModal("PST", selectedPost.userId, selectedPost.postId)}
+                  >
                     신고하기
                   </button>
 
@@ -725,6 +855,58 @@ function PostDetailModal({
                   onClick={confirmDeletePost}
                 >
                   삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {reportModalOpen && (
+          <div
+            className="report-modal-backdrop"
+            onClick={() => setReportModalOpen(false)}
+          >
+            <div
+              className="report-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>신고하기</h3>
+
+              <select
+                value={reportReason}
+                onChange={(e) => {
+                  setReportReason(e.target.value);
+                  setReportMessage("");
+                }}
+              >
+                <option value="">신고 사유 선택</option>
+                <option value="부적절한 내용">부적절한 내용</option>
+                <option value="욕설/비방">욕설/비방</option>
+                <option value="음란/선정적 내용">음란/선정적 내용</option>
+                <option value="허위 정보">허위 정보</option>
+                <option value="기타">기타</option>
+              </select>
+
+              <textarea
+                value={reportDetail}
+                onChange={(e) => setReportDetail(e.target.value)}
+                placeholder="상세 내용을 입력해주세요."
+                maxLength={500}
+              />
+
+              {reportMessage && (
+                <p className="delete-post-modal-message">
+                  {reportMessage}
+                </p>
+              )}
+
+              <div className="delete-post-modal-actions">
+                <button type="button" onClick={() => setReportModalOpen(false)}>
+                  취소
+                </button>
+
+                <button type="button" onClick={submitReport}>
+                  신고
                 </button>
               </div>
             </div>

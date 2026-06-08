@@ -1,6 +1,8 @@
 // 프로필 상단 영역
 
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authFetch } from "../routes/authFetch";
 import {
   Loader2,
   MessageCircle,
@@ -21,6 +23,61 @@ function ProfileHeader({
 })
 {
   const [openMenu, setOpenMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDetail, setReportDetail] = useState("");
+  const [reportMessage, setReportMessage] = useState("");
+
+  function openReportModal() {
+    setOpenMenu(false);
+    setReportReason("");
+    setReportDetail("");
+    setReportMessage("");
+    setReportModalOpen(true);
+  }
+
+  function submitReport() {
+    if (!reportReason) {
+      setReportMessage("신고 사유를 선택해주세요.");
+      return;
+    }
+
+    authFetch("http://localhost:3010/report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        targetType: "USR",
+        targetId: profile.userId,
+        targetNo: null,
+        reason: reportReason,
+        detail: reportDetail
+      })
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          setReportMessage(data.message || "신고 접수에 실패했습니다.");
+          return;
+        }
+
+        setReportModalOpen(false);
+
+          navigate("/so:lo/feed", {
+            state: {
+              toastMessage: "신고가 접수되었습니다."
+            }
+        });
+      })
+      .catch((err) => {
+        console.error("User report error:", err);
+        setReportMessage("신고 접수에 실패했습니다.");
+      });
+  }
 
   const canShowDmButton =
     !isMyProfile &&
@@ -191,18 +248,74 @@ function ProfileHeader({
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    className="danger"
-                  >
-                    신고
-                  </button>
+                  {!isMyProfile && (
+                    <button
+                      type="button"
+                      className="danger"
+                      onClick={openReportModal}
+                    >
+                      신고
+                    </button>
+                  )}
                 </div>
               )}
             </div>
           </>
         </div>
       </div>
+
+      {reportModalOpen && (
+        <div
+          className="report-modal-backdrop"
+          onClick={() => setReportModalOpen(false)}
+        >
+          <div
+            className="report-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>신고하기</h3>
+
+            <select
+              value={reportReason}
+              onChange={(e) => {
+                setReportReason(e.target.value);
+                setReportMessage("");
+              }}
+            >
+              <option value="">신고 사유 선택</option>
+              <option value="부적절한 프로필">부적절한 프로필</option>
+              <option value="사칭">사칭</option>
+              <option value="괴롭힘/비방">괴롭힘/비방</option>
+              <option value="음란/선정적 내용">음란/선정적 내용</option>
+              <option value="허위 정보">허위 정보 </option>
+              <option value="기타">기타</option>
+            </select>
+
+            <textarea
+              value={reportDetail}
+              onChange={(e) => setReportDetail(e.target.value)}
+              placeholder="상세 내용을 입력해주세요."
+              maxLength={500}
+            />
+
+            {reportMessage && (
+              <p className="delete-post-modal-message">
+                {reportMessage}
+              </p>
+            )}
+
+            <div className="delete-post-modal-actions">
+              <button type="button" onClick={() => setReportModalOpen(false)}>
+                취소
+              </button>
+
+              <button type="button" onClick={submitReport}>
+                신고
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
