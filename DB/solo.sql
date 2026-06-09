@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 금요일-6월-05-2026   
+--  파일이 생성됨 - 월요일-6월-08-2026   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Table SNS_ACT_SCORE
@@ -160,7 +160,8 @@
 	"USER_ID" VARCHAR2(100 BYTE), 
 	"ROOM_NO" NUMBER, 
 	"LAST_READ_MESSAGE_NO" NUMBER, 
-	"CDATE" DATE DEFAULT SYSDATE
+	"CDATE" DATE DEFAULT SYSDATE, 
+	"DELETED_YN" CHAR(1 BYTE) DEFAULT 'N'
    ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
  NOCOMPRESS LOGGING
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
@@ -349,7 +350,8 @@
 	"REASON" VARCHAR2(200 BYTE), 
 	"DETAIL" VARCHAR2(500 BYTE), 
 	"STATUS" CHAR(3 BYTE), 
-	"CDATE" DATE DEFAULT SYSDATE
+	"CDATE" DATE DEFAULT SYSDATE, 
+	"TARGET_NO" NUMBER
    ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
  NOCOMPRESS LOGGING
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
@@ -397,7 +399,8 @@
 	"TARGET_TYPE" CHAR(3 BYTE), 
 	"TARGET_NO" NUMBER, 
 	"SCORE" NUMBER, 
-	"CDATE" DATE DEFAULT SYSDATE
+	"CDATE" DATE DEFAULT SYSDATE, 
+	"TARGET_ID" VARCHAR2(100 BYTE)
    ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
  NOCOMPRESS LOGGING
   STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
@@ -427,7 +430,7 @@
    (	"SCORE_NO" NUMBER, 
 	"USER_ID" VARCHAR2(100 BYTE), 
 	"TAG_NO" NUMBER, 
-	"CATEGORY_NO" NUMBER, 
+	"TARGET_ID" VARCHAR2(100 BYTE), 
 	"SCORE" NUMBER, 
 	"CDATE" DATE DEFAULT SYSDATE
    ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
@@ -486,10 +489,18 @@ Insert into SYSTEM.SNS_ACT_SCORE (SCORE_NO,ACT_TYPE,SCORE,DESCRIPTION,USE_YN) va
 Insert into SYSTEM.SNS_ACT_SCORE (SCORE_NO,ACT_TYPE,SCORE,DESCRIPTION,USE_YN) values (5,'PST',10,'글 작성','Y');
 REM INSERTING into SYSTEM.SNS_AD_LINK
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_AD_LINK (LINK_NO,POST_NO,LINK_NAME,LINK_URL,LINK_ICON,LINK_ORDER,CDATE) values (24,86,'홈페이지','https://www.instagram.com/werk.roasters?utm_source=chatgpt.com','Globe',1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_LINK (LINK_NO,POST_NO,LINK_NAME,LINK_URL,LINK_ICON,LINK_ORDER,CDATE) values (25,88,'홈페이지','https://www.instagram.com/watayoup/?utm_source=chatgpt.com','Globe',1,to_date('26/06/08','RR/MM/DD'));
 Insert into SYSTEM.SNS_AD_LINK (LINK_NO,POST_NO,LINK_NAME,LINK_URL,LINK_ICON,LINK_ORDER,CDATE) values (22,50,'예약하기','https://linktr.ee/mylittlecave','CalendarDays',1,to_date('26/06/05','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_AD_POST_TAG
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (15,86,8,to_date('26/06/08','RR/MM/DD'));
 Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (9,50,8,to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (12,82,6,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (13,85,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (18,89,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (16,87,7,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AD_POST_TAG (AD_POST_TAG_NO,POST_NO,AD_TAG_NO,CDATE) values (17,88,8,to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_AD_TAG
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_AD_TAG (AD_TAG_NO,AD_TAG_NAME,USE_YN,CDATE) values (1,'신메뉴 출시!','Y',to_date('26/06/05','RR/MM/DD'));
@@ -531,6 +542,8 @@ Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIR
 Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIRE_TIME,CDATE) values (27,'01024140196','933148','Y',to_date('26/06/05','RR/MM/DD'),to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIRE_TIME,CDATE) values (28,'01024140196','719452','Y',to_date('26/06/05','RR/MM/DD'),to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIRE_TIME,CDATE) values (29,'01024140196','302009','Y',to_date('26/06/05','RR/MM/DD'),to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIRE_TIME,CDATE) values (30,'01024140196','928920','Y',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_AUTH_CODE (AUTH_ID,USER_PHONE,AUTH_CODE,AUTH_STATUS,EXPIRE_TIME,CDATE) values (31,'01024140196','983091','Y',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_CATEGORY
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_CATEGORY (CATEGORY_NO,CATEGORY_NAME,USE_YN) values (1,'혼밥','Y');
@@ -542,6 +555,17 @@ Insert into SYSTEM.SNS_CATEGORY (CATEGORY_NO,CATEGORY_NAME,USE_YN) values (6,'�
 Insert into SYSTEM.SNS_CATEGORY (CATEGORY_NO,CATEGORY_NAME,USE_YN) values (7,'기타','Y');
 REM INSERTING into SYSTEM.SNS_COMMENTS
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (35,'testuser',50,null,'와 너무 이뻐에ㅛ','DEL',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (36,'testuser',50,null,'@doyoon_','DEL',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (37,'testuser',50,null,'xptmxm','DEL',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (38,'testuser',40,null,'와 맛있겠다','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (39,'user08',77,null,'맛있겠다','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (40,'user08',67,null,'맛있겠다','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (41,'user01',60,null,'와 거기 맛있어요!','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (42,'user08',60,null,'와 맛있겠다!','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (43,'user08',60,41,'@m_nss0 정말요?','ACT',to_date('26/06/08','RR/MM/DD'),'user01');
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (44,'user01',65,null,'와 여기 한번 가봐야겠어요','ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_COMMENTS (COMMENT_NO,USER_ID,POST_NO,PARENT_COMMENT_NO,CONTENT,CMT_STATUS,CDATE,MENTION_USER_ID) values (45,'user05',63,null,'와 맛있겠다','ACT',to_date('26/06/08','RR/MM/DD'),null);
 REM INSERTING into SYSTEM.SNS_DM_MESSAGE
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (1,'test',1,'N',to_date('26/06/02','RR/MM/DD'));
@@ -576,30 +600,55 @@ Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) val
 Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (30,'testuser',4,'N',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (31,'testuser',4,'N',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (32,'testuser',4,'N',to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (33,'user08',5,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (34,'user08',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (35,'user09',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (36,'user08',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (37,'user08',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (38,'user09',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (39,'user08',6,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_MESSAGE (MESSAGE_NO,USER_ID,ROOM_NO,READ_YN,CDATE) values (40,'user08',6,'N',to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_DM_ROOM
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (1,to_date('26/06/02','RR/MM/DD'));
 Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (2,to_date('26/06/02','RR/MM/DD'));
 Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (3,to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (4,to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (5,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_ROOM (ROOM_NO,CDATE) values (6,to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_DM_ROOM_USER
 SET DEFINE OFF;
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (1,'test',1,20,to_date('26/06/02','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (2,'test01',1,20,to_date('26/06/02','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (3,'test01',2,16,to_date('26/06/02','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (4,'test04',2,null,to_date('26/06/02','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (5,'test',3,22,to_date('26/06/05','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (6,'test05',3,22,to_date('26/06/05','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (7,'user01',4,29,to_date('26/06/05','RR/MM/DD'));
-Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE) values (8,'testuser',4,32,to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (1,'test',1,20,to_date('26/06/02','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (2,'test01',1,20,to_date('26/06/02','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (3,'test01',2,16,to_date('26/06/02','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (4,'test04',2,null,to_date('26/06/02','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (5,'test',3,22,to_date('26/06/05','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (6,'test05',3,22,to_date('26/06/05','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (7,'user01',4,32,to_date('26/06/05','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (8,'testuser',4,32,to_date('26/06/05','RR/MM/DD'),'Y');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (9,'user08',5,33,to_date('26/06/08','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (10,'user11',5,null,to_date('26/06/08','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (11,'user08',6,40,to_date('26/06/08','RR/MM/DD'),'N');
+Insert into SYSTEM.SNS_DM_ROOM_USER (ROOM_USER_NO,USER_ID,ROOM_NO,LAST_READ_MESSAGE_NO,CDATE,DELETED_YN) values (12,'user09',6,38,to_date('26/06/08','RR/MM/DD'),'N');
 REM INSERTING into SYSTEM.SNS_FAVORITE_FOLDER
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_FAVORITE_FOLDER (FOLDER_NO,USER_ID,FOLDER_NAME,FOLDER_INFO,IS_SHARED,CDATE) values (8,'test','테스트','테스트','Y',to_date('26/06/02','RR/MM/DD'));
 Insert into SYSTEM.SNS_FAVORITE_FOLDER (FOLDER_NO,USER_ID,FOLDER_NAME,FOLDER_INFO,IS_SHARED,CDATE) values (9,'test','1','1','N',to_date('26/06/02','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_FOLDER (FOLDER_NO,USER_ID,FOLDER_NAME,FOLDER_INFO,IS_SHARED,CDATE) values (15,'testuser','저장',null,'N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_FOLDER (FOLDER_NO,USER_ID,FOLDER_NAME,FOLDER_INFO,IS_SHARED,CDATE) values (16,'user08','나중에 가볼 곳','꼭 가야지!','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_FOLDER (FOLDER_NO,USER_ID,FOLDER_NAME,FOLDER_INFO,IS_SHARED,CDATE) values (17,'user08','카페 모으기!','카페 좋은 곳 찜 해주기~','Y',to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_FAVORITE_PLACE
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (9,16,'user08','어니언 성수','서울 성동구 아차산로9길 8',37.544782395189884,127.05820807890457,null,to_date('26/06/08','RR/MM/DD'));
 Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (4,8,'test','부평문화의거리','인천 부평구 광장로 6',37.4941629743516,126.724277577653,null,to_date('26/06/02','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (7,15,'testuser','와타요업 갈마본점','대전 서구 갈마역로25번길 9-8',36.3525647319605,127.373476882175,null,to_date('26/06/08','RR/MM/DD'));
 Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (5,9,'test','서울특별시청','서울 중구 세종대로 110',37.56682420267543,126.978652258823,null,to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (8,16,'user08','소문난성수감자탕','서울 성동구 연무장길 45',37.5428308422967,127.05440457812,null,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (10,17,'user08','베르크로스터스','부산 수영구 수영로 566',35.1561654475022,129.112983110924,null,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (11,17,'user08','카페레이어드 연남점','서울 마포구 성미산로 161-4',37.5649763702769,126.924182307844,null,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (12,17,'user08','호랑가시나무창작소','광주 남구 제중로47번길 22',35.1380143321172,126.911888605384,null,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (13,17,'user08','커피명가 시지점','대구 수성구 달구벌대로 3204-1',35.839694452730285,128.70689227049547,null,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FAVORITE_PLACE (FAVORITE_NO,FOLDER_NO,USER_ID,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,MEMO,CDATE) values (14,17,'user08','웨이브온커피','부산 기장군 장안읍 해맞이로 286',35.3222915727433,129.269784558837,null,to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_FOLLOW_REQUEST
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_FOLLOW_REQUEST (REQUEST_NO,REQUESTER_ID,RECEIVER_ID,REQUEST_STATUS,CDATE,UDATE) values (3,'test','test01','APR',to_date('26/06/02','RR/MM/DD'),to_date('26/06/02','RR/MM/DD'));
@@ -608,9 +657,15 @@ SET DEFINE OFF;
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (8,'test','test01',to_date('26/06/02','RR/MM/DD'));
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (6,'test','test04',to_date('26/06/02','RR/MM/DD'));
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (7,'test01','test',to_date('26/06/02','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (16,'user08','biz02',to_date('26/06/08','RR/MM/DD'));
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (10,'test05','test02',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (11,'test','test05',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (12,'test03','test',to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (14,'testuser','user01',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (15,'user08','user11',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (17,'user08','user09',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (18,'testuser','user08',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_FOLLOWS (FOLLOW_NO,FOLLOWER_ID,FOLLOWING_ID,CDATE) values (19,'user13','user08',to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_NOTIFICATION
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (1,'test01','test','FLW','USR',null,'님이 팔로우를 요청했습니다.','Y',to_date('26/06/02','RR/MM/DD'));
@@ -641,7 +696,37 @@ Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_
 Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (26,'user01','testuser','DM ','DMR',4,'님이 메시지를 보냈습니다.','Y',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (27,'user01','testuser','DM ','DMR',4,'님이 메시지를 보냈습니다.','Y',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (28,'testuser','user01','DM ','DMR',4,'님이 메시지를 보냈습니다.','Y',to_date('26/06/05','RR/MM/DD'));
-Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (29,'user04','user01','FLW','USR',null,'님이 회원님을 팔로우했습니다.','N',to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (29,'user04','user01','FLW','USR',null,'님이 회원님을 팔로우했습니다.','Y',to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (30,'user01','testuser','FLW','USR',null,'님이 회원님을 팔로우했습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (31,'user20','testuser','CMT','PST',50,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (32,'user20','testuser','CMT','PST',50,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (33,'user20','testuser','CMT','PST',50,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (34,'user01','testuser','CMT','PST',40,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (35,'user11','user08','CMT','PST',77,'님이 회원님의 글에 댓글을 남겼습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (36,'user09','user08','CMT','PST',67,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (37,'user09','user08','LKE','PST',67,'님이 회원님의 글을 좋아합니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (38,'user07','user01','LKE','PST',60,'님이 회원님의 글을 좋아합니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (39,'user07','user01','CMT','PST',60,'님이 회원님의 글에 댓글을 남겼습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (40,'user07','user08','CMT','PST',60,'님이 회원님의 글에 댓글을 남겼습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (41,'user07','user08','LKE','PST',60,'님이 회원님의 글을 좋아합니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (42,'user07','user08','CMT','PST',60,'님이 회원님의 글에 댓글을 남겼습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (43,'user11','user08','FLW','USR',null,'님이 회원님을 팔로우했습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (44,'biz02','user08','FLW','USR',null,'님이 회원님을 팔로우했습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (45,'user09','user08','FLW','USR',null,'님이 회원님을 팔로우했습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (46,'user08','testuser','FLW','USR',null,'님이 회원님을 팔로우했습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (47,'user08','user13','FLW','USR',null,'님이 회원님을 팔로우했습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (48,'user08','user01','CMT','PST',65,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (49,'user08','user02','LKE','PST',64,'님이 회원님의 글을 좋아합니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (50,'user08','user05','CMT','PST',63,'님이 회원님의 글에 댓글을 남겼습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (51,'user08','user05','LKE','PST',63,'님이 회원님의 글을 좋아합니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (52,'user11','user08','DM ','DMR',5,'님이 메시지를 보냈습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (53,'user09','user08','DM ','DMR',6,'님이 메시지를 보냈습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (54,'user08','user09','DM ','DMR',6,'님이 메시지를 보냈습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (55,'user09','user08','DM ','DMR',6,'님이 메시지를 보냈습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (56,'user09','user08','DM ','DMR',6,'님이 메시지를 보냈습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (57,'user08','user09','DM ','DMR',6,'님이 메시지를 보냈습니다.','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (58,'user09','user08','DM ','DMR',6,'님이 메시지를 보냈습니다.','N',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_NOTIFICATION (NOTI_NO,USER_ID,SENDER_ID,NOTI_TYPE,TARGET_TYPE,TARGET_ID,CONTENT,READ_YN,CDATE) values (59,'user09','user08','DM ','DMR',6,'님이 메시지를 보냈습니다.','N',to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_POST
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (41,'user01',2,'퇴근 후 성수 맥주 한 잔','브루어리을를 서울숲','서울 성동구 서울숲4길 16-25',37.546885739587154,127.04244081226828,'Y','N',0,'ACT',to_date('26/06/05','RR/MM/DD'),null);
@@ -656,6 +741,43 @@ Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_
 Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (48,'user04',5,'제주에서 천천히 걷기','성산일출봉','제주특별자치도 서귀포시 성산읍 성산리 78',33.4591349705437,126.940537521366,'Y','N',0,'ACT',to_date('26/06/05','RR/MM/DD'),null);
 Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (49,'user04',5,'영도 골목','흰여울문화마을','부산 영도구 영선동4가 605-3',35.07944374604049,129.0437540909888,'Y','N',0,'ACT',to_date('26/06/05','RR/MM/DD'),null);
 Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (50,'user20',2,'혼술하기 좋은 마이리틀케이브','마이리틀케이브','서울 강남구 논현로94길 7',37.5024726826252,127.036931763963,'Y','Y',0,'ACT',to_date('26/06/05','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (52,'user05',3,'비 오는 성수는 역시 여기','성수동대림창고갤러리','서울 성동구 성수이로 78',37.54171994709006,127.05624815815919,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (53,'user05',1,'점심 혼밥','소문난성수감자탕','서울 성동구 연무장길 45',37.5428308422967,127.05440457812,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (54,'user05',2,'퇴근 후 한잔','생활맥주 건대역점','서울 광진구 동일로22길 65',37.5415984861114,127.067914079893,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (55,'user05',3,'작업하기 좋은 곳 발견','어니언 성수','서울 성동구 아차산로9길 8',37.544782395189884,127.05820807890457,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (56,'user05',4,'서울숲 산책',null,null,null,null,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (57,'user07',1,'국밥은 역시 혼자 먹어야','해운대원조할매국밥','부산 해운대구 구남로21번길 33',35.163301573016895,129.1613417627714,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (58,'user07',3,'바다 보면서 커피','웨이브온커피','부산 기장군 장안읍 해맞이로 286',35.3222915727433,129.269784558837,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (59,'user07',2,'오늘은 맥주 한잔','생활맥주 광안리점','부산 수영구 광안해변로 165',35.1497408586086,129.115218675642,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (60,'user07',1,'솥밥이 생각나던 날','솔솥 부산해운대점','부산 해운대구 우동1로20번길 27-10',35.1646955492134,129.15791096558,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (61,'user07',5,'청사포까지 천천히 걷기','청사포다릿돌전망대','부산 해운대구 중동 산 3-9',35.16418891718333,129.19631396716275,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (62,'user08',2,'오늘은 맥주보다 하이볼','토리노유메','대전 유성구 농대로15번길 22',36.3618243057897,127.351798695057,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (63,'user08',1,'칼국수 생각나던 날','오씨칼국수','대전 동구 옛신탄진로 13',36.34203952671037,127.42510563102718,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (64,'user08',3,'사람 적은 평일 오후','프랭크커핀바','대전 서구 둔산로31번길 69',36.3549605802193,127.377325290318,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (65,'user08',1,'돈카츠 먹고 싶은 날','정돈 갤러리아타임월드점','대전 서구 대덕대로 211',36.3519480265236,127.378157435909,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (66,'user08',4,'생각 정리하러 다녀옴','대전시립미술관','대전 서구 둔산대로 155',36.3668725417191,127.385713083518,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (67,'user09',1,'오늘은 쌀국수','포36거리 상암','서울 마포구 월드컵북로 396',37.5796186903947,126.890135435949,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (68,'user09',3,'평일 오후','카페레이어드 연남점','서울 마포구 성미산로 161-4',37.5649763702769,126.924182307844,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (69,'user09',1,'버거','브루클린더버거조인트 여의도점','서울 영등포구 국제금융로2길 24',37.5242939807281,126.924843428744,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (70,'user09',1,'오늘 점심은 텐동','텐동요츠야','서울 관악구 관악로14길 71',37.478438793238524,126.95655214933412,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (71,'user09',4,'산책 겸 다녀온 곳','경의선숲길','서울 마포구 동교동 190-1',37.558803479324,126.925338455597,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (72,'user10',2,'수주식당','수주식당','대구 중구 중앙대로81길 58',35.8696531160726,128.590455761929,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (73,'user10',1,'돈카츠 먹고 싶던 날','가츠라 수성못본점','대구 수성구 용학로 138',35.82368672051037,128.62406074348854,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (74,'user10',3,'커피명가','커피명가 시지점','대구 수성구 달구벌대로 3204-1',35.839694452730285,128.70689227049547,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (75,'user10',1,'깔끔하게 한 끼','국수방 동성로본점','대구 중구 동성로6길 17-1',35.86917718246244,128.5966461919217,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (76,'user10',5,'오랜만에 올라가봄','83타워','대구 달서구 두류공원로 200',35.853168063976,128.566690838862,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (77,'user11',1,'사케동','포카포카','광주 동구 동명로25번길 11',35.1515924156687,126.922394218617,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (78,'user11',4,'전시 보러 다녀옴','국립아시아문화전당','광주 동구 문화전당로 38',35.147333715652636,126.92135353457694,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (79,'user11',2,'오늘 하루 끝','동전','광주 동구 동명로 8-5',35.149757578335,126.922916144915,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (80,'user11',3,'커피 마시면서 쉬기','호랑가시나무창작소','광주 남구 제중로47번길 22',35.1380143321172,126.911888605384,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (81,'user11',1,'오늘은 국밥','옛날엄마손국밥','광주 남구 진다리로 43-1',35.1368115778966,126.906624144875,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (82,'user20',2,'강남 빌딩 숲 속, 가장 낭만적인 리스닝 바','마이리틀케이브','서울 강남구 논현로94길 7',37.5024726826252,127.036931763963,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (85,'user20',2,'평일 오후, 땡땡이 치고 싶은 날엔 마이리틀케이브로 오세요.🙌','마이리틀케이브','서울 강남구 논현로94길 7',37.5024726826252,127.036931763963,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (87,'biz01',3,'[WERK daily]','베르크로스터스','부산 수영구 수영로 566',35.1561654475022,129.112983110924,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (86,'biz01',3,'[WERK ROASTERS]','베르크로스터스','부산 수영구 수영로 566',35.1561654475022,129.112983110924,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (88,'biz02',1,'바삭한 튀김의 텐동이 일품인 장어가통째로 올라가는 "와타요업"','와타요업 탄방본점','대전 서구 계룡로603번길 29',36.34186013909107,127.39135309489495,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (89,'biz02',1,'와타요업 고객 후기','와타요업 갈마본점','대전 서구 갈마역로25번길 9-8',36.3525647319605,127.373476882175,'Y','Y',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_POST (POST_NO,USER_ID,CATEGORY_NO,TITLE,PLACE_NAME,PLACE_ADDRESS,LAT,LNG,CMT_YN,IS_AD,VIEW_COUNT,FEED_STATUS,CDATE,UDATE) values (90,'testuser',6,'그냥 저냥 하루',null,null,null,null,'Y','N',0,'ACT',to_date('26/06/08','RR/MM/DD'),null);
 REM INSERTING into SYSTEM.SNS_POST_FILE
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (39,40,'다운로드.jfif','1780641727478-318514854.jfif','/uploads/post/1780641727478-318514854.jfif','IMG',12589,2,to_date('26/06/05','RR/MM/DD'));
@@ -678,8 +800,67 @@ Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PAT
 Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (53,48,'다운로드 (14).jfif','1780643072422-219556177.jfif','/uploads/post/1780643072422-219556177.jfif','IMG',73210,1,to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (54,49,'다운로드 (15).jfif','1780643147309-3903621.jfif','/uploads/post/1780643147309-3903621.jfif','IMG',407556,1,to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (55,50,'images (2).jfif','1780649506628-24142828.jfif','/uploads/post/1780649506628-24142828.jfif','IMG',10342,1,to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (57,52,'대림창고.jfif','1780889568989-915013585.jfif','/uploads/post/1780889568989-915013585.jfif','IMG',173522,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (58,53,'성수소문난감자탕.jfif','1780889777544-582094588.jfif','/uploads/post/1780889777544-582094588.jfif','IMG',459641,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (59,54,'생활맥주 건대.jfif','1780889826024-542540890.jfif','/uploads/post/1780889826024-542540890.jfif','IMG',276597,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (60,55,'어니언성수.jfif','1780889870447-685207091.jfif','/uploads/post/1780889870447-685207091.jfif','IMG',408463,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (61,56,'서울숲.jfif','1780889913673-206431455.jfif','/uploads/post/1780889913673-206431455.jfif','IMG',410881,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (62,56,'서울숲2.jfif','1780889913674-167935632.jfif','/uploads/post/1780889913674-167935632.jfif','IMG',332921,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (63,56,'서울숲3.jfif','1780889913675-430714540.jfif','/uploads/post/1780889913675-430714540.jfif','IMG',739246,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (64,57,'국바.jfif','1780890397152-135754214.jfif','/uploads/post/1780890397152-135754214.jfif','IMG',357741,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (65,58,'웨이브온.jfif','1780890454544-26170380.jfif','/uploads/post/1780890454544-26170380.jfif','IMG',458125,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (66,59,'생맥부산.jfif','1780890489047-785735592.jfif','/uploads/post/1780890489047-785735592.jfif','IMG',182998,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (67,60,'솥밥.jfif','1780890599735-947402989.jfif','/uploads/post/1780890599735-947402989.jfif','IMG',327927,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (68,61,'청사포뭐시지.jfif','1780890650607-599761784.jfif','/uploads/post/1780890650607-599761784.jfif','IMG',320234,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (69,62,'토리노유메.png','1780891099230-571756706.png','/uploads/post/1780891099230-571756706.png','IMG',1698254,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (70,63,'오씨칼.jfif','1780891131551-606872671.jfif','/uploads/post/1780891131551-606872671.jfif','IMG',221985,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (71,64,'프랭크머시기.jfif','1780891175559-687615545.jfif','/uploads/post/1780891175559-687615545.jfif','IMG',224084,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (72,65,'wjdehs.jfif','1780891224310-873252738.jfif','/uploads/post/1780891224310-873252738.jfif','IMG',495585,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (77,67,'포36거리상암.jfif','1780891788278-286462103.jfif','/uploads/post/1780891788278-286462103.jfif','IMG',299151,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (78,68,'레이어드연남.jfif','1780891839078-467997028.jfif','/uploads/post/1780891839078-467997028.jfif','IMG',196296,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (79,69,'qjrj.jfif','1780891904039-886480901.jfif','/uploads/post/1780891904039-886480901.jfif','IMG',502200,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (80,70,'텐동오츠야.jfif','1780891939103-135382049.jfif','/uploads/post/1780891939103-135382049.jfif','IMG',441287,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (81,71,'숲1.jfif','1780891975201-797917405.jfif','/uploads/post/1780891975201-797917405.jfif','IMG',648673,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (82,71,'숲2.jfif','1780891975202-578824123.jfif','/uploads/post/1780891975202-578824123.jfif','IMG',701186,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (83,71,'숲3.jfif','1780891975204-262692822.jfif','/uploads/post/1780891975204-262692822.jfif','IMG',612286,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (84,72,'대구 혼술.jfif','1780892234910-517998700.jfif','/uploads/post/1780892234910-517998700.jfif','IMG',424466,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (85,73,'카르차.jfif','1780892447686-72921213.jfif','/uploads/post/1780892447686-72921213.jfif','IMG',452264,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (86,74,'커피명가.jfif','1780892530886-907030506.jfif','/uploads/post/1780892530886-907030506.jfif','IMG',362381,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (87,75,'국수방.jfif','1780892581014-951023834.jfif','/uploads/post/1780892581014-951023834.jfif','IMG',408966,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (88,76,'타워.jfif','1780896697422-86014996.jfif','/uploads/post/1780896697422-86014996.jfif','IMG',431997,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (89,76,'타워2.jfif','1780896697424-659762177.jfif','/uploads/post/1780896697424-659762177.jfif','IMG',323155,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (90,76,'터ㅏ3.jfif','1780896697425-928298512.jfif','/uploads/post/1780896697425-928298512.jfif','IMG',417432,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (91,77,'사케동 광주.jfif','1780896923366-1284722.jfif','/uploads/post/1780896923366-1284722.jfif','IMG',167112,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (92,78,'rnrans5.jfif','1780897037438-47920649.jfif','/uploads/post/1780897037438-47920649.jfif','IMG',269896,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (93,78,'rnrans44.jfif','1780897037439-795869263.jfif','/uploads/post/1780897037439-795869263.jfif','IMG',555141,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (94,78,'국립문화 ㅈ1.jfif','1780897037440-727283060.jfif','/uploads/post/1780897037440-727283060.jfif','IMG',144676,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (95,78,'국문23.jfif','1780897037441-209167751.jfif','/uploads/post/1780897037441-209167751.jfif','IMG',200677,4,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (96,79,'광주어쩌구.jfif','1780897106477-530235006.jfif','/uploads/post/1780897106477-530235006.jfif','IMG',363065,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (97,80,'호랑가시.png','1780897140038-989118258.png','/uploads/post/1780897140038-989118258.png','IMG',2966895,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (98,81,'국밥광주.jfif','1780897200493-904616797.jfif','/uploads/post/1780897200493-904616797.jfif','IMG',430310,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (108,86,'ㅇㄴㅁㄹ.PNG','1780899843967-505422179.PNG','/uploads/post/1780899843967-505422179.PNG','IMG',558080,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (109,86,'ㄹㄹㄹㅇ.PNG','1780899843969-229647986.PNG','/uploads/post/1780899843969-229647986.PNG','IMG',582777,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (110,86,'ㄹㄹㅇㅁㄴㅇ.PNG','1780899843971-233388603.PNG','/uploads/post/1780899843971-233388603.PNG','IMG',612909,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (104,82,'마리케.PNG','1780899468416-634630766.PNG','/uploads/post/1780899468416-634630766.PNG','IMG',499121,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (111,87,'오늘커피.PNG','1780899951478-408176592.PNG','/uploads/post/1780899951478-408176592.PNG','IMG',731413,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (105,82,'마리케33.PNG','1780899468420-847875217.PNG','/uploads/post/1780899468420-847875217.PNG','IMG',1030852,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (106,82,'akflzp2.PNG','1780899468424-427671562.PNG','/uploads/post/1780899468424-427671562.PNG','IMG',1167934,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (107,85,'평일 오후, 땡땡이 치고 싶은 날엔마이리틀케이브로 오세요.🙌마음 편히 쉴 수 있도록하루 5분에게만 공간을 내어드립니다.차를 마시며 편안한 선율 속에 쉬다보면복잡한 생각은 .mp4','1780899566326-320346681.mp4','/uploads/post/1780899566326-320346681.mp4','VDO',1320620,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (112,88,'바삭한 튀김의 텐동이 일품인 장어가통째로 올라가는 와타요업..🗺대전시 서구 탄방동58-32(1층)☎️010-7649-3220⏳️12-00 ~ 21-00브레이크타임 - .mp4','1780900161246-355174796.mp4','/uploads/post/1780900161246-355174796.mp4','VDO',11652100,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (113,89,'ㅌㅊㅋㅍ.PNG','1780900336325-253146437.PNG','/uploads/post/1780900336325-253146437.PNG','IMG',1554135,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (114,89,'ㄹㅇㄴ.PNG','1780900336329-768368432.PNG','/uploads/post/1780900336329-768368432.PNG','IMG',1315925,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (115,90,'프아.jpg','1780900471893-978361003.jpg','/uploads/post/1780900471893-978361003.jpg','IMG',10275,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (117,66,'altfrhks2.jfif','1780906783658-410743628.jfif','/uploads/post/1780906783658-410743628.jfif','IMG',356983,1,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (118,66,'altnfrhks1.jfif','1780906783660-341137730.jfif','/uploads/post/1780906783660-341137730.jfif','IMG',169314,2,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (119,66,'altnfrhks4.jfif','1780906783661-257233560.jfif','/uploads/post/1780906783661-257233560.jfif','IMG',197088,3,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_FILE (FILE_NO,POST_NO,ORIGIN_NAME,SAVE_NAME,FILE_PATH,FILE_TYPE,FILE_SIZE,FILE_ORDER,CDATE) values (120,66,'atnfrhks1.jfif','1780906783662-930421707.jfif','/uploads/post/1780906783662-930421707.jfif','IMG',375314,4,to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_POST_LIKE
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_POST_LIKE (LIKE_NO,USER_ID,POST_NO,CDATE) values (40,'user08',67,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_LIKE (LIKE_NO,USER_ID,POST_NO,CDATE) values (41,'user01',60,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_LIKE (LIKE_NO,USER_ID,POST_NO,CDATE) values (42,'user08',60,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_LIKE (LIKE_NO,USER_ID,POST_NO,CDATE) values (43,'user02',64,to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_POST_LIKE (LIKE_NO,USER_ID,POST_NO,CDATE) values (44,'user05',63,to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_POST_TAG
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (53,40,383);
@@ -733,8 +914,157 @@ Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (95,50,97);
 Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (96,50,380);
 Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (97,50,2);
 Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (98,50,391);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (100,52,14);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (101,52,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (102,52,229);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (103,53,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (104,53,14);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (105,53,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (106,53,383);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (107,53,223);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (108,54,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (109,54,85);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (110,54,211);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (111,54,56);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (112,55,14);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (113,55,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (114,55,392);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (115,56,393);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (116,56,37);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (117,56,19);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (118,56,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (119,56,394);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (120,57,384);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (121,57,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (122,57,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (123,57,224);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (124,58,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (125,58,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (126,59,85);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (127,59,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (128,59,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (129,59,211);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (130,59,230);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (131,60,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (132,60,395);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (133,60,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (134,60,224);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (135,60,335);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (136,61,37);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (137,61,25);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (138,61,224);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (139,61,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (140,61,187);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (141,62,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (142,62,396);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (143,62,397);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (144,62,211);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (145,63,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (146,63,398);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (147,63,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (148,64,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (149,64,223);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (150,64,241);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (151,64,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (152,64,397);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (153,65,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (154,65,399);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (155,65,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (156,65,397);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (157,65,379);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (162,67,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (163,67,379);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (164,67,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (165,67,401);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (166,68,402);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (167,68,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (168,68,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (169,68,223);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (170,68,241);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (171,69,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (172,69,378);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (173,69,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (174,70,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (175,70,403);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (176,70,55);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (177,70,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (178,71,393);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (179,71,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (180,71,19);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (181,71,37);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (182,72,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (183,72,284);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (184,72,396);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (185,73,399);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (186,73,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (187,73,284);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (188,74,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (189,74,284);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (190,75,404);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (191,75,379);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (192,75,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (193,75,284);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (194,76,25);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (195,76,284);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (196,76,405);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (197,77,296);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (198,77,406);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (199,77,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (200,78,139);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (201,78,19);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (202,78,296);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (203,79,296);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (204,79,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (205,79,407);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (206,80,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (207,80,296);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (208,81,384);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (209,81,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (210,81,379);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (230,82,2);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (231,82,408);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (232,82,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (233,82,241);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (234,82,409);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (235,82,229);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (236,82,223);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (237,82,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (238,85,408);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (259,88,403);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (260,88,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (261,88,413);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (262,88,414);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (249,86,410);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (250,86,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (251,86,412);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (252,86,411);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (239,85,7);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (240,85,380);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (241,85,2);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (242,85,223);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (243,85,241);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (263,88,379);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (253,86,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (254,87,13);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (255,87,411);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (256,87,218);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (257,87,412);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (258,88,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (264,89,1);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (265,89,403);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (266,89,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (267,89,415);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (268,89,414);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (269,90,31);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (271,66,290);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (272,66,400);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (273,66,139);
+Insert into SYSTEM.SNS_POST_TAG (POST_TAG_NO,POST_NO,TAG_NO) values (274,66,19);
 REM INSERTING into SYSTEM.SNS_REPORT
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_REPORT (REPORT_NO,REPORTER_ID,TARGET_TYPE,TARGET_ID,REASON,DETAIL,STATUS,CDATE,TARGET_NO) values (2,'testuser','PST','user12','부적절한 내용','부적절한 내용입니다','WAT',to_date('26/06/08','RR/MM/DD'),91);
+Insert into SYSTEM.SNS_REPORT (REPORT_NO,REPORTER_ID,TARGET_TYPE,TARGET_ID,REASON,DETAIL,STATUS,CDATE,TARGET_NO) values (3,'testuser','USR','user18','부적절한 프로필','부적절한 사람임','WAT',to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_REPORT (REPORT_NO,REPORTER_ID,TARGET_TYPE,TARGET_ID,REASON,DETAIL,STATUS,CDATE,TARGET_NO) values (4,'testuser','USR','user17','부적절한 프로필','부적절한 프로필','WAT',to_date('26/06/08','RR/MM/DD'),null);
 REM INSERTING into SYSTEM.SNS_SEARCH_LOG
 SET DEFINE OFF;
 REM INSERTING into SYSTEM.SNS_TAG
@@ -1129,8 +1459,195 @@ Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (388,'선�
 Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (389,'등산','USR','N');
 Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (390,'역삼역','USR','N');
 Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (391,'lp','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (392,'빵','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (393,'숲','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (394,'걷기','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (395,'솥밥','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (396,'하이볼','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (397,'둔산동','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (398,'칼국수','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (399,'돈카츠','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (400,'미술관','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (401,'상암','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (402,'연남','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (403,'텐동','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (404,'국수','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (405,'83타워','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (406,'사케동','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (407,'동구','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (408,'마이리틀케이브','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (409,'저녁','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (410,'베르크로스터스','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (411,'커피','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (412,'수영구','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (413,'탄방동','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (414,'서구','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (415,'갈마','USR','N');
+Insert into SYSTEM.SNS_TAG (TAG_NO,TAG_NAME,TAG_TYPE,ALGO_YN) values (416,'강아지','USR','N');
 REM INSERTING into SYSTEM.SNS_USER_ACT_LOG
 SET DEFINE OFF;
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (4,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (2,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (3,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (5,'testuser','VIW','PST',45,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (6,'testuser','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user04');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (7,'testuser','VIW','PST',50,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (8,'user05','PST','PST',52,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (9,'user05','PST','PST',53,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (10,'user05','PST','PST',54,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (11,'user05','PST','PST',55,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (12,'user05','PST','PST',56,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (13,'user07','PST','PST',57,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (14,'user07','PST','PST',58,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (15,'user07','PST','PST',59,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (16,'user07','PST','PST',60,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (17,'user07','PST','PST',61,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (18,'user08','PST','PST',62,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (19,'user08','PST','PST',63,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (20,'user08','PST','PST',64,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (21,'user08','PST','PST',65,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (22,'user08','PST','PST',66,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (23,'user09','PST','PST',67,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (24,'user09','PST','PST',68,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (25,'user09','PST','PST',69,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (26,'user09','PST','PST',70,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (27,'user09','PST','PST',71,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (28,'user10','PST','PST',72,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (29,'user10','PST','PST',73,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (30,'user10','PST','PST',74,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (31,'user10','PST','PST',75,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (32,'user10','PST','PST',76,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (33,'user11','PST','PST',77,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (34,'user11','PST','PST',78,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (35,'user11','PST','PST',79,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (36,'user11','PST','PST',80,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (37,'user11','PST','PST',81,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (38,'user11','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (39,'user11','VIW','PST',45,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (40,'user11','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (41,'user11','VIW','PST',53,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (42,'user11','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (43,'user11','VIW','PST',70,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (44,'user11','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (45,'user11','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (46,'user11','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (47,'user11','VIW','PST',75,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (48,'user20','PST','PST',83,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (49,'user20','VIW','PST',81,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (50,'testuser','VIW','PST',40,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (51,'testuser','CMT','PST',40,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (52,'user20','PST','PST',84,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (53,'testuser','VIW','PST',88,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (54,'testuser','VIW','PST',41,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (55,'testuser','VIW','PST',39,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (56,'testuser','PST','PST',90,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (57,'testuser','VIW','PST',81,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (58,'testuser','VIW','PST',89,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (59,'user12','PST','PST',91,10,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (60,'testuser','VIW','PST',91,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (61,'testuser','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user18');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (62,'testuser','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user17');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (63,'testuser','VIW','PST',89,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (64,'testuser','VIW','PST',70,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (65,'testuser','VIW','PST',67,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (66,'testuser','VIW','PST',48,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (67,'testuser','VIW','PST',77,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (68,'user01','VIW','PST',91,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (69,'user08','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user02');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (70,'user08','VIW','PST',81,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (71,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (72,'user08','VIW','PST',45,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (73,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (74,'user08','VIW','PST',53,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (75,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (76,'user08','VIW','PST',70,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (77,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (78,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (79,'user08','VIW','PST',89,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (80,'user08','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (81,'user08','VIW','PST',75,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (82,'user08','VIW','PST',77,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (83,'user08','CMT','PST',77,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (84,'user08','VIW','PST',73,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (85,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (86,'user08','VIW','PST',69,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (87,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (88,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (89,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (90,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (91,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (92,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (93,'user08','SCH','TAG',406,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (94,'user08','VIW','PST',67,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (95,'user08','CMT','PST',67,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (96,'user08','LKE','PST',67,4,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (97,'user01','SCH','TAG',395,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (98,'user01','VIW','PST',60,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (99,'user01','LKE','PST',60,4,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (100,'user01','CMT','PST',60,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (101,'user08','VIW','PST',57,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (102,'user08','VIW','PST',39,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (103,'user08','VIW','PST',60,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (104,'user08','CMT','PST',60,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (105,'user08','LKE','PST',60,4,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (106,'user08','CMT','PST',60,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (107,'user08','VIW','PST',40,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (108,'user08','VIW','PST',87,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (109,'user08','VIW','PST',68,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (110,'user08','VIW','PST',80,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (111,'user08','VIW','PST',74,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (112,'user08','VIW','PST',58,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (113,'testuser','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (114,'user13','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (115,'user01','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (116,'user01','CMT','PST',65,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (117,'user02','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (118,'user02','LKE','PST',64,4,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (119,'user05','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (120,'user05','CMT','PST',63,6,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (121,'user05','LKE','PST',63,4,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (122,'user08','VIW','PST',71,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (123,'user08','VIW','PST',78,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (124,'testuser','VIW','PST',63,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (125,'testuser','VIW','PST',65,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (126,'testuser','VIW','PST',64,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (127,'testuser','VIW','PST',66,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (128,'testuser','VIW','PST',73,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (129,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (130,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (131,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (132,'testuser','VIW','PST',45,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (133,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (134,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (135,'testuser','SCH','TAG',1,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (136,'testuser','VIW','PST',62,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (137,'testuser','VIW','PST',89,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (138,'testuser','VIW','PST',60,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (139,'testuser','SCH','USR',null,1,to_date('26/06/08','RR/MM/DD'),'user08');
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (140,'testuser','SCH','TAG',399,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (141,'testuser','SCH','TAG',399,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (142,'testuser','VIW','PST',50,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (143,'testuser','VIW','PST',74,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (144,'user03','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (145,'user03','VIW','PST',85,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (146,'user03','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (147,'user03','VIW','PST',82,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (148,'user03','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (149,'user03','VIW','PST',79,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (150,'user03','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (151,'user06','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (152,'user06','VIW','PST',79,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (153,'user06','VIW','PST',85,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (154,'user15','SCH','TAG',7,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (155,'user15','VIW','PST',85,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (156,'user15','VIW','PST',82,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (157,'user15','VIW','PST',89,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (158,'user15','VIW','PST',88,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (159,'user15','VIW','PST',87,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (160,'user15','SCH','TAG',408,1,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (161,'user15','VIW','PST',86,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (162,'user15','VIW','PST',50,2,to_date('26/06/08','RR/MM/DD'),null);
+Insert into SYSTEM.SNS_USER_ACT_LOG (LOG_NO,USER_ID,ACT_TYPE,TARGET_TYPE,TARGET_NO,SCORE,CDATE,TARGET_ID) values (163,'user15','VIW','PST',79,2,to_date('26/06/08','RR/MM/DD'),null);
 REM INSERTING into SYSTEM.SNS_USER_BLOCK
 SET DEFINE OFF;
 REM INSERTING into SYSTEM.SNS_USER_INTR_SCORE
@@ -1165,6 +1682,8 @@ Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_
 Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_NOTI,UDATE) values ('user19','Y','Y','Y','Y',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_NOTI,UDATE) values ('user20','Y','Y','Y','Y',to_date('26/06/05','RR/MM/DD'));
 Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_NOTI,UDATE) values ('testuser','Y','Y','Y','Y',to_date('26/06/05','RR/MM/DD'));
+Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_NOTI,UDATE) values ('biz01','Y','Y','Y','Y',to_date('26/06/08','RR/MM/DD'));
+Insert into SYSTEM.SNS_USER_NOTI (USER_ID,DM_NOTI,COMMENT_NOTI,FOLLOW_NOTI,LIKE_NOTI,UDATE) values ('biz02','Y','Y','Y','Y',to_date('26/06/08','RR/MM/DD'));
 REM INSERTING into SYSTEM.SNS_USERS
 SET DEFINE OFF;
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('test','$2b$10$EH84UNN3VDLF4xWFntF3T.Ukjwoz6dqTrWSv8MSjIMUfdxemXrg1i','김예림','yerim_kim','01024140196','안뇽하세용','/uploads/profile/1780311855303-893972589.png','N','DEL',to_date('26/05/29','RR/MM/DD'),to_date('26/06/05','RR/MM/DD'),'ALL','PUB');
@@ -1179,14 +1698,14 @@ Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHON
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user03','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','박지후','jihoo.log','01024140196','고양이
 ','/uploads/profile/1780643710574-896658183.jpg','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user04','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','최도윤','doyoon_','01024140196','여행','/uploads/profile/1780643728484-491865428.jpg','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user05','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','정하린','harin.zip','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user05','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','정하린','harin.zip','01024140196','빵주세요','/uploads/profile/1780889972840-857057335.png','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user06','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','강유진','mood.of.yujin','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user07','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','윤채원','chaewon_day','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user08','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','오지안','zian.archive','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user09','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','한서우','slow.coffee','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user10','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','임도현','wander.note','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user11','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','송하준','nightwalk_','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user12','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','조은우','film.memory','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user07','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','윤채원','chaewon_day','01024140196','부산사람','/uploads/profile/1780890729488-465739725.png','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user08','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','오지안','zian.archive','01024140196','혼자 있는게 좋은 사람','/uploads/profile/1780891358232-935632763.jfif','N','ACT',to_date('26/06/05','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'),'OFF','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user09','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','한서우','slow.coffee','01024140196',null,'/uploads/profile/1780892049111-834961854.png','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user10','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','임도현','wander.note','01024140196',null,'/uploads/profile/1780892083102-311272803.jpg','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user11','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','송하준','nightwalk_','01024140196',null,'/uploads/profile/1780897350503-943618600.jpg','N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user12','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','조은우','film.memory','01024140196','악질 유저',null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user13','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','장민서','mins_archive','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user14','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','백지율','dailymoment','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user15','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','신예나','yena.record','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
@@ -1195,7 +1714,10 @@ Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHON
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user18','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','박하늘','bluewindow','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user19','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','최라온','cafe.memo','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
 Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('user20','$2b$10$hahWZv0mxcaOdpfDmMz1H.dAG6f2wCJukee1XM/nJ6T8Dhga2p2/a','정민우','mylittlecave_bar','01024140196','강남 빌딩 숲 속, 가장 낭만적인 리스닝 바','/uploads/profile/1780649312484-431559477.jpg','Y','ACT',to_date('26/06/05','RR/MM/DD'),to_date('26/06/05','RR/MM/DD'),'ALL','PUB');
-Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('testuser','$2b$10$hbNZAqisTMQz2gkGMO3YgO7T9pJWXhj2JU72eb5dKStDC90Zx5KLK','테스터','test_user','01024140196',null,null,'N','ACT',to_date('26/06/05','RR/MM/DD'),null,'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('testuser','$2b$10$hbNZAqisTMQz2gkGMO3YgO7T9pJWXhj2JU72eb5dKStDC90Zx5KLK','테스터','test_user','01024140196','혼자가 좋아','/uploads/profile/1780900491430-801477096.png','N','ACT',to_date('26/06/05','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'),'OFF','PRV');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('biz01','$2b$10$SyLMc61zV/GTsLvaDCCiT.iuYjaebvKmUG4iybDSt1Z5CLOcsjcuC','김비즈','werk.roasters','01024140196','WERK ROASTERS | 베르크로스터스','/uploads/profile/1780899652157-905887206.jpg','Y','ACT',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'),'ALL','PUB');
+Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHONE,USER_INTRO,PROFILE_IMG,USER_BIZ,USER_STATUS,CDATE,UDATE,RELATION_BADGE,ACCOUNT_VISIBLE) values ('biz02','$2b$10$Ti1rkhDtXNg/zBV5mr1AuOBqeRTvGjehv0S9IW5QRCNCAYOOLE9d2','이비즈','watayoup','01024140196','●「와타요업」
+🎏대전 처음,텐동집🥇🥇','/uploads/profile/1780900041060-996268421.jpg','Y','ACT',to_date('26/06/08','RR/MM/DD'),to_date('26/06/08','RR/MM/DD'),'ALL','PUB');
 --------------------------------------------------------
 --  DDL for Index SYS_C008406
 --------------------------------------------------------
@@ -1723,6 +2245,7 @@ Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHON
   PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
   BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
   TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SYSTEM"."SNS_DM_ROOM_USER" MODIFY ("DELETED_YN" NOT NULL ENABLE);
 --------------------------------------------------------
 --  Constraints for Table SNS_FAVORITE_FOLDER
 --------------------------------------------------------
@@ -1900,7 +2423,7 @@ Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHON
   ALTER TABLE "SYSTEM"."SNS_REPORT" MODIFY ("REASON" NOT NULL ENABLE);
   ALTER TABLE "SYSTEM"."SNS_REPORT" MODIFY ("STATUS" NOT NULL ENABLE);
   ALTER TABLE "SYSTEM"."SNS_REPORT" MODIFY ("CDATE" NOT NULL ENABLE);
-  ALTER TABLE "SYSTEM"."SNS_REPORT" ADD CONSTRAINT "CK_SNS_REPORT_STATUS" CHECK (STATUS IN ('NEW', 'ING', 'END')) ENABLE;
+  ALTER TABLE "SYSTEM"."SNS_REPORT" ADD CONSTRAINT "CK_SNS_REPORT_STATUS" CHECK (STATUS IN ('WAT', 'DON', 'REJ')) ENABLE;
   ALTER TABLE "SYSTEM"."SNS_REPORT" ADD CONSTRAINT "CK_SNS_REPORT_TARGET" CHECK (TARGET_TYPE IN ('USR', 'PST', 'CMT')) ENABLE;
   ALTER TABLE "SYSTEM"."SNS_REPORT" ADD PRIMARY KEY ("REPORT_NO")
   USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
@@ -2177,8 +2700,6 @@ Insert into SYSTEM.SNS_USERS (USER_ID,USER_PWD,USER_NAME,USER_NICKNAME,USER_PHON
 	  REFERENCES "SYSTEM"."SNS_USERS" ("USER_ID") ENABLE;
   ALTER TABLE "SYSTEM"."SNS_USER_INTR_SCORE" ADD CONSTRAINT "FK_SNS_INTR_TAG" FOREIGN KEY ("TAG_NO")
 	  REFERENCES "SYSTEM"."SNS_TAG" ("TAG_NO") ENABLE;
-  ALTER TABLE "SYSTEM"."SNS_USER_INTR_SCORE" ADD CONSTRAINT "FK_SNS_INTR_CATEGORY" FOREIGN KEY ("CATEGORY_NO")
-	  REFERENCES "SYSTEM"."SNS_CATEGORY" ("CATEGORY_NO") ENABLE;
 --------------------------------------------------------
 --  Ref Constraints for Table SNS_USER_NOTI
 --------------------------------------------------------
