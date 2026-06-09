@@ -90,12 +90,28 @@ function NotificationPanel({ open, onClose, onUnreadCountChange }) {
       });
   }
 
-  function moveByNotification(noti) {
+  async function moveByNotification(noti) {
     readNotification(noti.notiNo);
 
     if (noti.notiType === "DM") {
-      navigate(`/so:lo/message?roomNo=${noti.targetId}`);
-      onClose();
+      authFetch(`http://localhost:3010/dm/rooms/${noti.targetId}/show`, {
+        method: "PUT"
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.result !== "success") {
+            setMessage(data.message || "채팅방으로 이동하지 못했습니다.");
+            return;
+          }
+
+          navigate(`/so:lo/message?roomNo=${noti.targetId}`);
+          onClose();
+        })
+        .catch((err) => {
+          console.error("DM room show error:", err);
+          setMessage("채팅방으로 이동하지 못했습니다.");
+        });
+
       return;
     }
 
@@ -103,7 +119,8 @@ function NotificationPanel({ open, onClose, onUnreadCountChange }) {
       navigate("/so:lo/feed", {
         state: {
           notificationPostNo: noti.targetId,
-          notificationType: noti.notiType
+          notificationType: noti.notiType,
+          openPostDetail: true
         }
       });
       onClose();

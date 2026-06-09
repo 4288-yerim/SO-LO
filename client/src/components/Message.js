@@ -300,14 +300,21 @@ function Message() {
             <div className="message-empty">아직 메시지가 없습니다.</div>
           ) : (
             roomList.map((room) => (
-              <button
-                type="button"
+              <div
                 key={room.roomNo}
-                className={`message-room-item ${String(selectedRoomNo) === String(room.roomNo)
+                role="button"
+                tabIndex={0}
+                className={`message-room-item ${
+                  String(selectedRoomNo) === String(room.roomNo)
                     ? "active"
                     : ""
-                  }`}
+                }`}
                 onClick={() => selectRoom(room)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    selectRoom(room);
+                  }
+                }}
               >
                 <div className="message-room-img-wrap">
                   {room.otherProfileImg ? (
@@ -347,7 +354,7 @@ function Message() {
                     <X size={16} />
                   </button>
                 </div>
-              </button>
+              </div>
             ))
           )}
         </section>

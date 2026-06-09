@@ -323,32 +323,15 @@ function Setting() {
       .then((res) => res.json())
       .then((data) => {
         if (data.result === "success") {
-          const savedUser = JSON.parse(localStorage.getItem("user"));
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
 
-          if (savedUser) {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                ...savedUser,
-                userBiz: "Y",
-                relationBadge: "ALL",
-                accountVisible: "PUB"
-              })
-            );
-          }
-
-          setPrivacyForm({
-            accountVisible: "PUB",
-            relationBadge: "ALL"
-          });
-
-          setUserInfo((prev) => ({
-            ...prev,
-            userBiz: "Y"
-          }));
-
-          loadSetting();
-          openModal("alert", "전환 완료", data.message);
+          openModal(
+            "alert",
+            "전환 완료",
+            "비즈니스 계정으로 전환되었습니다. 다시 로그인해주세요.",
+            () => navigate("/login")
+          );
         } else {
           openModal("alert", "전환 실패", data.message);
         }

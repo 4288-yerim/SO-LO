@@ -256,3 +256,8 @@
 .profile-more-menu .danger {
   color: #b04a4a;
 }
+
+.ready {
+  font-size: 14px;
+  color: #555;
+}

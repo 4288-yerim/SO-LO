@@ -160,7 +160,6 @@ router.get("/", authMiddleware, async (req, res) => {
           OR P.USER_ID = :userId
         )
           
-        AND P.USER_ID <> :userId
     )
     SELECT
       BASE_POST.*,
@@ -243,6 +242,7 @@ router.get("/", authMiddleware, async (req, res) => {
     WHERE IS_AD = 'N'
       OR IS_AD = 'Y'
     ORDER BY
+      CASE WHEN USER_ID = :userId THEN 1 ELSE 0 END ASC,
       CASE WHEN IS_AD = 'Y' THEN AD_GROUP ELSE FEED_GROUP END ASC,
       POST_TAG_SCORE DESC,
       CDATE DESC
@@ -528,7 +528,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-//  댓글
+// 댓글
 router.get("/:postNo", authMiddleware, async (req, res) => {
   let connection;
 

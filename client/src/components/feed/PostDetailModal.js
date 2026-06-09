@@ -109,6 +109,8 @@ function PostDetailModal({
   const [reportDetail, setReportDetail] = useState("");
   const [reportMessage, setReportMessage] = useState("");
 
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
   function openReportModal(targetType, targetId, targetNo) {
     setReportTarget({ targetType, targetId, targetNo });
     setReportReason("");
@@ -746,6 +748,7 @@ function PostDetailModal({
                 className="post-detail-share-btn"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setShareModalOpen(true);
                 }}
               >
                 <Share2 size={21} />
@@ -871,6 +874,33 @@ function PostDetailModal({
                   onClick={confirmDeletePost}
                 >
                   삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {shareModalOpen && (
+          <div
+            className="report-modal-backdrop"
+            onClick={() => setShareModalOpen(false)}
+          >
+            <div
+              className="report-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>공유</h3>
+
+              <p className="ready">
+                기능 준비중입니다.
+              </p>
+
+              <div className="delete-post-modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setShareModalOpen(false)}
+                >
+                  확인
                 </button>
               </div>
             </div>

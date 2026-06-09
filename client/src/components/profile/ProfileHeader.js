@@ -30,6 +30,8 @@ function ProfileHeader({
   const [reportDetail, setReportDetail] = useState("");
   const [reportMessage, setReportMessage] = useState("");
 
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
   function openReportModal() {
     setOpenMenu(false);
     setReportReason("");
@@ -231,7 +233,13 @@ function ProfileHeader({
 
               {openMenu && (
                 <div className="profile-more-menu">
-                  <button type="button">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenMenu(false);
+                      setShareModalOpen(true);
+                    }}
+                  >
                     공유
                   </button>
 
@@ -263,6 +271,33 @@ function ProfileHeader({
           </>
         </div>
       </div>
+
+      {shareModalOpen && (
+        <div
+          className="report-modal-backdrop"
+          onClick={() => setShareModalOpen(false)}
+        >
+          <div
+            className="report-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>공유</h3>
+
+            <p className="ready">
+              기능 준비중입니다.
+            </p>
+
+            <div className="delete-post-modal-actions">
+              <button
+                type="button"
+                onClick={() => setShareModalOpen(false)}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {reportModalOpen && (
         <div

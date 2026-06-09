@@ -440,6 +440,63 @@ router.put("/rooms/:roomNo/read", authMiddleware, async (req, res) => {
   }
 });
 
+// 숨김 채팅방 다시 표시
+router.put("/rooms/:roomNo/show", authMiddleware, async (req, res) => {
+  let connection;
+
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    const loginUserId = req.user.userId;
+    const { roomNo } = req.params;
+
+    const memberResult = await connection.execute(
+      `
+      SELECT COUNT(*) AS CNT
+      FROM SNS_DM_ROOM_USER
+      WHERE ROOM_NO = :roomNo
+        AND USER_ID = :loginUserId
+      `,
+      { roomNo, loginUserId },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (memberResult.rows[0].CNT === 0) {
+      return res.status(403).json({
+        result: "fail",
+        message: "접근할 수 없는 채팅방입니다."
+      });
+    }
+
+    await connection.execute(
+      `
+      UPDATE SNS_DM_ROOM_USER
+      SET DELETED_YN = 'N'
+      WHERE ROOM_NO = :roomNo
+        AND USER_ID = :loginUserId
+      `,
+      {
+        roomNo,
+        loginUserId
+      },
+      { autoCommit: true }
+    );
+
+    res.json({
+      result: "success"
+    });
+  } catch (err) {
+    console.error("DM room show error:", err);
+
+    res.status(500).json({
+      result: "fail",
+      message: "채팅방 복구에 실패했습니다."
+    });
+  } finally {
+    if (connection) await connection.close();
+  }
+});
+
 // DM 채팅방 삭제 - 내 목록에서만 숨김
 router.delete("/rooms/:roomNo", authMiddleware, async (req, res) => {
   let connection;
