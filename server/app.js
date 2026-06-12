@@ -34,8 +34,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
-    credentials: true
+    origin: "*"
   }
 });
 
@@ -77,7 +76,7 @@ io.on("connection", (socket) => {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "*",
   credentials: true,
   exposedHeaders: ["Authorization"]
 }));
